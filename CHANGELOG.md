@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9] - 2026-04-03
+
+### Added
+- `status` and `related_skills` metadata to all 4 SKILL.md frontmatters
+  - Enables skill discovery tools and cross-skill navigation for users with multiple skills installed
+  - `deep-research` ↔ `academic-paper` ↔ `academic-paper-reviewer` ↔ `academic-pipeline`
+
+### Changed
+- Information Systems Basket of 8 journals added to academic-paper reference list (since 2.8)
+- AI Writing Lint renamed to Writing Quality Check (since 2.8)
+
 ## [2.8] - 2026-03-22
 
 ### Added
