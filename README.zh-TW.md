@@ -461,6 +461,10 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## 更新紀錄
 
+### v2.9.1 (2026-04-03) — Skill Metadata
+- 為 4 個 SKILL.md 加入 `status: active` 和 `related_skills` 交叉引用
+- 支援 skill 探索工具及跨技能導航
+
 ### v2.9 (2026-03-27) — 風格校準 + 寫作品質檢查
 - **風格校準**（academic-paper intake Step 10，可選）：提供 3+ 篇過去論文，pipeline 會學習你的寫作風格 — 句子節奏、詞彙偏好、引用整合方式。寫作時作為軟性指引；學科規範永遠優先。優先級系統：學科規範（硬性）> 期刊慣例（強）> 個人風格（軟性）。見 `shared/style_calibration_protocol.md`
 - **寫作品質檢查**（`academic-paper/references/writing_quality_check.md`）：寫作品質 checklist，於初稿自我審查時套用。5 大類：AI 高頻詞彙警告（25 個詞）、標點模式控制（em dash ≤3）、開頭廢話偵測、結構模式警告（三項列舉強迫症、均勻段落、同義詞循環）、句子長度變化檢查。這是好寫作規則 — 不是逃避偵測
