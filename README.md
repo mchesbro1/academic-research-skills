@@ -117,14 +117,30 @@ See the complete artifacts from a real 10-stage pipeline run — including **pee
 >
 > Individual skills (e.g., `deep-research` alone, or `academic-paper-reviewer` alone) consume significantly less.
 
+### Estimated Token Usage by Mode
+
+| Skill / Mode | Input Tokens | Output Tokens | Estimated Cost (Opus 4.6) |
+|-------------|-------------|--------------|--------------------------|
+| `deep-research` socratic | ~30K | ~15K | ~$0.60 |
+| `deep-research` full | ~60K | ~30K | ~$1.20 |
+| `deep-research` systematic-review | ~100K | ~50K | ~$2.00 |
+| `academic-paper` plan | ~40K | ~20K | ~$0.80 |
+| `academic-paper` full | ~80K | ~50K | ~$1.80 |
+| `academic-paper-reviewer` full | ~50K | ~30K | ~$1.10 |
+| `academic-paper-reviewer` quick | ~15K | ~8K | ~$0.30 |
+| **Full pipeline (10 stages)** | **~200K+** | **~100K+** | **~$4-6** |
+| + Cross-model verification | +~10K (external) | +~5K (external) | +~$0.60-1.10 |
+
+*Estimates based on a ~15,000-word paper with ~60 references. Actual usage varies with paper length, revision rounds, and dialogue depth. Costs at Anthropic API pricing as of April 2026.*
+
 ### Recommended Settings
 
 For the best experience with these skills, enable the following Claude Code features:
 
 | Setting | What it does | How to enable | Docs |
 |---------|-------------|---------------|------|
-| **Agent Team** | Spawns subagents for parallel research, writing, and review — critical for multi-agent pipelines | Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (research preview) | [Agent Teams](https://code.claude.com/docs/en/agent-teams) |
-| **Ralph Loop** | Keeps the session alive during long-running pipeline stages so Claude can work autonomously without timing out | Use `/ralph-loop` to activate | [Ralph Loop](https://claude.com/plugins/ralph-loop) |
+| **Agent Team** | Spawns subagents for parallel research, writing, and review — critical for multi-agent pipelines | Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (research preview) | Experimental feature — no stable docs yet |
+| **Ralph Loop** | Keeps the session alive during long-running pipeline stages so Claude can work autonomously without timing out | Use `/ralph-loop` to activate | Community plugin — experimental |
 | **Skip Permissions** | Bypasses per-tool confirmation prompts, enabling uninterrupted autonomous execution across all pipeline stages | Launch with `claude --dangerously-skip-permissions` | [Permissions](https://docs.anthropic.com/en/docs/claude-code/cli-reference) · [Advanced Usage](https://docs.anthropic.com/en/docs/claude-code/advanced) |
 
 > **⚠️ Skip Permissions**: This flag disables all tool-use confirmation dialogs. Use at your own discretion — it is convenient for trusted, long-running pipelines but removes the safety net of manual approval. Only enable this in environments where you are comfortable with Claude executing file reads, writes, and shell commands without asking first.
@@ -170,6 +186,28 @@ Or set it as an environment variable:
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-xxxxx
 ```
+
+### LaTeX / PDF Output (Optional)
+
+PDF output requires [tectonic](https://tectonic-typesetting.github.io/) and specific fonts. **This is optional** — MD and DOCX output work without any of this.
+
+```bash
+# macOS
+brew install tectonic
+
+# Linux (Debian/Ubuntu)
+curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+
+# Windows
+# Download from https://tectonic-typesetting.github.io/en-US/install.html
+```
+
+**Required fonts** (for APA 7.0 CJK output):
+- **Times New Roman** — usually pre-installed on macOS/Windows; on Linux install `ttf-mscorefonts-installer`
+- **Source Han Serif TC VF** (思源宋體) — download from [Google Fonts](https://fonts.google.com/specimen/Noto+Serif+TC) or [Adobe GitHub](https://github.com/adobe-fonts/source-han-serif)
+- **Courier New** — usually pre-installed
+
+> If you only need MD/DOCX output, skip this entirely. The pipeline will ask before attempting LaTeX compilation.
 
 ---
 
