@@ -125,7 +125,15 @@ Users should see this table in the README and get mode recommendations based on 
 
 **Implication for ARS**: If ARS ever wants to become a full research pipeline (not just a writing pipeline), this is the missing module. Currently the user runs experiments themselves and brings results to ARS; The AI Scientist closes that loop.
 
-**Change**: **Not v3.2.** Record as a known gap in the roadmap. Revisit after v3.2 ships. If added, it would be a new skill (`experiment-manager`) rather than an agent inside existing skills, because it has a different execution model (long-running, non-interactive).
+**Change**: **Not v3.2.** Record as a known gap in the roadmap. Revisit after v3.2 ships.
+
+**Correction (2026-04-09)**: The initial draft proposed this as a new standalone skill (`experiment-manager`). That was wrong. This is an **agent** (`experiment_monitor_agent`), not a skill. Rationale:
+- It is **dispatched** by the pipeline orchestrator (or invoked by another agent), not triggered directly by the user via keywords.
+- It runs in the **background** (polling run status, detecting stalls), not in interactive dialogue.
+- It does not need its own SKILL.md, trigger keywords, or mode table — those are skill-level constructs.
+- It naturally lives at `academic-pipeline/agents/experiment_monitor_agent.md`, alongside the existing pipeline agents (state_tracker, integrity_verification, etc.).
+
+The pipeline orchestrator would dispatch it between Stage 1 RESEARCH and Stage 2 WRITE, when the user says "I need to run experiments first". The agent monitors runs, reports status, and returns verified results to the orchestrator, which then proceeds to Stage 2 with confidence that the experimental data is sound.
 
 ### 6. Disclosure mode for `academic-paper` (LOW priority, LOW cost)
 
@@ -199,7 +207,7 @@ Net effect: v3.1 was about *tightening existing quality*; v3.2 adds *external ca
 5. v3.2 item 6 — Disclosure mode.
 6. v3.2 item 4 — Pipeline early stopping. Depends on (1) for accurate version tracking.
 7. v3.2 item 3 — Mode spectrum reclassification + v3.1 Phase 3 (templates to sub-files) together.
-8. v3.2 item 5 — Experiment Progress Manager: parked.
+8. v3.2 item 5 — Experiment Progress Manager: parked. Will be an agent (`experiment_monitor_agent`) in `academic-pipeline/agents/`, not a standalone skill.
 
 ---
 
