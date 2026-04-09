@@ -238,6 +238,24 @@ curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 
 ---
 
+## 搭配工具：Experiment Agent
+
+如果你的研究需要在寫作前跑實驗（程式碼或人工研究），[Experiment Agent](https://github.com/Imbad0202/experiment-agent) 技能填補 ARS Stage 1（研究）和 Stage 2（寫作）之間的空缺。
+
+```
+ARS Stage 1 研究      →  RQ Brief + Methodology Blueprint
+        ↓
+  experiment-agent     →  執行/管理實驗 → 驗證結果
+        ↓
+ARS Stage 2 寫作      →  用驗證過的實驗結果撰寫論文
+```
+
+**功能**：執行程式碼實驗（Python、R 等）並即時監控、管理人工研究 protocol 與 IRB 倫理審查、11 種統計謬誤偵測、重現性驗證。
+
+**搭配使用方式**：ARS pipeline 跑完 Stage 1 後暫停，在另一個 experiment-agent session 中跑實驗，完成後將結果（含 Material Passport）帶回 ARS Stage 2。ARS 不需要任何修改。詳見 [experiment-agent README](https://github.com/Imbad0202/experiment-agent)。
+
+---
+
 ## 安裝方式
 
 ### 方法一：作為專案 Skills（推薦）

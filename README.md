@@ -228,6 +228,24 @@ curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 
 ---
 
+## Companion: Experiment Agent
+
+If your research involves running experiments (code or human studies) before writing, the [Experiment Agent](https://github.com/Imbad0202/experiment-agent) skill fills the gap between ARS Stage 1 (RESEARCH) and Stage 2 (WRITE).
+
+```
+ARS Stage 1 RESEARCH  →  RQ Brief + Methodology Blueprint
+        ↓
+  experiment-agent     →  run/manage experiments → validate results
+        ↓
+ARS Stage 2 WRITE     →  write paper with verified experiment results
+```
+
+**What it does**: executes code experiments (Python, R, etc.) with real-time monitoring, manages human study protocols with IRB ethics checklist, interprets statistics with 11-type fallacy detection, and verifies reproducibility.
+
+**How to use together**: pause the ARS pipeline after Stage 1, run experiments in a separate experiment-agent session, then bring the results (with Material Passport) back to ARS Stage 2. ARS requires zero modification. See the [experiment-agent README](https://github.com/Imbad0202/experiment-agent) for setup instructions.
+
+---
+
 ## Installation
 
 ### Method 1: As Project Skills (Recommended)
