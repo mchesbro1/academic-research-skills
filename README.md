@@ -600,9 +600,20 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## Changelog
 
+### v3.2 (2026-04-09) — Lu 2026 Nature Integration
+
+Integrates insights from Lu et al. (2026, *Nature* 651:914-919) — the first end-to-end autonomous AI research system to pass blind peer review.
+
+- **7-mode AI Research Failure Mode Checklist** — blocks pipeline at Stage 2.5/4.5 on suspected implementation bugs, hallucinated results, shortcut reliance, bug-as-insight, methodology fabrication, frame-lock. Extends existing 5-type citation hallucination taxonomy.
+- **Reviewer Calibration Mode** (academic-paper-reviewer v1.8) — opt-in FNR/FPR/balanced-accuracy measurement against user-supplied gold set. 5× ensembling, cross-model default-on, session-scoped confidence disclosure.
+- **Disclosure Mode** (academic-paper v2.9) — venue-specific AI-usage statement generator. v1 covers ICLR, NeurIPS, Nature, Science, ACL, EMNLP.
+- **Early-Stopping Criterion** (academic-pipeline v3.1) — convergence check + budget transparency at pipeline start.
+- **Fidelity-Originality Mode Spectrum** — classifies all modes across 3 skills per Lu 2026 Fig 1c.
+- New versions: academic-paper v2.9, academic-paper-reviewer v1.8, academic-pipeline v3.1
+
 ### v3.1.1 (2026-04-09) — IS Senior Scholars' Basket of 11
 
-External contribution from [@cloudenochcsis](https://github.com/cloudenochcsis) ([PR #8](https://github.com/Imbad0202/academic-research-skills/pull/8)). Extended `academic-paper-reviewer/references/top_journals_by_field.md` Section 7 from the AIS *Basket of 8* (added in v2.9) to the full *Senior Scholars' Basket of 11*, adding *Decision Support Systems*, *Information & Management*, and *Information and Organization*. Source: [AIS Senior Scholars' List of Premier Journals](https://aisnet.org/page/SeniorScholarListofPremierJournals) — the authoritative IS list referenced by doctoral programs and tenure committees.
+External contributions: [@mchesbro1](https://github.com/mchesbro1) originally proposed and drafted the IS Basket of 8 journals ([Issue #5](https://github.com/Imbad0202/academic-research-skills/issues/5)); [@cloudenochcsis](https://github.com/cloudenochcsis) extended it to the full Senior Scholars' Basket of 11 ([Issue #7](https://github.com/Imbad0202/academic-research-skills/issues/7), [PR #8](https://github.com/Imbad0202/academic-research-skills/pull/8)). Updated `academic-paper-reviewer/references/top_journals_by_field.md` Section 7, adding *Decision Support Systems*, *Information & Management*, and *Information and Organization*. Source: [AIS Senior Scholars' List of Premier Journals](https://aisnet.org/page/SeniorScholarListofPremierJournals).
 
 ### v3.1 (2026-04-06) — Anti-Context-Rot + Cognitive Frameworks + Lean Size
 

@@ -571,9 +571,20 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## 更新紀錄
 
+### v3.2 (2026-04-09) — Lu 2026 Nature 整合
+
+整合 Lu 等人（2026，*Nature* 651:914-919）的研究洞見——第一個通過盲審的端到端全自動 AI 研究系統。
+
+- **7 類 AI 研究失敗模式檢查清單** — 在 Stage 2.5/4.5 阻斷管線：偵測實作錯誤、幻覺實驗結果、取巧特徵依賴、錯誤包裝為發現、方法偽造、框架鎖定。擴充現有 5 類引用幻覺分類。
+- **Reviewer 校準模式**（academic-paper-reviewer v1.8）— opt-in 的 FNR/FPR/balanced accuracy 測量，使用者提供 gold set。5 次集成、跨模型預設開啟、session 內強制附加信心揭露。
+- **揭露模式**（academic-paper v2.9）— 針對特定期刊/會議的 AI 使用聲明生成器。v1 涵蓋 ICLR、NeurIPS、Nature、Science、ACL、EMNLP。
+- **提前停止機制**（academic-pipeline v3.1）— 收斂檢查 + pipeline 開始時的 token 預算透明化。
+- **忠實度-原創性模式光譜** — 按 Lu 2026 Fig 1c 分類所有 3 個 skill 的模式。
+- 新版本：academic-paper v2.9、academic-paper-reviewer v1.8、academic-pipeline v3.1
+
 ### v3.1.1 (2026-04-09) — 資訊系統 Senior Scholars' Basket of 11
 
-[@cloudenochcsis](https://github.com/cloudenochcsis) 的外部貢獻（[PR #8](https://github.com/Imbad0202/academic-research-skills/pull/8)）。將 `academic-paper-reviewer/references/top_journals_by_field.md` 第 7 節從 v2.9 加入的 AIS *Basket of 8* 擴充為完整的 *Senior Scholars' Basket of 11*，補上 *Decision Support Systems*、*Information & Management*、*Information and Organization* 三本期刊。資料來源：[AIS Senior Scholars' List of Premier Journals](https://aisnet.org/page/SeniorScholarListofPremierJournals) — 全球 IS 博士班與終身職評鑑委員會引用的權威清單。
+外部貢獻：[@mchesbro1](https://github.com/mchesbro1) 最初提出並撰寫了 IS Basket of 8 期刊清單（[Issue #5](https://github.com/Imbad0202/academic-research-skills/issues/5)）；[@cloudenochcsis](https://github.com/cloudenochcsis) 將其擴充為完整的 Senior Scholars' Basket of 11（[Issue #7](https://github.com/Imbad0202/academic-research-skills/issues/7)、[PR #8](https://github.com/Imbad0202/academic-research-skills/pull/8)）。更新 `academic-paper-reviewer/references/top_journals_by_field.md` 第 7 節，補上 *Decision Support Systems*、*Information & Management*、*Information and Organization*。資料來源：[AIS Senior Scholars' List of Premier Journals](https://aisnet.org/page/SeniorScholarListofPremierJournals)。
 
 ### v3.1 (2026-04-06) — 抗 Context Rot + 認知框架 + 精簡尺寸
 
