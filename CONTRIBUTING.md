@@ -6,31 +6,9 @@ Thank you for your interest in contributing. This document explains what kinds o
 
 ## How to submit a contribution
 
-ARS uses the standard **fork-and-PR** workflow:
+ARS uses the standard **fork-and-PR** workflow. Fork the repo on GitHub, clone your fork, create a branch, make your changes, push to your fork, then open a PR against `Imbad0202/academic-research-skills`.
 
-```bash
-# 1. Fork the repo on GitHub (click "Fork" button on the repo page)
-
-# 2. Clone your fork
-git clone https://github.com/YOUR-USERNAME/academic-research-skills.git
-cd academic-research-skills
-
-# 3. Create a branch
-git checkout -b feat/your-feature-name
-
-# 4. Make your changes and commit
-git add .
-git commit -m "feat: description of your change"
-
-# 5. Push to your fork
-git push origin feat/your-feature-name
-
-# 6. Open a PR on GitHub
-# Go to https://github.com/Imbad0202/academic-research-skills
-# Click "Compare & pull request"
-```
-
-**Important**: You cannot push directly to this repo — you must fork it first and submit a PR from your fork. This is standard GitHub practice for open collaboration.
+**Important**: You cannot push directly to this repo — you must fork it first and submit a PR from your fork.
 
 ---
 
@@ -93,14 +71,7 @@ The repo is maintained by [Cheng-I Wu](https://github.com/Imbad0202) (HEEACT). T
 
 ## Academic integrity policy
 
-This repo is designed to be **assistive, not deceptive**.
-
-- ARS helps researchers write better papers, not hide that they used AI
-- Contributors must not add features designed to evade AI detection tools
-- All pipeline outputs include AI disclosure by design
-- The Disclosure Mode generates venue-specific AI usage statements because transparency is the standard, not the exception
-
-If you're unsure whether a contribution aligns with this policy, open an issue to discuss before submitting a PR.
+This repo is designed to be **assistive, not deceptive**. See [POSITIONING.md](POSITIONING.md) for the full design philosophy. Contributors must not add features designed to evade AI detection tools. If unsure, open an issue to discuss before submitting a PR.
 
 ---
 
@@ -110,4 +81,4 @@ Contributors are credited in commit messages, CHANGELOG entries, and the Contrib
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), the same license as the rest of the project.
+By contributing, you agree that your contributions will be licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). See [POSITIONING.md](POSITIONING.md) for usage terms.

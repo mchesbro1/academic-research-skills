@@ -33,7 +33,7 @@ Last updated: v3.3 (2026-04-09)
 | `lit-review` | Fidelity | Annotated bibliography in paper format | Medium | "literature review paper", "write a lit review" |
 | `format-convert` | Fidelity | Formatted document (LaTeX/DOCX/PDF/MD) | Low | "convert to LaTeX", "convert citations to [format]" |
 | `citation-check` | Fidelity | Citation error report | Low | "check citations", "verify references" |
-| `disclosure` | Fidelity | Venue-specific AI-usage disclosure statement | Low | "AI disclosure for [venue]" |
+| `disclosure` | Fidelity | Venue-specific AI-usage disclosure statement | Low | "AI disclosure for [venue]", "generate AI usage statement" |
 
 ## academic-paper-reviewer (6 modes)
 
@@ -65,9 +65,9 @@ Last updated: v3.3 (2026-04-09)
 
 ### Oversight levels
 
-| Level | Meaning | Modes |
-|-------|---------|-------|
-| Very High | User-led dialogue or mandatory checkpoints at every stage | socratic, plan, guided, calibration, pipeline |
-| High | User confirms key decisions (RQ, outline, configuration) | full (all skills), outline-only, revision, review |
-| Medium | Structured format with limited decision points | quick, lit-review, fact-check, systematic-review, re-review, methodology-focus, revision-coach, abstract-only |
-| Low | Mechanical/template-driven, minimal human input | format-convert, citation-check, disclosure, quick (reviewer) |
+| Level | Meaning |
+|-------|---------|
+| Very High | User-led dialogue or mandatory checkpoints at every stage |
+| High | User confirms key decisions (RQ, outline, configuration) |
+| Medium | Structured format with limited decision points |
+| Low | Mechanical/template-driven, minimal human input |

@@ -28,9 +28,9 @@ ARS is not an autonomous paper-writing system. It is not a replacement for the r
 - Commercial SaaS or hosted services built on ARS
 - Consulting or freelance services that package ARS as a paid product
 - Enterprise or institutional paid deployments without separate licensing
-- API wrappers or resale of ARS functionality
+- Commercial API wrappers or resale of ARS functionality
 
-For commercial licensing inquiries, contact the maintainer.
+These reflect our policy intent. See the [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/) for the precise legal terms. For commercial licensing inquiries, contact the maintainer.
 
 ## Design philosophy
 
