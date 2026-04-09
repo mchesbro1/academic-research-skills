@@ -1,6 +1,6 @@
 # Mode Spectrum: Fidelity vs Originality
 
-**Status**: v3.2 new
+**Status**: v3.2
 **Source**: Lu et al. (2026, Nature 651:914-919) Figure 1c — template-based mode produces higher-quality, lower-variance papers; template-free mode produces more diverse outputs but lower mean quality and higher variance. ARS maps this finding onto its own mode taxonomy.
 
 ---

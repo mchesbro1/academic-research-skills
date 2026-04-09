@@ -1,6 +1,6 @@
 # AI Research Failure Mode Checklist
 
-**Status**: v3.2 new, draft
+**Status**: v3.2
 **Parent skill**: `academic-pipeline`
 **Used at**: Stage 2.5 INTEGRITY (blocking), Stage 4.5 FINAL INTEGRITY (blocking), Stage 6 PROCESS SUMMARY (reporting only)
 **Source**: Lu et al. (2026). Towards end-to-end automation of AI research. *Nature* 651, 914-919. doi:10.1038/s41586-026-10265-5 — Limitations section, Figure 2 (examples of failures in The AI Scientist's own accepted paper), Supplementary Information A.2.9 (debugging traces).

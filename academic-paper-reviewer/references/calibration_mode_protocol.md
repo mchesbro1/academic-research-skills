@@ -1,6 +1,6 @@
 # Calibration Mode Protocol
 
-**Status**: Draft — v3.2 roadmap item 1
+**Status**: v3.2
 **Parent skill**: `academic-paper-reviewer`
 **Mode name**: `calibration`
 **Purpose**: Measure this reviewer's own false-negative rate (FNR), false-positive rate (FPR), and balanced accuracy against a user-supplied gold-standard set, then attach the resulting error profile as a confidence disclosure to subsequent reviews in the same session.

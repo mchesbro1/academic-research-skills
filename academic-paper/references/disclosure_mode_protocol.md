@@ -1,6 +1,6 @@
 # Disclosure Mode Protocol
 
-**Status**: v3.2 new, draft
+**Status**: v3.2
 **Parent skill**: `academic-paper`
 **Mode name**: `disclosure`
 **Purpose**: Generate a venue-specific AI-usage disclosure statement that complies with the target venue's current AI policy, placed in the venue's preferred section (Methods / Acknowledgements / cover letter / separate statement), in the venue's preferred voice.
