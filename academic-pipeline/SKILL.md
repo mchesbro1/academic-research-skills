@@ -2,8 +2,8 @@
 name: academic-pipeline
 description: "Orchestrator for the full academic research pipeline: research -> write -> integrity check -> review -> revise -> re-review -> re-revise -> final integrity check -> finalize. Coordinates deep-research, academic-paper, and academic-paper-reviewer into a seamless 9-stage workflow with mandatory integrity verification, two-stage peer review, and reproducible quality gates. Triggers on: academic pipeline, research to paper, full paper workflow, paper pipeline, end-to-end paper, research-to-publication, complete paper workflow."
 metadata:
-  version: "3.0"
-  last_updated: "2026-04-06"
+  version: "3.1"
+  last_updated: "2026-04-09"
   depends_on: "deep-research, academic-paper, academic-paper-reviewer"
   status: active
   related_skills:
@@ -12,7 +12,7 @@ metadata:
     - academic-paper-reviewer
 ---
 
-# Academic Pipeline v3.0 — Full Academic Research Workflow Orchestrator
+# Academic Pipeline v3.1 — Full Academic Research Workflow Orchestrator
 
 A lightweight orchestrator that manages the complete academic pipeline from research exploration to final manuscript. It does not perform substantive work — it only detects stages, recommends modes, dispatches skills, manages transitions, and tracks state.
 
@@ -340,6 +340,38 @@ ASCII dashboard shown at FULL checkpoints to display pipeline progress.
 - Mark unresolved issues as Acknowledged Limitations
 - Provide cumulative revision history (each round's decision, items addressed, unresolved items)
 
+### Early-Stopping Criterion (v3.2)
+
+Inspired by Lu et al. (2026, Nature 651:914-919) Figure 3c, which shows paper quality plateaus at ~30 agentic search nodes — additional compute has diminishing returns.
+
+**Convergence check** — at the end of each revision round (Stage 4 → Stage 3', and Stage 4' → Stage 4.5), compute the delta between the reviewer's weighted average score from the current round and the previous round:
+
+- If **delta < 3 points on the 0-100 rubric** AND **no P0 (CRITICAL) issues remain**, the pipeline terminates the revision loop with a "converged" status. The remaining revision loops are skipped and the pipeline proceeds to Stage 4.5 FINAL INTEGRITY.
+- The convergence check is informational, not mandatory: the user can override it and request another revision round anyway. But the default is to stop.
+
+**Hard cap** — maximum 2 full revision loops (Stage 4 + Stage 4') as currently enforced. This is not changed by v3.2, but is now explicitly marked as a ceiling rather than an implied constraint.
+
+### Budget Transparency (v3.2)
+
+At **pipeline start** (Stage 1 entry), the orchestrator estimates the expected token cost of the full 10-stage run based on:
+
+- Paper length (word count of the draft, if available; otherwise ask user for estimate)
+- Selected mode (individual skill vs full pipeline)
+- Whether cross-model verification is enabled
+
+Present the estimate to the user and ask for confirmation before Stage 1 begins:
+
+```
+Estimated token budget for this pipeline run:
+- Input tokens: ~XXK
+- Output tokens: ~XXK
+- Estimated cost: ~$X.XX (Claude Opus 4.6 pricing)
+- Cross-model add-on: ~$X.XX (if enabled)
+Proceed? [Y/n]
+```
+
+This prevents surprise bills from multi-revision pipelines on long papers.
+
 ---
 
 ## Reproducibility
@@ -389,6 +421,8 @@ Explicit prohibitions to prevent common failure modes:
 | No overstepping | ⚠️ IRON RULE: Orchestrator does not perform substantive research/writing/reviewing, only dispatching |
 | No forcing | ⚠️ IRON RULE: User can pause or exit pipeline at any time (but cannot skip integrity checks) |
 | Reproducible | Same input follows the same workflow across different sessions |
+| **Convergence-aware stopping** (v3.2) | **If delta < 3 points AND no P0 issues, suggest stopping revision loop; user can override** |
+| **Budget transparency** (v3.2) | **Token cost estimate + user confirmation at pipeline start** |
 
 ---
 
@@ -514,8 +548,8 @@ Stage 5: academic-paper (format-convert mode)
 
 | Item | Content |
 |------|---------|
-| Skill Version | 3.0 |
-| Last Updated | 2026-04-06 |
+| Skill Version | 3.1 |
+| Last Updated | 2026-04-09 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | deep-research v2.0+, academic-paper v2.0+, academic-paper-reviewer v1.1+ |
 | Role | Full academic research workflow orchestrator |
