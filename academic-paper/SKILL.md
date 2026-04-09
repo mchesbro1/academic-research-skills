@@ -1,9 +1,9 @@
 ---
 name: academic-paper
-description: "12-agent academic paper writing pipeline. 9 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check). 6 paper types, 5 citation formats, bilingual abstracts, LaTeX/DOCX/PDF output. Style Calibration + Writing Quality Check + Anti-Patterns with IRON RULE markers. Triggers: write paper, academic paper, guide my paper, parse reviews, 寫論文, 學術論文, 引導我寫論文, 審查意見."
+description: "12-agent academic paper writing pipeline. 10 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check/disclosure). 6 paper types, 5 citation formats, bilingual abstracts, LaTeX/DOCX/PDF output. Style Calibration + Writing Quality Check + Anti-Patterns with IRON RULE markers. Triggers: write paper, academic paper, guide my paper, parse reviews, AI disclosure, 寫論文, 學術論文, 引導我寫論文, 審查意見."
 metadata:
-  version: "2.8"
-  last_updated: "2026-04-06"
+  version: "2.9"
+  last_updated: "2026-04-09"
   status: active
   related_skills:
     - deep-research
@@ -151,6 +151,7 @@ See `references/mode_selection_guide.md` for details.
 | `citation-check` | "Check citations" | 6 only | Citation error report |
 | `plan` | "guide my paper" / "help me plan my paper" | 1->10->3->4 | Chapter Plan + INSIGHT Collection |
 | `revision-coach` | "parse reviews" / "revision roadmap" / "I got reviewer comments" | 12 only | Revision Roadmap + optional Tracking Template + Response Letter Skeleton |
+| **`disclosure`** (v3.2) | **"AI disclosure for Nature" / "generate AI usage statement"** | **9 only** | **Venue-specific AI-usage disclosure paragraph(s) + placement instructions** |
 
 ### Quick Mode Selection Guide
 
@@ -165,8 +166,9 @@ See `references/mode_selection_guide.md` for details.
 | Need to check/fix citations | `citation-check` |
 | Need to convert format (LaTeX, DOCX) or citation style | `format-convert` |
 | Want a systematic literature review paper | `lit-review` |
+| Need a venue-specific AI-usage disclosure statement for submission | `disclosure` |
 
-Not sure? Start with `plan` — it will guide you step by step.
+Not sure? Start with `plan` — it will guide you step by step. `disclosure` is a finishing step — run it after the paper is drafted, targeting the venue you plan to submit to.
 
 ### Mode Selection Logic
 
@@ -226,8 +228,9 @@ See `agents/intake_agent.md` for the complete field definitions of the Phase 0 c
 - Writing: `academic_writing_style`, `writing_quality_check`, `writing_judgment_framework`
 - Structure: `paper_structure_patterns` (6 types), `abstract_writing_guide`
 - Domain: `hei_domain_glossary` (bilingual), `journal_submission_guide`, `latex_template_reference`
-- Process: `failure_paths` (12 scenarios), `mode_selection_guide` (9 modes), `plan_mode_protocol`, `workflow_phase_details`
+- Process: `failure_paths` (12 scenarios), `mode_selection_guide` (10 modes), `plan_mode_protocol`, `workflow_phase_details`
 - Ethics: `credit_authorship_guide` (CRediT 14 roles), `funding_statement_guide`, `statistical_visualization_standards`
+- Disclosure (v3.2): `disclosure_mode_protocol` (venue-specific AI-usage statement generation), `venue_disclosure_policies` (v1 database: ICLR, NeurIPS, Nature, Science, ACL, EMNLP)
 - Also: `deep-research/references/apa7_style_guide.md` (base reference, extended here)
 
 **Templates** (11 files in `templates/`): `imrad`, `literature_review`, `case_study`, `theoretical_paper`, `policy_brief`, `conference_paper`, `latex_article_template.tex`, `bilingual_abstract`, `credit_statement`, `funding_statement`, `revision_tracking` (4 status types).
