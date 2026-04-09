@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.1-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.1)
+[![Version](https://img.shields.io/badge/version-v3.2-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.2)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -11,6 +11,24 @@
 > **AI 是你的副駕駛，不是機長。** 這工具不會幫你寫論文。它處理苦工 — 搜文獻、排格式、驗數據、查邏輯一致性 — 讓你專注在真正需要你腦子的事：定義問題、選方法、詮釋數據的意義、寫出「我認為」後面那句話。
 >
 > 跟 humanizer 不同，這工具不是幫你隱藏用 AI 協作的事實，而是幫你把關文章品質。風格校準從你過去的文章學習你的聲音，寫作品質檢查抓出讓文字讀起來像機器產的模式。目標是品質，不是遮掩。
+
+### 為什麼選「人機協作」而不是「全自動」？
+
+Lu 等人（2026，*Nature* 651:914-919）發表的 **The AI Scientist** 是第一個端到端全自動的 AI 研究系統，其生成的論文通過 ICLR 2025 workshop 的盲審（評分 6.33/10，workshop 平均 4.87）。這是截至 2026 年「全自動 AI 研究」能達到的最強公開基準。
+
+但他們自己的 Limitations 段落也列出這類系統會遇到的結構性失敗模式：
+
+- 實作錯誤通過 AI 自我審查，污染後續結果
+- 幻覺的實驗數字（看起來合理但沒有對應的實際 run）
+- 模型靠虛假特徵取巧，論文卻宣稱「解決了任務」
+- 實作錯誤被重新包裝成「意外發現」
+- 方法章節飄離實際執行的內容（methodology fabrication）
+- 早期階段的框架鎖定（選錯方向後整個 pipeline 無法回頭）
+- 引用幻覺
+
+ARS 建立在這個前提上：**人類研究者 + AI 的組合，比純自動或純人工都更能避開這些失敗模式**。v3.2 把 Lu 2026 的失敗模式清單直接操作化：pipeline 的 Stage 2.5 與 Stage 4.5 integrity gate 新增一份 7 類阻斷式檢查清單（見 `academic-pipeline/references/ai_research_failure_modes.md`），reviewer 也提供一個 opt-in 的 calibration mode，用使用者自備的 gold set 測量這個 reviewer 本身的 FNR/FPR（見 `academic-paper-reviewer/references/calibration_mode_protocol.md`）。
+
+The AI Scientist 證明了自動 AI 研究已經可行。ARS 的設計是讓你拿到這種能力的槓桿，但不用繼承它的失敗模式。
 
 ---
 
