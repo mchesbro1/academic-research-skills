@@ -2,15 +2,15 @@
 name: academic-paper-reviewer
 description: "Multi-perspective academic paper review with dynamic reviewer personas. Simulates 5 independent reviewers (EIC + 3 peer reviewers + Devil's Advocate) with field-specific expertise. Supports full review, re-review (verification), quick assessment, methodology focus, and Socratic guided modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review."
 metadata:
-  version: "1.7"
-  last_updated: "2026-04-06"
+  version: "1.8"
+  last_updated: "2026-04-09"
   status: active
   related_skills:
     - academic-paper
     - academic-pipeline
 ---
 
-# Academic Paper Reviewer v1.7 — Multi-Perspective Academic Paper Review Agent Team
+# Academic Paper Reviewer v1.8 — Multi-Perspective Academic Paper Review Agent Team
 
 Simulates a complete international journal peer review process: automatically identifies the paper's field, dynamically configures 5 reviewers (Editor-in-Chief + 3 peer reviewers + Devil's Advocate) who review from four non-overlapping perspectives — methodology, domain expertise, cross-disciplinary viewpoints, and core argument challenges — ultimately producing a structured Editorial Decision and Revision Roadmap.
 
@@ -40,7 +40,7 @@ Review this paper: [paste paper or provide file]
 
 ### Trigger Keywords
 
-**English**: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review
+**English**: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy
 
 ### Non-Trigger Scenarios
 
@@ -59,8 +59,9 @@ Review this paper: [paste paper or provide file]
 | Quick quality assessment (15 min) | quick |
 | Focus only on methods/statistics | methodology-focus |
 | Want to learn by doing (guided review) | guided |
+| Want to know this reviewer's own error profile before trusting its scores | calibration |
 
-Not sure? Use `full` for pre-submission review, `re-review` for post-revision verification.
+Not sure? Use `full` for pre-submission review, `re-review` for post-revision verification. `calibration` is opt-in — run it once per domain when you want to know the reviewer's FNR/FPR before relying on its rubric scores.
 
 ---
 
@@ -168,7 +169,7 @@ User: "Review this paper"
 
 ---
 
-## Operational Modes (5 Modes)
+## Operational Modes (6 Modes)
 
 | Mode | Trigger | Agents | Output |
 |------|---------|--------|--------|
@@ -177,6 +178,7 @@ User: "Review this paper"
 | `quick` | "quick review" | field_analyst + eic | EIC quick assessment + key issues list (15-minute version) |
 | `methodology-focus` | "check methodology" | field_analyst + methodology_reviewer | In-depth methodology review report |
 | `guided` | "guide me" | All + Socratic dialogue | Socratic issue-by-issue guided review |
+| **`calibration`** (v3.2) | **"calibrate reviewer" / "measure reviewer accuracy"** | **All 7 agents, 5x per gold paper, cross-model default-on** | **Calibration Report: FNR/FPR/balanced accuracy/AUC + per-dimension calibration error + session-scoped confidence disclosure** |
 
 ### Mode Selection Logic
 
@@ -188,6 +190,8 @@ User: "Review this paper"
 "Guide me to improve this paper"         -> guided
 "Walk me through the issues in my paper" -> guided
 "Verification review" / "Check revisions"-> re-review
+"How accurate is your review scoring?"   -> calibration
+"Calibrate against these 10 papers"      -> calibration
 ```
 
 ---
@@ -208,6 +212,24 @@ Dedicated mode for Pipeline Stage 3' — verifies whether revisions address firs
 Helps authors understand problems themselves through progressive revelation. EIC opens with strengths, then gradually introduces deeper issues from each reviewer perspective.
 
 > See `references/guided_mode_protocol.md` for dialogue flow, rules, and progressive revelation sequence.
+
+---
+
+## Calibration Mode (v3.2)
+
+Opt-in mode that measures this reviewer's own error profile against a user-supplied gold-standard set of papers with known outcomes (accept / reject / borderline). Inspired by Lu et al. (2026, Nature 651:914-919) Table 1, which validated an Automated Reviewer against 500 ICLR 2022 papers and found balanced accuracy within 0.05 of human reviewers but with a dramatically different FNR/FPR trade-off.
+
+**Why it exists**: a single reviewer's absolute 0-100 rubric score is weakly interpretable without knowing the reviewer's systematic biases. Two reviewers could give the same paper a 65, yet have completely different error profiles. Calibration makes the profile legible.
+
+**Inputs**: 5-20 gold-standard papers with labels + domain specification. Minimum 5 (need at least one accept and one reject).
+
+**Process**: runs `full` mode 5x per gold paper (ensembling per Lu 2026 Methods A.1.1) with fresh context per run. Cross-model verification (`ARS_CROSS_MODEL`) is default-on in this mode. Aggregates median rubric scores + majority-vote decisions, computes FNR / FPR / balanced accuracy / AUC with bootstrap 95% CIs.
+
+**Output**: Calibration Report attached as a confidence disclosure header to every subsequent review in the same session. User cannot suppress the disclosure — that defeats the purpose.
+
+**Not persistent across sessions**. Opt-in per session. Re-run if you want the profile in a new session.
+
+> See `references/calibration_mode_protocol.md` for full intake rules, ensembling methodology, output format, and the list of failure cases this mode does *not* fix.
 
 ---
 
@@ -282,6 +304,7 @@ deep-research --> academic-paper --> [integrity check] --> academic-paper-review
 | `references/review_quality_thinking.md` | Cognitive framework for review quality: three lenses (internal validity, external validity, contribution), common reviewer traps, calibration questions | all reviewers |
 | `references/re_review_mode_protocol.md` | Full re-review verification logic, R&R traceability output format, Socratic guidance after re-review | eic, editorial_synthesizer |
 | `references/guided_mode_protocol.md` | Guided mode dialogue flow, progressive revelation sequence, dialogue rules | all reviewers |
+| `references/calibration_mode_protocol.md` | Calibration mode: FNR/FPR/balanced accuracy measurement against user-supplied gold set, 5x ensembling, session-scoped confidence disclosure (v3.2) | all reviewers |
 | `references/integration_guide.md` | Complete 9-step pipeline usage example | — |
 | `references/changelog.md` | Full version history | — |
 
