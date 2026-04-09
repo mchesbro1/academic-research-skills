@@ -626,6 +626,17 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## Changelog
 
+### v3.3 (2026-04-09) — PaperOrchestra-Inspired Enhancements
+
+Integrates techniques from [PaperOrchestra](https://arxiv.org/abs/2604.05018) (Song, Song, Pfister & Yoon, 2026, Google).
+
+- **Semantic Scholar API Verification** — Tier 0 programmatic reference existence check via S2 API. Levenshtein >= 0.70 title matching, DOI mismatch detection, bibliography deduplication via S2 IDs. Graceful degradation if API unavailable.
+- **Anti-Leakage Protocol** — Knowledge Isolation Directive prioritizes session materials over LLM parametric memory. Flags `[MATERIAL GAP]` for missing content instead of filling from memory. Reduces Mode 5/6 failure risk.
+- **VLM Figure Verification** (optional) — Closed-loop verification of rendered figures using vision-capable LLM. 10-point checklist, max 2 refinement iterations.
+- **Score Trajectory Protocol** — Per-dimension rubric score delta tracking across revision rounds (7 dimensions). Detects regressions (delta < -3) and triggers mandatory checkpoint.
+- **Stage 2 Parallelization** — Visualization and argument building can run in parallel after outline completion.
+- New versions: deep-research v2.8, academic-paper v3.0, academic-pipeline v3.2
+
 ### v3.2 (2026-04-09) — Lu 2026 Nature Integration
 
 Integrates insights from Lu et al. (2026, *Nature* 651:914-919) — the first end-to-end autonomous AI research system to pass blind peer review.

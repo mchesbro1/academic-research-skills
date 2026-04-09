@@ -597,6 +597,17 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## 更新紀錄
 
+### v3.3 (2026-04-09) — PaperOrchestra 啟發的強化
+
+整合 [PaperOrchestra](https://arxiv.org/abs/2604.05018)（Song, Song, Pfister & Yoon, 2026, Google）的技術。
+
+- **Semantic Scholar API 驗證** — Tier 0 程式化引用存在性查核。Levenshtein >= 0.70 標題比對、DOI 不符偵測、S2 ID 去重。API 不可用時優雅降級。
+- **反洩漏協議** — 知識隔離指令優先使用 session 內材料，缺少的內容標記 `[MATERIAL GAP]` 而非用 LLM 記憶填補。降低 Mode 5/6 失敗風險。
+- **VLM 圖表驗證**（可選）— 用視覺模型閉環檢查生成圖表。10 項檢核清單，最多 2 輪修正。
+- **分數軌跡協議** — 跨修訂輪次的逐維度評分差異追蹤（7 個維度）。偵測退步（delta < -3）觸發強制 checkpoint。
+- **Stage 2 並行化** — 視覺化與論證建構可在大綱完成後並行執行。
+- 新版本：deep-research v2.8、academic-paper v3.0、academic-pipeline v3.2
+
 ### v3.2 (2026-04-09) — Lu 2026 Nature 整合
 
 整合 Lu 等人（2026，*Nature* 651:914-919）的研究洞見——第一個通過盲審的端到端全自動 AI 研究系統。
