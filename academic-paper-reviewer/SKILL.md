@@ -52,14 +52,16 @@ Review this paper: [paste paper or provide file]
 
 ### Quick Mode Selection Guide
 
-| Your Situation | Recommended Mode |
-|----------------|-----------------|
-| Need comprehensive review (first submission) | full |
-| Checking if revisions addressed comments | re-review |
-| Quick quality assessment (15 min) | quick |
-| Focus only on methods/statistics | methodology-focus |
-| Want to learn by doing (guided review) | guided |
-| Want to know this reviewer's own error profile before trusting its scores | calibration |
+| Your Situation | Recommended Mode | Spectrum |
+|----------------|-----------------|----------|
+| Need comprehensive review (first submission) | full | balanced |
+| Checking if revisions addressed comments | re-review | fidelity |
+| Quick quality assessment (15 min) | quick | fidelity |
+| Focus only on methods/statistics | methodology-focus | fidelity |
+| Want to learn by doing (guided review) | guided | originality |
+| Want to know this reviewer's own error profile before trusting its scores | calibration | fidelity |
+
+**Spectrum** (v3.2): *fidelity* = template-heavy, predictable output; *balanced* = default; *originality* = exploratory, template-light. See `shared/mode_spectrum.md` for the full cross-skill spectrum table.
 
 Not sure? Use `full` for pre-submission review, `re-review` for post-revision verification. `calibration` is opt-in — run it once per domain when you want to know the reviewer's FNR/FPR before relying on its rubric scores.
 

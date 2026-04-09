@@ -155,18 +155,20 @@ See `references/mode_selection_guide.md` for details.
 
 ### Quick Mode Selection Guide
 
-| Your Situation | Recommended Mode |
-|----------------|-----------------|
-| Starting from scratch with a clear RQ | `full` |
-| Need help planning before writing | `plan` |
-| Just need an outline | `outline-only` |
-| Have a draft, received review feedback | `revision` |
-| Have unstructured reviewer comments | `revision-coach` |
-| Just need an abstract | `abstract-only` |
-| Need to check/fix citations | `citation-check` |
-| Need to convert format (LaTeX, DOCX) or citation style | `format-convert` |
-| Want a systematic literature review paper | `lit-review` |
-| Need a venue-specific AI-usage disclosure statement for submission | `disclosure` |
+| Your Situation | Recommended Mode | Spectrum |
+|----------------|-----------------|----------|
+| Starting from scratch with a clear RQ | `full` | balanced |
+| Need help planning before writing | `plan` | originality |
+| Just need an outline | `outline-only` | balanced |
+| Have a draft, received review feedback | `revision` | fidelity |
+| Have unstructured reviewer comments | `revision-coach` | balanced |
+| Just need an abstract | `abstract-only` | fidelity |
+| Need to check/fix citations | `citation-check` | fidelity |
+| Need to convert format (LaTeX, DOCX) or citation style | `format-convert` | fidelity |
+| Want a systematic literature review paper | `lit-review` | fidelity |
+| Need a venue-specific AI-usage disclosure statement for submission | `disclosure` | fidelity |
+
+**Spectrum** (v3.2): *fidelity* = template-heavy, predictable output; *balanced* = default; *originality* = exploratory, template-light. See `shared/mode_spectrum.md` for the full cross-skill spectrum table.
 
 Not sure? Start with `plan` — it will guide you step by step. `disclosure` is a finishing step — run it after the paper is drafted, targeting the venue you plan to submit to.
 

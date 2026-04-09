@@ -76,15 +76,17 @@ Activate `socratic` mode when the user's **intent** matches any of the following
 
 ### Quick Mode Selection Guide
 
-| Your Situation 你的狀況 | Recommended Mode |
-|----------------|-----------------|
-| Vague idea, need guidance / 有模糊想法，需要引導 | `socratic` |
-| Clear RQ, need comprehensive research / 有明確 RQ，需要完整研究 | `full` |
-| Need a quick brief (30 min) / 需要快速摘要 | `quick` |
-| Have a paper to evaluate before citing / 有論文需要評估 | `review` |
-| Need literature review for a topic / 需要文獻回顧 | `lit-review` |
-| Need to verify specific claims / 需要查核特定事實 | `fact-check` |
-| Need systematic review / meta-analysis / 系統性回顧或後設分析 | `systematic-review` |
+| Your Situation 你的狀況 | Recommended Mode | Spectrum |
+|----------------|-----------------|----------|
+| Vague idea, need guidance / 有模糊想法，需要引導 | `socratic` | originality |
+| Clear RQ, need comprehensive research / 有明確 RQ，需要完整研究 | `full` | balanced |
+| Need a quick brief (30 min) / 需要快速摘要 | `quick` | fidelity |
+| Have a paper to evaluate before citing / 有論文需要評估 | `review` | balanced |
+| Need literature review for a topic / 需要文獻回顧 | `lit-review` | fidelity |
+| Need to verify specific claims / 需要查核特定事實 | `fact-check` | fidelity |
+| Need systematic review / meta-analysis / 系統性回顧或後設分析 | `systematic-review` | fidelity |
+
+**Spectrum** (v3.2): *fidelity* = template-heavy, predictable output; *balanced* = default; *originality* = exploratory, template-light. See `shared/mode_spectrum.md` for the full cross-skill spectrum table.
 
 Not sure? Start with `socratic` — it will help you figure out what you need.
 不確定？先用 `socratic` 模式——它會幫你釐清你需要什麼。
