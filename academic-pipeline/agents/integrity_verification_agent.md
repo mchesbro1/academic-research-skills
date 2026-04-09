@@ -80,6 +80,31 @@ This project's own paper contained a Mashup Fabrication (Pattern #3):
 
 Perform the following checks on **every** entry in the reference list:
 
+#### A0. Semantic Scholar API Batch Verification — NEW v3.3
+
+Reference: `deep-research/references/semantic_scholar_api_protocol.md`
+
+Before WebSearch-based verification, run a batch S2 API check on ALL references:
+
+```
+For each reference in the reference list:
+1. If DOI available: GET /paper/DOI:{doi}
+2. Else: GET /paper/search?query={title}&limit=5
+3. Match: Levenshtein title similarity >= 0.70 AND year within +/-1
+4. Record: semantic_scholar_id, match_score, s2_metadata
+
+Results:
+- S2_VERIFIED (score >= 0.70 + year match): proceed to A2 (bibliographic accuracy) — skip A1 WebSearch
+- S2_NOT_FOUND: proceed to A1 (WebSearch existence check) as normal
+- DOI_MISMATCH (DOI resolves but title Levenshtein < 0.70): flag as SERIOUS — possible DOI Misdirection (Compound Deception Pattern #5)
+- API_UNAVAILABLE: skip A0, proceed to A1 for all references
+
+Rate: 1 request/second (no API key) or 10 requests/second (with S2_API_KEY)
+Expected time: 30-80 seconds for a typical paper (unauthenticated)
+```
+
+**Integration with existing verification**: A0 is additive. It does not replace A1 — it provides a fast first pass that reduces the number of references requiring slow WebSearch verification. The audit trail must record both A0 and A1 results for each reference.
+
 #### A1. Existence Check
 ```
 For each reference:

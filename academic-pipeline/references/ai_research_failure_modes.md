@@ -40,11 +40,11 @@ This also extends the existing 5-type citation hallucination taxonomy (in `acade
 
 **What it is**: A reference that does not exist, is miscited (wrong year, wrong journal, wrong authors), or is attributed a finding it does not contain. This is the mode ARS already covers most thoroughly via the 5-type citation hallucination taxonomy in `academic-paper-reviewer/references/`. It is included here for completeness of the 7-mode taxonomy.
 
-**Lu 2026 example**: The AI Scientist pipeline includes a Semantic Scholar citation check to suppress this mode, acknowledging it as a primary failure class.
+**Lu 2026 example**: The AI Scientist pipeline includes a Semantic Scholar citation check to suppress this mode, acknowledging it as a primary failure class. PaperOrchestra (Song et al., 2026) extended this with a two-phase pipeline: web search discovery + sequential Semantic Scholar API verification (Levenshtein >= 0.70 title matching).
 
-**Detection**: existing integrity verification covers this. No change required, other than noting that it is Mode 2 of 7.
+**Detection (v3.3 update)**: Covered by the existing integrity verification, now strengthened with Semantic Scholar API batch verification (Phase A0 in `integrity_verification_agent`). See `deep-research/references/semantic_scholar_api_protocol.md` for the API protocol. The S2 API provides structured, machine-readable verification that catches fabricated DOIs (DOI_MISMATCH pattern) missed by manual WebSearch.
 
-**Who catches it**: `source_verification_agent` + existing integrity gate.
+**Who catches it**: `source_verification_agent` (Tier 0 S2 API + Tier 1 DOI + Tier 2 WebSearch) + `integrity_verification_agent` (Phase A0 + A1).
 
 ---
 

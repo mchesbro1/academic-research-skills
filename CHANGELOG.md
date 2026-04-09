@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3] - 2026-04-09
+
+### Added — PaperOrchestra-inspired enhancements
+Integrates techniques from Song et al. (2026, *arXiv:2604.05018*) "PaperOrchestra: A Multi-Agent Framework for Automated AI Research Paper Writing."
+
+- **Semantic Scholar API Verification** (deep-research, academic-pipeline): Tier 0 programmatic reference verification via S2 API. Title search with Levenshtein >= 0.70 matching. DOI mismatch detection for Compound Deception Pattern #5. Bibliography deduplication via S2 IDs. Graceful degradation if API unavailable.
+  - New file: `deep-research/references/semantic_scholar_api_protocol.md`
+  - Modified: `source_verification_agent`, `bibliography_agent`, `integrity_verification_agent`
+- **Anti-Leakage Protocol** (academic-paper, deep-research): Knowledge Isolation Directive prioritizes session materials over LLM parametric memory for factual content. Flags `[MATERIAL GAP]` for missing content instead of silently filling from memory. Reduces Mode 5/6 failure risk.
+  - New file: `academic-paper/references/anti_leakage_protocol.md`
+  - Modified: `draft_writer_agent`, `report_compiler_agent`
+- **VLM Figure Verification** (academic-paper): Optional closed-loop verification of rendered figures using vision-capable LLM. 10-point checklist covering data accuracy, APA 7.0 compliance, and visual quality. Max 2 refinement iterations.
+  - New file: `academic-paper/references/vlm_figure_verification.md`
+  - Modified: `visualization_agent`
+- **Score Trajectory Protocol** (academic-pipeline): Per-dimension rubric score delta tracking across revision rounds. Detects regressions (delta < -3) and triggers mandatory checkpoint. Extends v3.2 early-stopping with dimension-level granularity.
+  - New file: `academic-pipeline/references/score_trajectory_protocol.md`
+  - Modified: `integrity_review_protocol.md`, `handoff_schemas.md` (Schema 5)
+- **Stage 2 Parallelization Directive** (academic-pipeline): Visualization and argument building can run in parallel after outline completion.
+- **Handoff Schema Updates** (shared): `semantic_scholar_id` field added to Bibliography source object. `score_trajectory` structure added to Integrity Report schema.
+
+**Version bumps**: deep-research v2.8, academic-paper v3.0, academic-pipeline v3.2
+
 ## [3.2] - 2026-04-09
 
 ### Added — Lu 2026 integration

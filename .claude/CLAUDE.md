@@ -6,10 +6,18 @@ A suite of Claude Code skills for rigorous academic research, paper writing, pee
 
 | Skill | Purpose | Key Modes |
 |-------|---------|-----------|
-| `deep-research` v2.7 | 13-agent research team | full, quick, socratic, review, lit-review, fact-check, systematic-review |
-| `academic-paper` v2.9 | 12-agent paper writing | full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, disclosure |
+| `deep-research` v2.8 | 13-agent research team | full, quick, socratic, review, lit-review, fact-check, systematic-review |
+| `academic-paper` v3.0 | 12-agent paper writing | full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, disclosure |
 | `academic-paper-reviewer` v1.8 | Multi-perspective paper review (5 reviewers + optional cross-model) | full, re-review, quick, methodology-focus, guided, calibration |
-| `academic-pipeline` v3.1 | Full pipeline orchestrator | (coordinates all above) |
+| `academic-pipeline` v3.2 | Full pipeline orchestrator | (coordinates all above) |
+
+## v3.3 Key Additions
+
+- **Semantic Scholar API Verification**: Tier 0 programmatic reference verification. See `deep-research/references/semantic_scholar_api_protocol.md`.
+- **Anti-Leakage Protocol**: Knowledge isolation prioritizing session materials over LLM memory. See `academic-paper/references/anti_leakage_protocol.md`.
+- **VLM Figure Verification**: Optional closed-loop figure verification via vision LLM. See `academic-paper/references/vlm_figure_verification.md`.
+- **Score Trajectory Protocol**: Per-dimension rubric score delta tracking across revision rounds. See `academic-pipeline/references/score_trajectory_protocol.md`.
+- **Stage 2 Parallelization**: Visualization and argument building can run in parallel after outline.
 
 ## v3.2 Key Additions
 
@@ -70,7 +78,7 @@ Materials: Complete paper text. field_analyst_agent auto-detects domain and conf
 Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed comments
 
 ## Version Info
-- **Suite version**: 3.2 (per CHANGELOG.md)
+- **Suite version**: 3.3 (per CHANGELOG.md)
 - **Last Updated**: 2026-04-09
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0

@@ -41,3 +41,11 @@ Execution steps:
    - FAIL -> fix -> re-verify -> PASS -> Stage 5
 5. ⚠️ **IRON RULE**: Must PASS with zero issues to proceed to Stage 5
 ```
+
+## Score Trajectory Tracking (v3.3)
+
+Reference: `references/score_trajectory_protocol.md`
+
+At Stage 3' (RE-REVIEW), the `pipeline_orchestrator_agent` computes per-dimension score deltas between Stage 3 and Stage 3' review results. If any dimension regresses by more than 3 points, a MANDATORY checkpoint is triggered before proceeding.
+
+The score trajectory is recorded in the Integrity Report's `score_trajectory` field (Schema 5) and included in the Stage 6 Process Summary.

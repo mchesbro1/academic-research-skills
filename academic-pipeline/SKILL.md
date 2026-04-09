@@ -2,7 +2,7 @@
 name: academic-pipeline
 description: "Orchestrator for the full academic research pipeline: research -> write -> integrity check -> review -> revise -> re-review -> re-revise -> final integrity check -> finalize. Coordinates deep-research, academic-paper, and academic-paper-reviewer into a seamless 9-stage workflow with mandatory integrity verification, two-stage peer review, and reproducible quality gates. Triggers on: academic pipeline, research to paper, full paper workflow, paper pipeline, end-to-end paper, research-to-publication, complete paper workflow."
 metadata:
-  version: "3.1"
+  version: "3.2"
   last_updated: "2026-04-09"
   depends_on: "deep-research, academic-paper, academic-paper-reviewer"
   status: active
@@ -91,6 +91,13 @@ I received reviewer comments, help me revise
 | **4.5** | **FINAL INTEGRITY** | **`integrity_verification_agent`** | **final-check** | **Final verification report (must achieve 100% pass to proceed)** |
 | 5 | FINALIZE | `academic-paper` | format-convert | Final Paper (default MD + DOCX; ask about LaTeX; confirm correctness; PDF) |
 | **6** | **PROCESS SUMMARY** | **orchestrator** | **auto** | **Paper creation process record MD + LaTeX to PDF (bilingual)** |
+
+**Parallelization opportunity (v3.3)**: Within Stage 2, the `academic-paper` skill's Phase 1 (literature_strategist_agent) and the `visualization_agent` can operate in parallel after Phase 2 (structure_architect_agent) completes the outline. Specifically:
+- Once the outline includes a visualization plan, `visualization_agent` can begin figure generation
+- Simultaneously, `argument_builder_agent` can build CER chains
+- `draft_writer_agent` waits for both to complete before beginning Phase 4
+
+This mirrors PaperOrchestra's parallel execution of Plot Generation (Step 2) and Literature Review (Step 3) after Outline (Step 1), which reduces overall pipeline latency. The parallelization is optional — sequential execution remains the default for simplicity.
 
 ---
 
