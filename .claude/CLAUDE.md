@@ -11,6 +11,14 @@ A suite of Claude Code skills for rigorous academic research, paper writing, pee
 | `academic-paper-reviewer` v1.8 | Multi-perspective paper review (5 reviewers + optional cross-model) | full, re-review, quick, methodology-focus, guided, calibration |
 | `academic-pipeline` v3.1 | Full pipeline orchestrator | (coordinates all above) |
 
+## v3.2 Key Additions
+
+- **7-mode AI Research Failure Mode Checklist**: blocks pipeline at Stage 2.5/4.5 on suspected failures (Lu 2026). See `academic-pipeline/references/ai_research_failure_modes.md`.
+- **Reviewer Calibration Mode**: opt-in FNR/FPR/balanced-accuracy measurement. See `academic-paper-reviewer/references/calibration_mode_protocol.md`.
+- **Disclosure Mode**: venue-specific AI-usage statement (ICLR/NeurIPS/Nature/Science/ACL/EMNLP). See `academic-paper/references/disclosure_mode_protocol.md`.
+- **Early-Stopping + Budget Transparency**: convergence check + token cost estimate at pipeline start.
+- **Fidelity-Originality Mode Spectrum**: classifies all modes. See `shared/mode_spectrum.md`.
+
 ## v3.0 Key Additions
 
 - **Anti-sycophancy protocols**: DA agents score rebuttals 1-5 before conceding. No concession below 4/5. Frame-lock detection.
@@ -62,7 +70,7 @@ Materials: Complete paper text. field_analyst_agent auto-detects domain and conf
 Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed comments
 
 ## Version Info
-- **Suite version**: 3.1.1 (per CHANGELOG.md)
+- **Suite version**: 3.2 (per CHANGELOG.md)
 - **Last Updated**: 2026-04-09
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0

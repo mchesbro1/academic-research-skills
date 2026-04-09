@@ -48,22 +48,8 @@ ARS modes fall on a spectrum between these poles. This table is the reference fo
 
 ---
 
-## Implications for v3.1 Phase 3 (templates to sub-files)
+## Mode recommendation
 
-**Fidelity modes**: templates are load-bearing. They should be moved to sub-files loaded on demand (reducing SKILL.md bloat) but must always be loaded at mode start — the mode cannot function without them.
-
-**Balanced modes**: templates are useful but not mandatory. Move to sub-files. Load at mode start by default, but allow the LLM to skip if context is tight.
-
-**Originality modes**: templates should be available but not auto-loaded. Move to sub-files. Load only when the user asks for more structure, or when the dialogue stalls and structure would help unstick it.
-
-The actual file reorganization (moving template content from SKILL.md into sub-files) is a separate PR-level task. This document establishes which modes get which treatment.
-
----
-
-## User-facing mode recommendation
-
-When the user says they want a "predictable" or "consistent" result → suggest Fidelity modes.
-When the user says they want to "explore" or "think through" or "discover" → suggest Originality modes.
-When unclear → suggest Balanced modes as the default.
-
-The Quick Mode Selection Guide in each SKILL.md should be annotated with spectrum position labels (e.g., "systematic-review *(fidelity)*") so users can self-select.
+- User wants "predictable" / "consistent" → suggest **Fidelity** modes
+- User wants to "explore" / "think through" → suggest **Originality** modes
+- Unclear → suggest **Balanced** modes as default

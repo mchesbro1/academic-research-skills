@@ -1,6 +1,6 @@
 ---
 name: academic-paper-reviewer
-description: "Multi-perspective academic paper review with dynamic reviewer personas. Simulates 5 independent reviewers (EIC + 3 peer reviewers + Devil's Advocate) with field-specific expertise. Supports full review, re-review (verification), quick assessment, methodology focus, and Socratic guided modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review."
+description: "Multi-perspective academic paper review with dynamic reviewer personas. Simulates 5 independent reviewers (EIC + 3 peer reviewers + Devil's Advocate) with field-specific expertise. Supports full review, re-review (verification), quick assessment, methodology focus, Socratic guided, and calibration modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy."
 metadata:
   version: "1.8"
   last_updated: "2026-04-09"
@@ -219,19 +219,9 @@ Helps authors understand problems themselves through progressive revelation. EIC
 
 ## Calibration Mode (v3.2)
 
-Opt-in mode that measures this reviewer's own error profile against a user-supplied gold-standard set of papers with known outcomes (accept / reject / borderline). Inspired by Lu et al. (2026, Nature 651:914-919) Table 1, which validated an Automated Reviewer against 500 ICLR 2022 papers and found balanced accuracy within 0.05 of human reviewers but with a dramatically different FNR/FPR trade-off.
+Opt-in mode that measures this reviewer's FNR / FPR / balanced accuracy against a user-supplied gold set (5-20 papers with known outcomes). Runs `full` 5x per paper with fresh context, cross-model default-on. Produces a Calibration Report attached as a confidence disclosure to subsequent reviews in the session.
 
-**Why it exists**: a single reviewer's absolute 0-100 rubric score is weakly interpretable without knowing the reviewer's systematic biases. Two reviewers could give the same paper a 65, yet have completely different error profiles. Calibration makes the profile legible.
-
-**Inputs**: 5-20 gold-standard papers with labels + domain specification. Minimum 5 (need at least one accept and one reject).
-
-**Process**: runs `full` mode 5x per gold paper (ensembling per Lu 2026 Methods A.1.1) with fresh context per run. Cross-model verification (`ARS_CROSS_MODEL`) is default-on in this mode. Aggregates median rubric scores + majority-vote decisions, computes FNR / FPR / balanced accuracy / AUC with bootstrap 95% CIs.
-
-**Output**: Calibration Report attached as a confidence disclosure header to every subsequent review in the same session. User cannot suppress the disclosure — that defeats the purpose.
-
-**Not persistent across sessions**. Opt-in per session. Re-run if you want the profile in a new session.
-
-> See `references/calibration_mode_protocol.md` for full intake rules, ensembling methodology, output format, and the list of failure cases this mode does *not* fix.
+> See `references/calibration_mode_protocol.md` for full spec: intake rules, ensembling methodology, output format, and failure cases this mode does not fix.
 
 ---
 

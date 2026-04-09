@@ -342,35 +342,11 @@ ASCII dashboard shown at FULL checkpoints to display pipeline progress.
 
 ### Early-Stopping Criterion (v3.2)
 
-Inspired by Lu et al. (2026, Nature 651:914-919) Figure 3c, which shows paper quality plateaus at ~30 agentic search nodes — additional compute has diminishing returns.
-
-**Convergence check** — at the end of each revision round (Stage 4 → Stage 3', and Stage 4' → Stage 4.5), compute the delta between the reviewer's weighted average score from the current round and the previous round:
-
-- If **delta < 3 points on the 0-100 rubric** AND **no P0 (CRITICAL) issues remain**, the pipeline terminates the revision loop with a "converged" status. The remaining revision loops are skipped and the pipeline proceeds to Stage 4.5 FINAL INTEGRITY.
-- The convergence check is informational, not mandatory: the user can override it and request another revision round anyway. But the default is to stop.
-
-**Hard cap** — maximum 2 full revision loops (Stage 4 + Stage 4') as currently enforced. This is not changed by v3.2, but is now explicitly marked as a ceiling rather than an implied constraint.
+At the end of each revision round, if **delta < 3 points** on the 0-100 rubric AND **no P0 issues remain**, suggest stopping the revision loop ("converged"). User can override. Hard cap: 2 full revision loops (Stage 4 + Stage 4').
 
 ### Budget Transparency (v3.2)
 
-At **pipeline start** (Stage 1 entry), the orchestrator estimates the expected token cost of the full 10-stage run based on:
-
-- Paper length (word count of the draft, if available; otherwise ask user for estimate)
-- Selected mode (individual skill vs full pipeline)
-- Whether cross-model verification is enabled
-
-Present the estimate to the user and ask for confirmation before Stage 1 begins:
-
-```
-Estimated token budget for this pipeline run:
-- Input tokens: ~XXK
-- Output tokens: ~XXK
-- Estimated cost: ~$X.XX (Claude Opus 4.6 pricing)
-- Cross-model add-on: ~$X.XX (if enabled)
-Proceed? [Y/n]
-```
-
-This prevents surprise bills from multi-revision pipelines on long papers.
+At pipeline start, estimate token cost based on paper length, mode, and cross-model toggle. Present estimate and ask for user confirmation before Stage 1 begins.
 
 ---
 
