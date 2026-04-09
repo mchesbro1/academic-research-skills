@@ -286,7 +286,10 @@ Stage 2.5 (pre-review) and Stage 4.5 (post-revision) verification. 5-phase proto
 
 ⚠️ **IRON RULE**: Stage 4.5 must PASS with zero issues to proceed to Stage 5. Stage 4.5 verifies from scratch independently.
 
-> See `references/integrity_review_protocol.md` for full 5-phase verification procedures.
+⚠️ **IRON RULE (v3.2)**: Both Stage 2.5 and Stage 4.5 must also run the **AI Research Failure Mode Checklist** — a 7-mode taxonomy extending the citation hallucination checks into implementation bugs, hallucinated results, shortcut reliance, bug-as-insight, methodology fabrication, and pipeline-level frame-lock. If any of the 7 modes is `SUSPECTED`, or if Modes 1/3/5/6 are `INSUFFICIENT EVIDENCE`, the pipeline **blocks** and the user must acknowledge (confirm / override with reasoning / revise) before the pipeline proceeds. There is no `--no-block` escape hatch. Stage 6 PROCESS SUMMARY then reports the full failure-mode audit log as part of the AI Self-Reflection Report.
+
+> See `references/integrity_review_protocol.md` for the 5-phase citation/claim verification procedures.
+> See `references/ai_research_failure_modes.md` for the 7-mode AI research failure checklist and block/override logic.
 
 ---
 
@@ -368,6 +371,7 @@ Explicit prohibitions to prevent common failure modes:
 | 5 | **Silently dropping reviewer concerns** | Revision addresses 8 of 10 concerns and hopes nobody notices | The R&R tracking table must account for every concern with explicit status |
 | 6 | **Re-verifying only known issues at Stage 4.5** | Final integrity check only re-checks Stage 2.5 findings | Stage 4.5 must verify from scratch independently; revision may introduce new issues |
 | 7 | **Inflating Collaboration Quality scores** | Giving 90/100 to avoid awkward self-criticism | Honesty first: no inflation, no pleasantries; cite specific evidence for every score |
+| 8 | **Bypassing the Failure Mode Checklist block** (v3.2) | "The 7-mode checklist is new, let's skip it this run" | Stage 2.5/4.5 Failure Mode Checklist is MANDATORY and BLOCKING; no `--no-block` flag exists; overrides require user reasoning recorded for Stage 6 |
 
 ---
 
@@ -381,6 +385,7 @@ Explicit prohibitions to prevent common failure modes:
 | State tracking | Pipeline state updated in real time; Progress Dashboard accurate |
 | **Mandatory checkpoint** | **User confirmation required after each stage completion** |
 | **Mandatory integrity check** | **Stage 2.5 and 4.5 cannot be skipped, must PASS** |
+| **Mandatory failure mode checklist** (v3.2) | **Stage 2.5 and 4.5 must run the 7-mode AI research failure checklist; suspected failures block; overrides require user reasoning** |
 | No overstepping | ⚠️ IRON RULE: Orchestrator does not perform substantive research/writing/reviewing, only dispatching |
 | No forcing | ⚠️ IRON RULE: User can pause or exit pipeline at any time (but cannot skip integrity checks) |
 | Reproducible | Same input follows the same workflow across different sessions |
@@ -423,6 +428,7 @@ Explicit prohibitions to prevent common failure modes:
 | `references/plagiarism_detection_protocol.md` | Phase D originality verification protocol + self-plagiarism + AI text characteristics |
 | `references/mode_advisor.md` | Unified cross-skill decision tree: maps user intent to optimal skill + mode |
 | `references/claim_verification_protocol.md` | Phase E claim verification protocol: claim extraction, source tracing, cross-referencing, verdict taxonomy |
+| `references/ai_research_failure_modes.md` | 7-mode AI research failure checklist (Lu 2026), run at Stage 2.5 + 4.5 with blocking behaviour, reported at Stage 6 |
 | `references/team_collaboration_protocol.md` | Multi-person team coordination: role definitions, handoff protocol, version control, conflict resolution |
 | `references/integrity_review_protocol.md` | Stage 2.5 + 4.5 integrity verification: 5-phase protocol details |
 | `references/two_stage_review_protocol.md` | Two-stage review: Stage 3 full review + Stage 3' verification review |
