@@ -25,8 +25,12 @@ The `editorial_synthesizer_agent` produces dimension scores in the Review Report
 The `editorial_synthesizer_agent` produces new dimension scores. The `pipeline_orchestrator_agent` computes deltas:
 
 ```
-For each dimension d in {originality, methodology, clarity, significance, overall}:
+For each dimension d in {originality, methodological_rigor, evidence_sufficiency,
+  argument_coherence, writing_quality, literature_integration, significance_impact, overall}:
   delta[d] = score_re_review[d] - score_review[d]
+
+Note: Dimensions match the 7 universal review dimensions from
+academic-paper-reviewer/references/review_criteria_framework.md plus overall.
 ```
 
 ### Decision rules
@@ -68,13 +72,16 @@ The Process Summary includes a "Score Trajectory" subsection showing all rounds:
 
 | Dimension | Review (Stage 3) | Re-Review (Stage 3') | Delta | Status |
 |-----------|-------------------|----------------------|-------|--------|
-| Originality | 65 | 68 | +3 | Improved |
-| Methodology | 72 | 70 | -2 | Warning |
-| Clarity | 58 | 71 | +13 | Improved |
-| Significance | 60 | 62 | +2 | Improved |
-| Overall | 64 | 68 | +4 | Improved |
+| Originality | 3.5 | 3.8 | +0.3 | Improved |
+| Methodological Rigor | 4.2 | 4.0 | -0.2 | Warning |
+| Evidence Sufficiency | 3.0 | 3.8 | +0.8 | Improved |
+| Argument Coherence | 2.8 | 3.5 | +0.7 | Improved |
+| Writing Quality | 3.5 | 3.6 | +0.1 | Improved |
+| Literature Integration | 3.8 | 4.0 | +0.2 | Improved |
+| Significance & Impact | 3.0 | 3.2 | +0.2 | Improved |
+| Overall | 3.4 | 3.7 | +0.3 | Improved |
 
-Regressions detected: 1 (Methodology, -2, within tolerance)
+Regressions detected: 1 (Methodological Rigor, -0.2, within tolerance)
 Early-stop eligible: No (overall delta = 4 >= 3)
 ```
 

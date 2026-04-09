@@ -100,7 +100,7 @@ Consuming agents should validate input and request re-generation if schema viola
 | `annotation` | string | Yes | 2-3 sentence summary of key findings and relevance |
 | `verified` | boolean | No | Whether DOI/existence has been verified |
 | `retraction_check` | boolean | No | Whether checked against Retraction Watch |
-| `semantic_scholar_id` | string / null | Semantic Scholar paper ID (v3.3). Null if S2 lookup failed or API unavailable. Used for deduplication and re-verification. |
+| `semantic_scholar_id` | string / null | No | Semantic Scholar paper ID (v3.3). Null if S2 lookup failed or API unavailable. Used for deduplication and re-verification. |
 
 ### Optional Fields
 
@@ -298,28 +298,39 @@ phases: {
 
 Present only when the integrity report is for a re-review (Stage 3' or 4'). Tracks rubric score changes across revision rounds.
 
+Dimensions match the 7 universal review dimensions from `academic-paper-reviewer/references/review_criteria_framework.md` plus an overall score:
+
 ```
 score_trajectory: {
   round: integer,          // revision round number (1 or 2)
-  previous_scores: {       // rubric scores from prior review
+  previous_scores: {       // rubric scores from prior review (1-5 scale)
     originality: float,
-    methodology: float,
-    clarity: float,
-    significance: float,
+    methodological_rigor: float,
+    evidence_sufficiency: float,
+    argument_coherence: float,
+    writing_quality: float,
+    literature_integration: float,
+    significance_impact: float,
     overall: float
   },
-  current_scores: {        // rubric scores from this review
+  current_scores: {        // rubric scores from this review (1-5 scale)
     originality: float,
-    methodology: float,
-    clarity: float,
-    significance: float,
+    methodological_rigor: float,
+    evidence_sufficiency: float,
+    argument_coherence: float,
+    writing_quality: float,
+    literature_integration: float,
+    significance_impact: float,
     overall: float
   },
   deltas: {                // current - previous for each dimension
     originality: float,
-    methodology: float,
-    clarity: float,
-    significance: float,
+    methodological_rigor: float,
+    evidence_sufficiency: float,
+    argument_coherence: float,
+    writing_quality: float,
+    literature_integration: float,
+    significance_impact: float,
     overall: float
   },
   regression_detected: boolean,  // true if any delta < -3

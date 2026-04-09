@@ -71,8 +71,8 @@ When VLM verification is run, the Figure Package (from visualization_agent) incl
 
 ```markdown
 ### VLM Verification
-- **Status**: PASS / PASS_WITH_NOTES / NEEDS_REVIEW
-- **Iterations**: [N] (1 = passed first time)
+- **Status**: PASS / PASS_WITH_NOTES / NEEDS_REVIEW / SKIPPED
+- **Iterations**: [N] (1 = passed first time, N/A if SKIPPED)
 - **Issues found**: [list of issues, if any]
 - **Issues fixed**: [list of fixes applied]
 - **Remaining issues**: [issues that could not be auto-fixed, if any]
