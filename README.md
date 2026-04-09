@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.2-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.2)
+[![Version](https://img.shields.io/badge/version-v3.3-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -29,6 +29,8 @@ ARS is built on the premise that **a human researcher augmented by AI avoids the
 
 The AI Scientist shows that autonomous AI research is now possible. ARS is designed to give you the leverage of that capability without inheriting its failure modes.
 
+v3.3 extends this foundation with techniques from PaperOrchestra (Song et al., 2026): **Semantic Scholar API verification** for programmatic citation checking, an **anti-leakage protocol** that prevents the LLM from silently filling gaps with parametric memory, **VLM figure verification** for closed-loop visual quality checks, and **score trajectory tracking** that detects when revisions inadvertently degrade specific quality dimensions.
+
 ---
 
 ## Guides & Articles
@@ -40,10 +42,10 @@ The AI Scientist shows that autonomous AI research is now possible. ARS is desig
 
 ## Features
 
-- **Deep Research** — 13-agent research team with Socratic guided mode + systematic review / PRISMA + SCR Loop + **intent detection** + **dialogue health monitoring** + **optional cross-model DA** + **argumentation & reasoning cognitive framework**
-- **Academic Paper** — 12-agent paper writing with Style Calibration, Writing Quality Check, LaTeX output hardening, visualization, revision coaching, citation conversion, and **writing judgment framework**
+- **Deep Research** — 13-agent research team with Socratic guided mode + systematic review / PRISMA + SCR Loop + **intent detection** + **dialogue health monitoring** + **optional cross-model DA** + **argumentation & reasoning cognitive framework** + **Semantic Scholar API verification**
+- **Academic Paper** — 12-agent paper writing with Style Calibration, Writing Quality Check, LaTeX output hardening, visualization, revision coaching, citation conversion, **writing judgment framework**, **anti-leakage protocol**, and **VLM figure verification**
 - **Academic Paper Reviewer** — Multi-perspective peer review with 0-100 quality rubrics (EIC + 3 dynamic reviewers + Devil's Advocate with **concession threshold protocol** + **attack intensity preservation** + **optional cross-model review**) + **R&R traceability matrix** + **read-only constraint** + **review quality thinking framework**
-- **Academic Pipeline** — Full 10-stage pipeline orchestrator with adaptive checkpoints, claim verification, material passport, **optional cross-model integrity verification**, **mid-conversation reinforcement**, and **self-check questions**
+- **Academic Pipeline** — Full 10-stage pipeline orchestrator with adaptive checkpoints, claim verification, material passport, **optional cross-model integrity verification**, **mid-conversation reinforcement**, **self-check questions**, and **score trajectory tracking**
 
 ### Full Pipeline
 
@@ -66,6 +68,10 @@ Research → Write → Integrity Check → Review (5-person) → Socratic Coachi
 10. Style Calibration — learn the author's writing voice from past papers (optional, intake Step 10)
 11. Writing Quality Check — writing quality checklist catching overused AI-typical patterns
 12. **Cross-model verification (optional)** — use GPT-5.4 Pro or Gemini 3.1 Pro as an independent second reviewer for integrity checks, DA challenges, and peer review
+13. **Semantic Scholar API verification** — programmatic Tier 0 reference existence check with Levenshtein title matching and DOI mismatch detection
+14. **Anti-leakage protocol** — Knowledge Isolation Directive prioritizes session materials over LLM memory; flags `[MATERIAL GAP]` for missing content
+15. **VLM figure verification (optional)** — closed-loop visual quality check using a vision-capable LLM with 10-point checklist
+16. **Score trajectory tracking** — per-dimension rubric score delta tracking across revision rounds with regression detection
 
 ---
 
