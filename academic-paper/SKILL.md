@@ -136,7 +136,7 @@ Phase 7: FORMAT        -> [formatter]                  -> Final Output Package
 
 ---
 
-## Operational Modes (9 Modes)
+## Operational Modes (10 Modes)
 
 See `references/mode_selection_guide.md` for details.
 

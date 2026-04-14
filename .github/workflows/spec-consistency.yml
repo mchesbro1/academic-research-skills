@@ -1,0 +1,20 @@
+name: Spec Consistency
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  spec-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run spec consistency check
+        run: python3 scripts/check_spec_consistency.py

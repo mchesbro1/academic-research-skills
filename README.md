@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.3-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3)
+[![Version](https://img.shields.io/badge/version-v3.3.1-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.1)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -44,7 +44,7 @@ v3.3 was inspired by [**PaperOrchestra**](https://arxiv.org/abs/2604.05018) (Son
 
 - **Deep Research** — 13-agent research team with Socratic guided mode + systematic review / PRISMA + SCR Loop + **intent detection** + **dialogue health monitoring** + **optional cross-model DA** + **argumentation & reasoning cognitive framework** + **Semantic Scholar API verification**
 - **Academic Paper** — 12-agent paper writing with Style Calibration, Writing Quality Check, LaTeX output hardening, visualization, revision coaching, citation conversion, **writing judgment framework**, **anti-leakage protocol**, and **VLM figure verification**
-- **Academic Paper Reviewer** — Multi-perspective peer review with 0-100 quality rubrics (EIC + 3 dynamic reviewers + Devil's Advocate with **concession threshold protocol** + **attack intensity preservation** + **optional cross-model review**) + **R&R traceability matrix** + **read-only constraint** + **review quality thinking framework**
+- **Academic Paper Reviewer** — Multi-perspective peer review with 0-100 quality rubrics (EIC + 3 dynamic reviewers + Devil's Advocate with **concession threshold protocol** + **attack intensity preservation** + **optional cross-model DA critique / calibration**) + **R&R traceability matrix** + **read-only constraint** + **review quality thinking framework**
 - **Academic Pipeline** — Full 10-stage pipeline orchestrator with adaptive checkpoints, claim verification, material passport, **optional cross-model integrity verification**, **mid-conversation reinforcement**, **self-check questions**, and **score trajectory tracking**
 
 ### Full Pipeline
@@ -67,7 +67,7 @@ Research → Write → Integrity Check → Review (5-person) → Socratic Coachi
 9. Cross-skill mode advisor (14 scenarios + user archetypes)
 10. Style Calibration — learn the author's writing voice from past papers (optional, intake Step 10)
 11. Writing Quality Check — writing quality checklist catching overused AI-typical patterns
-12. **Cross-model verification (optional)** — use GPT-5.4 Pro or Gemini 3.1 Pro as an independent second reviewer for integrity checks, DA challenges, and peer review
+12. **Cross-model verification (optional)** — use GPT-5.4 Pro or Gemini 3.1 Pro for integrity sample checks and independent DA challenges; sixth-reviewer peer review remains planned, not yet implemented
 13. **Semantic Scholar API verification** — programmatic Tier 0 reference existence check with Levenshtein title matching and DOI mismatch detection
 14. **Anti-leakage protocol** — Knowledge Isolation Directive prioritizes session materials over LLM memory; flags `[MATERIAL GAP]` for missing content
 15. **VLM figure verification (optional)** — closed-loop visual quality check using a vision-capable LLM with 10-point checklist
@@ -100,7 +100,7 @@ claude
 |---------|-------------------|------------------|
 | Integrity verification | Single-model 100% check | + 30% sample independently verified by 2nd model |
 | Devil's Advocate | Single-model DA | + Cross-model generates independent critique, novel findings added |
-| Peer Review | 5 reviewers (same model) | + 6th independent reviewer from 2nd model |
+| Peer Review | 5 reviewers (same model) | Same 5 reviewers + cross-model DA critique/calibration support |
 
 ### Cost
 
@@ -404,26 +404,28 @@ You: "status"
 "Review this paper's research quality"                → review mode
 ```
 
-#### Academic Paper (9 modes)
+#### Academic Paper (10 modes)
 ```
 "Write a paper on X"                                  → full mode
 "Guide me through writing a paper"                    → plan mode (guided)
+"Build a paper outline"                               → outline-only mode
 "I have a draft, here are reviewer comments"          → revision mode
 "Parse these reviewer comments into a roadmap"        → revision-coach mode (new)
+"Write an abstract for this paper"                    → abstract-only mode
+"Turn this into a literature review paper"            → lit-review mode
 "Convert to LaTeX" / "Convert citations to IEEE"      → format-convert mode
 "Check citations"                                     → citation-check mode
-"Write a bilingual abstract"                          → bilingual-abstract mode
-"Polish my writing style"                             → writing-polish mode
-"Write the full paper autonomously"                   → full-auto mode
+"Generate an AI disclosure statement for NeurIPS"     → disclosure mode
 ```
 
-#### Academic Paper Reviewer (5 modes)
+#### Academic Paper Reviewer (6 modes)
 ```
 "Review this paper"                                   → full mode (EIC + R1/R2/R3 + Devil's Advocate)
 "Quick assessment of this paper"                      → quick mode
 "Guide me to improve this paper"                      → guided mode
 "Check the methodology"                               → methodology-focus mode
 "Verify the revisions"                                → re-review mode
+"Calibrate this reviewer against my gold set"         → calibration mode
 ```
 
 #### Academic Pipeline (Orchestrator)
@@ -465,7 +467,7 @@ You: "status"
 
 ## Skill Details
 
-### Deep Research (v2.7)
+### Deep Research (v2.8)
 
 13-agent pipeline for rigorous academic research:
 
@@ -485,9 +487,9 @@ You: "status"
 | Meta-Analysis Agent | Effect sizes, heterogeneity, forest plot data, GRADE |
 | Monitoring Agent | Post-pipeline literature monitoring alerts |
 
-**Modes:** full, quick, paper-review, lit-review, fact-check, socratic, **systematic-review** (new)
+**Modes:** full, quick, review, lit-review, fact-check, socratic, **systematic-review** (new)
 
-### Academic Paper (v2.8)
+### Academic Paper (v3.0)
 
 12-agent pipeline for academic paper writing:
 
@@ -506,9 +508,9 @@ You: "status"
 | Visualization Agent | 9 chart types, matplotlib/ggplot2, APA 7.0 standards |
 | Revision Coach Agent | Parses unstructured reviewer comments → Revision Roadmap |
 
-**Modes:** full, plan, revision, citation-check, format-convert, bilingual-abstract, writing-polish, full-auto, **revision-coach** (new)
+**Modes:** full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, **disclosure**
 
-### Academic Paper Reviewer (v1.7)
+### Academic Paper Reviewer (v1.8)
 
 7-agent multi-perspective review with **0-100 quality rubrics**:
 
@@ -522,11 +524,11 @@ You: "status"
 | Devil's Advocate Reviewer | Core thesis challenge, logical fallacy detection, strongest counter-argument |
 | Editorial Synthesizer | Consensus analysis, revision roadmap, **rubric-based scoring** |
 
-**Modes:** full, re-review (verification), quick, methodology-focus, guided
+**Modes:** full, re-review (verification), quick, methodology-focus, guided, **calibration**
 
 **Decision mapping:** ≥80 Accept, 65-79 Minor Revision, 50-64 Major Revision, <50 Reject
 
-### Academic Pipeline (v3.0)
+### Academic Pipeline (v3.2)
 
 10-stage orchestrator with integrity verification, two-stage review, Socratic coaching, and collaboration evaluation:
 
@@ -628,6 +630,14 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## Changelog
 
+### v3.3.1 (2026-04-14) — Spec Consistency Patch
+
+- Synced README, `.claude/CLAUDE.md`, `MODE_REGISTRY.md`, and `SKILL.md` files to the current mode counts and published skill versions.
+- Corrected cross-model wording: integrity sample checks and independent DA critique are implemented today; sixth-reviewer peer review remains planned.
+- Clarified adaptive checkpoint semantics so SLIM checkpoints still wait for explicit user confirmation.
+- Reaffirmed that Stage 2.5 and Stage 4.5 integrity gates cannot be skipped.
+- Added a lightweight spec consistency check and GitHub Actions workflow to catch future drift.
+
 ### v3.3 (2026-04-09) — PaperOrchestra-Inspired Enhancements
 
 Integrates techniques from [PaperOrchestra](https://arxiv.org/abs/2604.05018) (Song, Song, Pfister & Yoon, 2026, Google).
@@ -683,7 +693,7 @@ Inspired by patterns from [aspi6246/Claude-Code-Skills-for-Academics](https://gi
 - **Attack Intensity Preservation** (academic-paper-reviewer): DA does not soften under pushback. Rebuttal assessment protocol with explicit deflection detection. Anti-sycophancy rules prevent persistent pushback from being treated as valid evidence.
 - **Intent Detection Layer** (deep-research socratic): Classifies user intent as exploratory vs. goal-oriented. Exploratory mode disables auto-convergence, raises max rounds, prohibits premature closure. Re-assesses every 3 turns.
 - **Dialogue Health Indicator** (deep-research socratic): Silent self-check every 5 turns for persistent agreement, conflict avoidance, premature convergence. Auto-injects challenges when agreement pattern detected.
-- **Cross-Model Verification Protocol** (shared, optional): Use GPT-5.4 Pro or Gemini 3.1 Pro as independent second reviewer. Integrity verification samples 30% of references for cross-check. DA gets independent critique from second model. Peer review gains 6th independent reviewer. Activated by setting `ARS_CROSS_MODEL` env var — without it, everything works as before. See `shared/cross_model_verification.md` for full setup guide, API patterns, and cost estimates.
+- **Cross-Model Verification Protocol** (shared, optional): Use GPT-5.4 Pro or Gemini 3.1 Pro for integrity verification sample cross-checks and independent DA critique. Sixth-reviewer peer review remains planned, not yet implemented. Activated by setting `ARS_CROSS_MODEL` env var — without it, everything works as before. See `shared/cross_model_verification.md` for full setup guide, API patterns, and cost estimates.
 - **AI Self-Reflection Report** (academic-pipeline Stage 6): Post-pipeline self-assessment of AI behavioral patterns — DA concession rate, checkpoint skip rate, health alerts, sycophancy risk rating (LOW/MEDIUM/HIGH), frame-lock incidents, convergence pattern analysis. Includes irony caveat: "this self-reflection is itself produced by the same AI that may have been sycophantic."
 - Origin: Discovered through a 4-round dialectic experiment where the DA conceded too quickly, the Socratic Mentor tried to converge prematurely, and the entire debate stayed locked in a frame the human set.
 - Versions: deep-research v2.5, academic-paper-reviewer v1.5, academic-pipeline v2.8

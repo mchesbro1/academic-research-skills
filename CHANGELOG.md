@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.1] - 2026-04-14
+
+### Fixed
+- Public contract drift across `README.md`, `README.zh-TW.md`, `.claude/CLAUDE.md`, `MODE_REGISTRY.md`, and the affected `SKILL.md` files
+- Cross-model wording now matches the implemented scope: integrity sample verification and independent DA critique are shipped; sixth-reviewer peer review remains planned
+- `academic-pipeline` checkpoint docs now state that SLIM checkpoints still wait for explicit user confirmation
+- `academic-pipeline` integrity gate docs now consistently state that Stage 2.5 and Stage 4.5 cannot be skipped
+- `academic-paper/SKILL.md` mode-count heading and `academic-paper-reviewer/SKILL.md` Version Info block
+
+### Added
+- `scripts/check_spec_consistency.py` to catch mode-count, version-block, and forbidden-claim drift
+- `.github/workflows/spec-consistency.yml` to run the consistency check on pushes and pull requests
+
 ## [3.3] - 2026-04-09
 
 ### Added — PaperOrchestra-inspired enhancements

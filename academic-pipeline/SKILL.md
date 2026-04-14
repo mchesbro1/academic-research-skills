@@ -127,7 +127,7 @@ See `references/pipeline_state_machine.md` for complete state transition definit
 | Type | When Used | Content |
 |------|-----------|---------|
 | FULL | First checkpoint; after integrity boundaries; before finalization | Full deliverables list + decision dashboard + all options |
-| SLIM | After 2+ consecutive "continue" responses on non-critical stages | One-line status + auto-continue in 5 seconds |
+| SLIM | After 2+ consecutive "continue" responses on non-critical stages | One-line status + explicit continue/pause prompt |
 | MANDATORY | Integrity FAIL; Review decision; Stage 5 | Cannot be skipped; requires explicit user input |
 
 ### Decision Dashboard (shown at FULL checkpoints)
@@ -157,7 +157,7 @@ Ready to proceed to Stage [Y]? You can also:
 ### Adaptive Rules
 
 1. **First checkpoint**: always FULL
-2. **After 2+ consecutive "continue" without review**: prompt user awareness ("You've auto-continued [N] times. Want to review progress?")
+2. **After 2+ consecutive "continue" without review**: prompt user awareness ("You've continued [N] times in a row. Want to review progress?")
 3. **Integrity boundaries (Stage 2.5, 4.5)**: always MANDATORY
 4. **Review decisions (Stage 3, 3')**: always MANDATORY
 5. **Before finalization (Stage 5)**: always MANDATORY
@@ -168,8 +168,8 @@ Ready to proceed to Stage [Y]? You can also:
 1. ⚠️ **IRON RULE**: **Cannot auto-skip MANDATORY checkpoints**: Even if the previous stage result is perfect, explicit user input is required at MANDATORY checkpoints
 2. **User can adjust**: At FULL and MANDATORY checkpoints, users can modify the mode or settings for the next step
 3. **Pause-friendly**: Users can pause at any checkpoint and resume later
-4. **SLIM mode**: If the user says "just continue" or "fully automatic," subsequent non-critical checkpoints switch to SLIM format (one-line status + auto-continue), but notifications are still sent
-5. **Awareness guard**: After 4+ consecutive auto-continues, the system inserts a FULL checkpoint regardless of stage type to ensure user remains engaged
+4. **SLIM mode**: If the user says "just continue" or "fully automatic," subsequent non-critical checkpoints switch to SLIM format (one-line status + explicit continue/pause prompt)
+5. **Awareness guard**: After 4+ consecutive continue responses, the system inserts a FULL checkpoint regardless of stage type to ensure user remains engaged
 
 ### Self-Check Questions (at every FULL checkpoint)
 
@@ -423,7 +423,7 @@ Explicit prohibitions to prevent common failure modes:
 | Stage 4' | Issues remain after revision | Mark as Acknowledged Limitations; proceed to Stage 4.5 |
 | Stage 4.5 | Final verification FAIL | Fix and re-verify (max 3 rounds) |
 | Any | User leaves midway | Save pipeline state; can resume from breakpoint next time |
-| Any | Skill execution failure | Report error; suggest retry or skip |
+| Any | Skill execution failure | Report error; suggest retry, pause, or mode switch. Do not skip mandatory integrity or failure-mode gates |
 
 ---
 
