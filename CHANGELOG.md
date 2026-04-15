@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
   - `academic-pipeline` = `verified_only`
 - `scripts/check_data_access_level.py` lint script with unit tests; wired into `.github/workflows/spec-consistency.yml`.
 - Pointer section in `shared/handoff_schemas.md` documenting the vocabulary for future skill authors.
+- `metadata.task_type` field on every top-level SKILL.md. Two-value vocabulary (`open-ended` | `outcome-gradable`) declaring whether the task has a scalar ground-truth metric. All current ARS skills are `open-ended` — the field is a truth-in-advertising signal that ARS targets domain-judgment work, not benchmark tasks.
+- `scripts/check_task_type.py` lint script with 4 unit tests; wired into the same CI workflow.
+- Pointer section in `shared/handoff_schemas.md` for the `task_type` vocabulary.
 
 ### Changed
 - Per-skill `metadata.version` patch-bumped on all 4 SKILL.md files; `last_updated` refreshed to 2026-04-15.
