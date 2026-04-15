@@ -1,4 +1,5 @@
 """Unit tests for check_data_access_level.py lint script."""
+import os
 import subprocess
 import sys
 import textwrap
@@ -10,10 +11,15 @@ SCRIPT = Path(__file__).resolve().parent / "check_data_access_level.py"
 
 
 def _run(root: Path) -> subprocess.CompletedProcess:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(SCRIPT.parent) + (
+        os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
+    )
     return subprocess.run(
         [sys.executable, str(SCRIPT), "--path", str(root)],
         capture_output=True,
         text=True,
+        env=env,
     )
 
 
