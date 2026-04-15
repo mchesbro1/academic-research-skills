@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.4] - 2026-04-15
+
+### Fixed
+- Embedded changelog sections in `README.md` and `README.zh-TW.md` now include the missing `v3.3.3` and `v3.3.2` summaries, so the README history matches the published releases.
+- `scripts/check_spec_consistency.py` now verifies that the README changelog summaries include the latest release entries, so future drift fails CI.
+
+### Changed
+- Suite version bumped to `3.3.4` across release-facing docs after the README changelog sync patch release.
+
 ## [3.3.3] - 2026-04-15
 
 ### Fixed

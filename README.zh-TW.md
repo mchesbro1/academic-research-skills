@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.3.3-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.3)
+[![Version](https://img.shields.io/badge/version-v3.3.4-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.4)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -622,6 +622,10 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## 更新紀錄
 
+### v3.3.4 (2026-04-15) — README 更新紀錄同步修補
+
+- 同步 `README.md` 與 `README.zh-TW.md` 內嵌的 changelog 區塊，補上原本缺漏的 `v3.3.3` 與 `v3.3.2` 發版摘要。
+- 擴充 `scripts/check_spec_consistency.py`，之後 README changelog 若再漂移，CI 會直接 fail。
 ### v3.3.3 (2026-04-15) — Release Prep + Lint 強化
 
 - 強化 SKILL frontmatter lint：缺少 closing `---` fence 時，現在會明確報錯，不再把整份檔案後半段誤當成合法 YAML。
