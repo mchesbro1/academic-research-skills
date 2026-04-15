@@ -7,6 +7,7 @@ metadata:
   depends_on: "deep-research, academic-paper, academic-paper-reviewer"
   status: active
   data_access_level: verified_only
+  task_type: open-ended
   related_skills:
     - deep-research
     - academic-paper

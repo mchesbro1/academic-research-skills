@@ -6,6 +6,7 @@ metadata:
   last_updated: "2026-04-15"
   status: active
   data_access_level: redacted
+  task_type: open-ended
   related_skills:
     - deep-research
     - academic-paper-reviewer
