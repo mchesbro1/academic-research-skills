@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.3.4-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.4)
+[![Version](https://img.shields.io/badge/version-v3.3.5-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.5)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -48,6 +48,8 @@ v3.3 was inspired by [**PaperOrchestra**](https://arxiv.org/abs/2604.05018) (Son
 - **Academic Pipeline** — Full 10-stage pipeline orchestrator with adaptive checkpoints, claim verification, material passport, **optional cross-model integrity verification**, **mid-conversation reinforcement**, **self-check questions**, and **score trajectory tracking**
 - **Data Access Level Metadata** (v3.3.2+) — Every skill declares a `data_access_level` (`raw`, `redacted`, or `verified_only`) so pipelines and CI can reason about isolation boundaries. Enforced by `scripts/check_data_access_level.py`. Pattern adapted from Anthropic's automated-w2s-researcher (2026).
 - **Task Type Annotation** (v3.3.2+) — Every skill declares a `task_type` (`open-ended` or `outcome-gradable`). All current ARS skills are `open-ended`: a truth-in-advertising signal that ARS targets domain-judgment work, not benchmark tasks. Enforced by `scripts/check_task_type.py`.
+- **Benchmark Report Schema** (v3.3.5+) — JSON Schema + lint for honest benchmark comparisons. Catches n=2-author-conducted, self-scored, empty-caveats failure modes. See [`shared/benchmark_report_pattern.md`](shared/benchmark_report_pattern.md).
+- **Artifact Reproducibility Lockfile** (v3.3.5+) — Optional `repro_lock` sub-block on Material Passport capturing model family, ARS version, prompt/material hashes. **Configuration documentation, not replay guarantee** — LLM outputs are not byte-reproducible. See [`shared/artifact_reproducibility_pattern.md`](shared/artifact_reproducibility_pattern.md).
 
 ### Skill posture (v3.3.2+)
 
@@ -650,6 +652,9 @@ https://github.com/Imbad0202/academic-research-skills
 ---
 
 ## Changelog
+
+### v3.3.5 (2026-04-15)
+- Added `benchmark_report.schema.json` + `repro_lock` optional block on Material Passport. Both ship with pattern docs, lints, and examples. First formal Python dev dep manifest (`requirements-dev.txt`).
 
 ### v3.3.4 (2026-04-15) — README Changelog Sync Patch
 

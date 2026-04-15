@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.5] - 2026-04-15
+
+### Added
+- `shared/benchmark_report.schema.json` — JSON Schema (draft-2020-12) defining required fields for ARS benchmark reports. Catches the "n=2 author-conducted baseline" failure mode from Anthropic's automated-w2s-researcher paper.
+- `shared/benchmark_report_pattern.md` — narrative hub doc explaining the schema.
+- `scripts/check_benchmark_report.py` + tests — validator with self-scored and small-sample warnings.
+- `examples/benchmark_report_template.json` — fillable template.
+- `repro_lock` optional sub-block added to Material Passport (Schema 9 in `shared/handoff_schemas.md`). Configuration lockfile; NOT a deterministic replay guarantee.
+- `shared/artifact_reproducibility_pattern.md` — hub doc with mandatory "not a replay guarantee" disclaimer section and required `stochasticity_declaration` field.
+- `scripts/check_repro_lock.py` + tests — passport validator.
+- `examples/passport_with_repro_lock.yaml` — example.
+- `requirements-dev.txt` — formal Python dev dep manifest (pyyaml + jsonschema).
+
+### Changed
+- `.github/workflows/spec-consistency.yml` installs via `pip install -r requirements-dev.txt` instead of ad-hoc `pip install`.
+- `academic-pipeline/references/reproducibility_audit.md` cross-links to new artifact-reproducibility pattern.
+
 ## [3.3.4] - 2026-04-15
 
 ### Fixed

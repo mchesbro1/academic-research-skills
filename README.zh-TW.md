@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.3.4-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.4)
+[![Version](https://img.shields.io/badge/version-v3.3.5-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.5)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -49,6 +49,8 @@ v3.3 的靈感來自 [**PaperOrchestra**](https://arxiv.org/abs/2604.05018)（So
 - **Academic Pipeline** — 10 階段全流程調度器，含自適應 checkpoint、宣稱驗證、素材護照、**可選跨模型誠信驗證**、**中途強化機制**、**自我檢查問題**、**分數軌跡追蹤**
 - **資料存取層級標註**（v3.3.2+）— 每個 skill 在 frontmatter 宣告 `data_access_level`（`raw`、`redacted`、`verified_only`），讓 pipeline 與 CI 能對隔離邊界做靜態檢查。由 `scripts/check_data_access_level.py` 強制執行。設計靈感來自 Anthropic 的 automated-w2s-researcher（2026）的三層隔離模式。
 - **任務類型標註**（v3.3.2+）— 每個 skill 宣告 `task_type`（`open-ended` 或 `outcome-gradable`）。目前 ARS 所有 skills 皆為 `open-ended`：誠信標示，明確告訴使用者 ARS 適用於需要領域判斷的工作，而非可量化的 benchmark 任務。由 `scripts/check_task_type.py` 強制執行。
+- **Benchmark 報告 Schema**（v3.3.5+）— JSON Schema + lint script，要求誠實的 benchmark 比較報告。擋掉 n=2 作者自測、self-scored、空 caveats 等失敗模式。詳見 [`shared/benchmark_report_pattern.md`](shared/benchmark_report_pattern.md)。
+- **Artifact 可重現性 Lockfile**（v3.3.5+）— Material Passport 新增可選 `repro_lock` 子區塊，記錄 model 家族、ARS 版本、prompt/material hash。**是設定文件化，不是重播保證** — LLM 輸出不是位元可重現。詳見 [`shared/artifact_reproducibility_pattern.md`](shared/artifact_reproducibility_pattern.md)。
 
 ### Skill 屬性一覽（v3.3.2+）
 
@@ -621,6 +623,9 @@ https://github.com/Imbad0202/academic-research-skills
 ---
 
 ## 更新紀錄
+
+### v3.3.5 (2026-04-15)
+- 新增 `benchmark_report.schema.json` 與 Material Passport 的 `repro_lock` 可選區塊。兩者都附 pattern 文件、lint、範例。首次引入正式的 Python 開發依賴清單（`requirements-dev.txt`）。
 
 ### v3.3.4 (2026-04-15) — README 更新紀錄同步修補
 
