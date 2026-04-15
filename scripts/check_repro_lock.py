@@ -99,7 +99,7 @@ def main() -> int:
     lock = doc["repro_lock"]
     if lock is None:
         print("WARN: repro_lock is null — honest opt-out. Reproducibility reduced.", file=sys.stderr)
-        print("OK: passport is valid (repro_lock explicitly null).")
+        print("OK (with WARN): passport valid; repro_lock explicitly null — see stderr.", flush=True)
         return 0
 
     if not isinstance(lock, dict):

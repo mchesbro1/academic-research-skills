@@ -63,7 +63,9 @@ class TestReproLock(unittest.TestCase):
             p.write_text(y)
             result = _run(p)
             self.assertEqual(result.returncode, 0)
-            self.assertIn("WARN", result.stdout + result.stderr)
+            # WARN signal must reach at least stderr; stdout OK line also mentions WARN
+            self.assertIn("WARN", result.stderr)
+            self.assertIn("with WARN", result.stdout)
 
     def test_missing_key_fails(self) -> None:
         with TemporaryDirectory() as tmp:
