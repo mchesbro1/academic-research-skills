@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.3] - 2026-04-15
+
+### Fixed
+- `scripts/_skill_lint.py` now rejects SKILL frontmatter that is missing a closing `---` fence instead of silently treating the rest of the file as YAML.
+- `scripts/_skill_lint.py` now reports a readable error when frontmatter parses as valid YAML but not as a mapping object, instead of crashing with `AttributeError`.
+- Broken showcase link for the post-publication audit report corrected in both `README.md` and `README.zh-TW.md`.
+- `scripts/check_spec_consistency.py` now validates README relative Markdown links so future dead links fail CI.
+
+### Changed
+- DOCX generation contract aligned across README, `academic-paper/SKILL.md`, `academic-paper/agents/formatter_agent.md`, `academic-pipeline/SKILL.md`, and `academic-pipeline/agents/pipeline_orchestrator_agent.md`: direct `.docx` output is Pandoc-dependent, with Markdown + conversion instructions as the fallback.
+- Added regression tests covering missing closing fences and non-mapping YAML frontmatter in both lint test suites.
+- Suite version bumped to `3.3.3` across release-facing docs; `academic-paper` patch-bumped to `3.0.2` and `academic-pipeline` patch-bumped to `3.2.2`.
+
 ## [3.3.2] - 2026-04-15
 
 ### Added
