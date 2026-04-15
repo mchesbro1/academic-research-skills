@@ -47,6 +47,16 @@ v3.3 was inspired by [**PaperOrchestra**](https://arxiv.org/abs/2604.05018) (Son
 - **Academic Paper Reviewer** — Multi-perspective peer review with 0-100 quality rubrics (EIC + 3 dynamic reviewers + Devil's Advocate with **concession threshold protocol** + **attack intensity preservation** + **optional cross-model DA critique / calibration**) + **R&R traceability matrix** + **read-only constraint** + **review quality thinking framework**
 - **Academic Pipeline** — Full 10-stage pipeline orchestrator with adaptive checkpoints, claim verification, material passport, **optional cross-model integrity verification**, **mid-conversation reinforcement**, **self-check questions**, and **score trajectory tracking**
 - **Data Access Level Metadata** (v3.3.2+) — Every skill declares a `data_access_level` (`raw`, `redacted`, or `verified_only`) so pipelines and CI can reason about isolation boundaries. Enforced by `scripts/check_data_access_level.py`. Pattern adapted from Anthropic's automated-w2s-researcher (2026).
+- **Task Type Annotation** (v3.3.2+) — Every skill declares a `task_type` (`open-ended` or `outcome-gradable`). All current ARS skills are `open-ended`: a truth-in-advertising signal that ARS targets domain-judgment work, not benchmark tasks. Enforced by `scripts/check_task_type.py`.
+
+### Skill posture (v3.3.2+)
+
+| Skill | data_access_level | task_type |
+|---|---|---|
+| deep-research | raw | open-ended |
+| academic-paper | redacted | open-ended |
+| academic-paper-reviewer | verified_only | open-ended |
+| academic-pipeline | verified_only | open-ended |
 
 ### Full Pipeline
 

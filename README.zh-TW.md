@@ -48,6 +48,16 @@ v3.3 的靈感來自 [**PaperOrchestra**](https://arxiv.org/abs/2604.05018)（So
 - **Academic Paper Reviewer** — 多視角同儕審查，0-100 品質量表（主編 + 3 位動態審查者 + 魔鬼代言人，含**讓步門檻協議** + **攻擊強度保持** + **可選跨模型 DA critique / calibration**）+ **R&R 追溯矩陣** + **唯讀約束** + **審查品質思維框架**
 - **Academic Pipeline** — 10 階段全流程調度器，含自適應 checkpoint、宣稱驗證、素材護照、**可選跨模型誠信驗證**、**中途強化機制**、**自我檢查問題**、**分數軌跡追蹤**
 - **資料存取層級標註**（v3.3.2+）— 每個 skill 在 frontmatter 宣告 `data_access_level`（`raw`、`redacted`、`verified_only`），讓 pipeline 與 CI 能對隔離邊界做靜態檢查。由 `scripts/check_data_access_level.py` 強制執行。設計靈感來自 Anthropic 的 automated-w2s-researcher（2026）的三層隔離模式。
+- **任務類型標註**（v3.3.2+）— 每個 skill 宣告 `task_type`（`open-ended` 或 `outcome-gradable`）。目前 ARS 所有 skills 皆為 `open-ended`：誠信標示，明確告訴使用者 ARS 適用於需要領域判斷的工作，而非可量化的 benchmark 任務。由 `scripts/check_task_type.py` 強制執行。
+
+### Skill 屬性一覽（v3.3.2+）
+
+| Skill | data_access_level | task_type |
+|---|---|---|
+| deep-research | raw | open-ended |
+| academic-paper | redacted | open-ended |
+| academic-paper-reviewer | verified_only | open-ended |
+| academic-pipeline | verified_only | open-ended |
 
 ### 完整 Pipeline
 
