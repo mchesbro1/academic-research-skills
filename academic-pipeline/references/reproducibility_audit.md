@@ -40,3 +40,15 @@ Integrity Summary:
   Final: [X] refs checked, [Y] issues found, [Y] fixed
   Overall: [CLEAN / ISSUES NOTED]
 ```
+
+## Computational reproducibility (v3.3.5+)
+
+This document defines PROCESS reproducibility — consistent stages, fixed reviewer angles,
+explicit pass/fail thresholds. That's one of two meanings of "reproducible."
+
+The other is COMPUTATIONAL re-run — could a third party re-execute the same pipeline and
+produce the same (or near-same) output? For that, see [`../../shared/artifact_reproducibility_pattern.md`](../../shared/artifact_reproducibility_pattern.md).
+
+Process reproducibility is enforced at the pipeline level. Computational documentation is
+captured in the Material Passport's optional `repro_lock` sub-block. Both are complementary;
+neither replaces the other.
