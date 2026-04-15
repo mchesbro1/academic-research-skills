@@ -61,7 +61,7 @@ def check_relative_markdown_links(rel_path: str) -> None:
 def check_mode_registry() -> None:
     rel_path = "MODE_REGISTRY.md"
     text = read(rel_path)
-    expect_contains(rel_path, "Last updated: v3.3.5 (2026-04-15)")
+    expect_contains(rel_path, "Last updated: v3.3.6 (2026-04-15)")
     for heading in (
         "## deep-research (7 modes)",
         "## academic-paper (10 modes)",
@@ -75,7 +75,7 @@ def check_claude_md() -> None:
     rel_path = ".claude/CLAUDE.md"
     expect_contains(rel_path, "integrity check (Stage 2.5)")
     expect_contains(rel_path, "final integrity check (Stage 4.5)")
-    expect_contains(rel_path, "**Suite version**: 3.3.5")
+    expect_contains(rel_path, "**Suite version**: 3.3.6")
     for forbidden in (
         "6th independent reviewer",
         "Peer review gains 6th independent reviewer",
@@ -136,8 +136,9 @@ def check_readme_sections() -> None:
     rel_path = "README.md"
     text = read(rel_path)
 
-    expect_contains(rel_path, "version-v3.3.5-blue")
-    expect_contains(rel_path, "releases/tag/v3.3.5")
+    expect_contains(rel_path, "version-v3.3.6-blue")
+    expect_contains(rel_path, "releases/tag/v3.3.6")
+    expect_contains(rel_path, "### v3.3.6 (2026-04-15)")
     expect_contains(rel_path, "### v3.3.5 (2026-04-15)")
     expect_contains(rel_path, "### v3.3.4 (2026-04-15)")
     expect_contains(rel_path, "### v3.3.3 (2026-04-15)")
@@ -183,12 +184,8 @@ def check_readme_sections() -> None:
         "Peer review gains 6th independent reviewer",
     ):
         expect_absent(rel_path, forbidden)
+    # DOCX contract lines moved to docs/SETUP.md in v3.3.6; checked there instead.
     expect_contains(rel_path, "DOCX (via Pandoc when available)")
-    expect_contains(rel_path, "Direct `.docx` generation uses [Pandoc]")
-    expect_contains(
-        rel_path,
-        "Direct `.docx` generation requires Pandoc, and PDF generation requires `tectonic`",
-    )
     check_relative_markdown_links(rel_path)
 
 
@@ -196,8 +193,9 @@ def check_readme_zh_sections() -> None:
     rel_path = "README.zh-TW.md"
     text = read(rel_path)
 
-    expect_contains(rel_path, "version-v3.3.5-blue")
-    expect_contains(rel_path, "releases/tag/v3.3.5")
+    expect_contains(rel_path, "version-v3.3.6-blue")
+    expect_contains(rel_path, "releases/tag/v3.3.6")
+    expect_contains(rel_path, "### v3.3.6 (2026-04-15)")
     expect_contains(rel_path, "### v3.3.5 (2026-04-15)")
     expect_contains(rel_path, "### v3.3.4 (2026-04-15)")
     expect_contains(rel_path, "### v3.3.3 (2026-04-15)")
@@ -249,10 +247,24 @@ def check_readme_zh_sections() -> None:
         "Peer review gains 6th independent reviewer",
     ):
         expect_absent(rel_path, forbidden)
+    # DOCX contract lines moved to docs/SETUP.zh-TW.md in v3.3.6; checked there instead.
     expect_contains(rel_path, "DOCX（Pandoc 可用時）")
-    expect_contains(rel_path, "若要直接產出 `.docx`，需要安裝 [Pandoc]")
-    expect_contains(rel_path, "直接產出 `.docx` 需要 Pandoc，PDF 需要 `tectonic`")
     check_relative_markdown_links(rel_path)
+
+
+def check_setup_docs() -> None:
+    expect_contains("docs/SETUP.md", "Direct `.docx` generation uses [Pandoc]")
+    expect_contains(
+        "docs/SETUP.md",
+        "Direct `.docx` generation requires Pandoc, and PDF generation requires `tectonic`",
+    )
+    expect_contains("docs/SETUP.zh-TW.md", "若要直接產出 `.docx`，需要安裝 [Pandoc]")
+    expect_contains(
+        "docs/SETUP.zh-TW.md",
+        "直接產出 `.docx` 需要 Pandoc，PDF 需要 `tectonic`",
+    )
+    check_relative_markdown_links("docs/SETUP.md")
+    check_relative_markdown_links("docs/SETUP.zh-TW.md")
 
 
 def check_docx_contract() -> None:
@@ -290,6 +302,7 @@ def main() -> int:
     check_pipeline_docs()
     check_readme_sections()
     check_readme_zh_sections()
+    check_setup_docs()
     check_docx_contract()
 
     if ERRORS:

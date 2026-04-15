@@ -80,7 +80,7 @@ Materials: Complete paper text. field_analyst_agent auto-detects domain and conf
 Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed comments
 
 ## Version Info
-- **Suite version**: 3.3.5 (per CHANGELOG.md)
+- **Suite version**: 3.3.6 (per CHANGELOG.md)
 - **Last Updated**: 2026-04-15
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0
