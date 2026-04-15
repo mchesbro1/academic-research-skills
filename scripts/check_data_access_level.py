@@ -17,6 +17,10 @@ LEGAL_VALUES = {"raw", "redacted", "verified_only"}
 SKIP_DIRS = {"shared", "scripts", "docs", ".git", ".github", "examples", ".local-plans"}
 
 
+class FrontmatterError(Exception):
+    """Raised when SKILL.md frontmatter cannot be parsed."""
+
+
 def _iter_skill_files(root: Path) -> list[Path]:
     results: list[Path] = []
     for child in sorted(root.iterdir()):
@@ -33,12 +37,11 @@ def _parse_frontmatter(path: Path) -> dict | None:
     if not text.startswith("---"):
         return None
     _, _, rest = text.partition("---\n")
-    fm, _, _ = rest.partition("\n---")
+    fm, _, _ = rest.partition("\n---\n")
     try:
         return yaml.safe_load(fm) or {}
     except yaml.YAMLError as exc:
-        print(f"ERROR: {path}: malformed YAML frontmatter: {exc}", file=sys.stderr)
-        return None
+        raise FrontmatterError(f"{path}: malformed YAML frontmatter: {exc}") from exc
 
 
 def check(root: Path) -> list[str]:
@@ -48,9 +51,13 @@ def check(root: Path) -> list[str]:
         violations.append(f"no SKILL.md files found under {root}")
         return violations
     for path in skills:
-        fm = _parse_frontmatter(path)
+        try:
+            fm = _parse_frontmatter(path)
+        except FrontmatterError as exc:
+            violations.append(str(exc))
+            continue
         if fm is None:
-            violations.append(f"{path}: could not parse frontmatter")
+            violations.append(f"{path}: missing YAML frontmatter")
             continue
         metadata = fm.get("metadata") or {}
         if "data_access_level" not in metadata:

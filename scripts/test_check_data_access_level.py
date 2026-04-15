@@ -93,6 +93,25 @@ class TestLintScript(unittest.TestCase):
             result = _run(root)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
 
+    def test_malformed_yaml_reports_on_stdout(self) -> None:
+        """FrontmatterError detail must appear on stdout, not only stderr."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill_dir = root / "bad-skill"
+            skill_dir.mkdir()
+            # Deliberately invalid YAML: tab character where spaces are required
+            (skill_dir / "SKILL.md").write_text(
+                "---\nkey: valid\n\tbad_indent: boom\n---\n\n# bad-skill\n",
+                encoding="utf-8",
+            )
+            result = _run(root)
+            self.assertEqual(result.returncode, 1)
+            # The yaml.YAMLError detail must be on stdout so CI stdout-only
+            # capture preserves the root cause.
+            self.assertIn("malformed YAML frontmatter", result.stdout)
+            # Nothing about this error should leak only to stderr.
+            self.assertNotIn("malformed YAML frontmatter", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
