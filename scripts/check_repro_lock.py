@@ -17,6 +17,7 @@ from pathlib import Path
 import yaml
 
 SUPPORTED_SCHEMA_VERSIONS = {"1.0"}
+SUPPORTED_HASH_TIMINGS = {"skill-load"}
 
 REQUIRED_FIELDS = {
     "schema_version",
@@ -67,9 +68,10 @@ def validate_block(lock: dict) -> list[str]:
     prompts = lock.get("prompts")
     if isinstance(prompts, dict):
         ht = prompts.get("hash_timing")
-        if ht is not None and ht != "skill-load":
+        if ht is not None and ht not in SUPPORTED_HASH_TIMINGS:
             errors.append(
-                f"repro_lock.prompts.hash_timing = {ht!r}, must be 'skill-load' (only supported value in v1.0)"
+                f"repro_lock.prompts.hash_timing = {ht!r}, "
+                f"must be one of {sorted(SUPPORTED_HASH_TIMINGS)} (see shared/artifact_reproducibility_pattern.md)"
             )
 
     return errors
