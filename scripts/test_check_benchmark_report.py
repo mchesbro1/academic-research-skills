@@ -105,6 +105,16 @@ class TestBenchmarkReport(unittest.TestCase):
             self.assertEqual(result.returncode, 0)
             self.assertIn("self-scored", result.stderr.lower() + result.stdout.lower())
 
+    def test_empty_tools_allowed_fails(self) -> None:
+        with TemporaryDirectory() as tmp:
+            r = _valid_report()
+            r["human_baseline"]["tools_allowed"] = []
+            p = Path(tmp) / "r.json"
+            p.write_text(json.dumps(r))
+            result = _run(p)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("tools_allowed", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

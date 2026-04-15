@@ -39,7 +39,8 @@
         "recruitment": { "type": "string", "minLength": 1 },
         "tools_allowed": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
         }
       }
     },
