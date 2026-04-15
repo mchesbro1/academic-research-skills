@@ -24,3 +24,6 @@ jobs:
 
       - name: Check data_access_level declarations
         run: python3 scripts/check_data_access_level.py
+
+      - name: Check task_type declarations
+        run: python3 scripts/check_task_type.py
