@@ -1,10 +1,11 @@
 """Unit tests for check_benchmark_report.py."""
 import json
 import subprocess
-import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+from scripts._test_helpers import run_script
 
 SCRIPT = Path(__file__).resolve().parent / "check_benchmark_report.py"
 SCHEMA = Path(__file__).resolve().parent.parent / "shared" / "benchmark_report.schema.json"
@@ -41,11 +42,7 @@ def _valid_report() -> dict:
 
 
 def _run(path: Path) -> subprocess.CompletedProcess:
-    return subprocess.run(
-        [sys.executable, str(SCRIPT), str(path)],
-        capture_output=True,
-        text=True,
-    )
+    return run_script(SCRIPT, str(path))
 
 
 class TestBenchmarkReport(unittest.TestCase):

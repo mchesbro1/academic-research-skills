@@ -1,20 +1,17 @@
 """Unit tests for check_repro_lock.py."""
 import subprocess
-import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import textwrap
 
+from scripts._test_helpers import run_script
+
 SCRIPT = Path(__file__).resolve().parent / "check_repro_lock.py"
 
 
 def _run(path: Path) -> subprocess.CompletedProcess:
-    return subprocess.run(
-        [sys.executable, str(SCRIPT), str(path)],
-        capture_output=True,
-        text=True,
-    )
+    return run_script(SCRIPT, str(path))
 
 
 def _valid_passport_yaml() -> str:
