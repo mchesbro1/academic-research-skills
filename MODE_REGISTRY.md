@@ -31,7 +31,7 @@ Last updated: v3.3.2 (2026-04-15)
 | `revision-coach` | Balanced | Revision Roadmap + Response Letter Skeleton | Medium | "parse reviews", "I got reviewer comments" |
 | `abstract-only` | Fidelity | Bilingual abstract (zh-TW + EN) + keywords | Medium | "write abstract" |
 | `lit-review` | Fidelity | Annotated bibliography in paper format | Medium | "literature review paper", "write a lit review" |
-| `format-convert` | Fidelity | Formatted document (LaTeX/DOCX/PDF/MD) | Low | "convert to LaTeX", "convert citations to [format]" |
+| `format-convert` | Fidelity | Formatted document (LaTeX/DOCX-via-Pandoc/PDF/MD) | Low | "convert to LaTeX", "convert citations to [format]" |
 | `citation-check` | Fidelity | Citation error report | Low | "check citations", "verify references" |
 | `disclosure` | Fidelity | Venue-specific AI-usage disclosure statement | Low | "AI disclosure for [venue]", "generate AI usage statement" |
 

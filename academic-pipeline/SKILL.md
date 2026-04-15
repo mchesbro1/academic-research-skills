@@ -91,7 +91,7 @@ I received reviewer comments, help me revise
 | **3'** | **RE-REVIEW** | **`academic-paper-reviewer`** | **re-review** | **Verification review report: revision response checklist + residual issues** |
 | **4'** | **RE-REVISE** | **`academic-paper`** | **revision** | **Second revised draft (if needed)** |
 | **4.5** | **FINAL INTEGRITY** | **`integrity_verification_agent`** | **final-check** | **Final verification report (must achieve 100% pass to proceed)** |
-| 5 | FINALIZE | `academic-paper` | format-convert | Final Paper (default MD + DOCX; ask about LaTeX; confirm correctness; PDF) |
+| 5 | FINALIZE | `academic-paper` | format-convert | Final Paper (default MD; DOCX via Pandoc when available, otherwise conversion instructions; ask about LaTeX; confirm correctness; PDF) |
 | **6** | **PROCESS SUMMARY** | **orchestrator** | **auto** | **Paper creation process record MD + LaTeX to PDF (bilingual)** |
 
 **Parallelization opportunity (v3.3)**: Within Stage 2, the `academic-paper` skill's Phase 1 (literature_strategist_agent) and the `visualization_agent` can operate in parallel after Phase 2 (structure_architect_agent) completes the outline. Specifically:
@@ -113,7 +113,7 @@ This mirrors PaperOrchestra's parallel execution of Plot Generation (Step 2) and
 6. **Stage 3' RE-REVIEW** -> Accept|Minor -> Stage 4.5 / Major -> Stage 4'
 7. **Stage 4' RE-REVISE** -> user confirmation -> Stage 4.5 (no return to review)
 8. **Stage 4.5 FINAL INTEGRITY** -> PASS (zero issues) -> Stage 5 (FAIL -> fix and re-verify)
-9. **Stage 5 FINALIZE** -> MD + DOCX -> ask about LaTeX -> confirm -> PDF -> Stage 6
+9. **Stage 5 FINALIZE** -> MD -> DOCX via Pandoc when available (otherwise instructions) -> ask about LaTeX -> confirm -> PDF -> Stage 6
 10. **Stage 6 PROCESS SUMMARY** -> ask language version -> generate process record MD -> LaTeX -> PDF -> end
 
 See `references/pipeline_state_machine.md` for complete state transition definitions.
@@ -510,7 +510,7 @@ Stage 3': academic-paper-reviewer
 Stage 4/4': academic-paper (revision mode)
 Stage 5: academic-paper (format-convert mode)
   - Step 1: Ask user which academic formatting style (APA 7.0 / Chicago / IEEE, etc.)
-  - Step 2: Auto-produce MD + DOCX
+  - Step 2: Produce MD, then generate DOCX via Pandoc when available (otherwise provide conversion instructions)
   - Step 3: Produce LaTeX (using corresponding document class, e.g., apa7 class for APA 7.0)
   - Step 4: After user confirms content is correct, tectonic compiles PDF (final version)
   - Fonts: Times New Roman (English) + Source Han Serif TC VF (Chinese) + Courier New (monospace)

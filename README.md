@@ -67,7 +67,7 @@ Research → Write → Integrity Check → Review (5-person) → Socratic Coachi
 3. Two-stage review with Devil's Advocate + 0-100 quality rubrics
 4. Socratic revision coaching with SCR Loop (State-Challenge-Reflect, user-togglable) between review and revision stages
 5. Final integrity verification before publication
-6. Output: MD + DOCX + LaTeX (APA 7.0 `apa7` class / IEEE / Chicago) → PDF via tectonic
+6. Output: MD + DOCX (via Pandoc when available) + LaTeX (APA 7.0 `apa7` class / IEEE / Chicago) → PDF via tectonic
 7. Post-pipeline process summary with 6-dimension collaboration quality scoring (1–100)
 8. Material passport for mid-entry provenance tracking
 9. Cross-skill mode advisor (14 scenarios + user archetypes)
@@ -134,7 +134,7 @@ See the complete artifacts from a real 10-stage pipeline run — including **pee
 | [Re-Review](examples/showcase/stage3prime_rereview_report.pdf) | Verification after revisions |
 | [Peer Review Round 2](examples/showcase/stage3_review_report_r2.pdf) | Follow-up review |
 | [Response to Reviewers](examples/showcase/response_to_reviewers_r2.pdf) | Point-by-point author response |
-| [Post-Publication Audit Report](examples/showcase/post_publication_audit_2026-03-09.md) | Independent full-reference audit: found 21/68 issues missed by 3 rounds of integrity checks |
+| [Post-Publication Audit Report](examples/showcase/post_publication_audit_2026-03-09.pdf) | Independent full-reference audit: found 21/68 issues missed by 3 rounds of integrity checks |
 
 ---
 
@@ -216,9 +216,24 @@ Or set it as an environment variable:
 export ANTHROPIC_API_KEY=sk-ant-xxxxx
 ```
 
+### DOCX Output (Optional)
+
+Direct `.docx` generation uses [Pandoc](https://pandoc.org/). If Pandoc is unavailable, the formatter falls back to Markdown + DOCX conversion instructions.
+
+```bash
+# macOS
+brew install pandoc
+
+# Linux (Debian/Ubuntu)
+sudo apt-get install pandoc
+
+# Windows
+# Download from https://pandoc.org/installing.html
+```
+
 ### LaTeX / PDF Output (Optional)
 
-PDF output requires [tectonic](https://tectonic-typesetting.github.io/) and specific fonts. **This is optional** — MD and DOCX output work without any of this.
+PDF output requires [tectonic](https://tectonic-typesetting.github.io/) and specific fonts. **This is optional** — Markdown output and DOCX conversion instructions work without any of this.
 
 ```bash
 # macOS
@@ -236,7 +251,7 @@ curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 - **Source Han Serif TC VF** (思源宋體) — download from [Google Fonts](https://fonts.google.com/specimen/Noto+Serif+TC) or [Adobe GitHub](https://github.com/adobe-fonts/source-han-serif)
 - **Courier New** — usually pre-installed
 
-> If you only need MD/DOCX output, skip this entirely. The pipeline will ask before attempting LaTeX compilation.
+> If you only need Markdown output or DOCX conversion instructions, skip this entirely. Direct `.docx` generation requires Pandoc, and PDF generation requires `tectonic`.
 
 ---
 
@@ -372,7 +387,7 @@ You can use these skills on [claude.ai](https://claude.ai) via the **Project** f
 **claude.ai vs Claude Code:**
 - claude.ai does not support parallel multi-agent execution or shell commands; results may be less comprehensive than Claude Code
 - Cross-model verification (`ARS_CROSS_MODEL`) requires Claude Code with API keys
-- LaTeX/PDF output requires Claude Code with `tectonic` installed; claude.ai can produce Markdown and DOCX
+- Direct `.docx` generation requires Pandoc, and LaTeX/PDF output requires Claude Code with `tectonic`; claude.ai can still produce Markdown and DOCX conversion instructions
 
 ---
 
@@ -509,7 +524,7 @@ You: "status"
 | Citation Compliance | Multi-format citation audit + APA↔Chicago↔MLA↔IEEE↔Vancouver conversion |
 | Abstract Bilingual | EN + Chinese abstracts |
 | Peer Reviewer | 5-dimension review (max 2 rounds) |
-| Formatter | LaTeX/DOCX/PDF output — mandatory `apa7` class, XeCJK bilingual, `ragged2e` justification fix, tectonic compilation |
+| Formatter | LaTeX + DOCX-via-Pandoc + PDF output — mandatory `apa7` class, XeCJK bilingual, `ragged2e` justification fix, tectonic compilation |
 | Socratic Mentor | Chapter-by-chapter guided planning with convergence criteria + SCR reflection (togglable) |
 | Visualization Agent | 9 chart types, matplotlib/ggplot2, APA 7.0 standards |
 | Revision Coach Agent | Parses unstructured reviewer comments → Revision Roadmap |
@@ -550,7 +565,7 @@ You: "status"
 | → | *Socratic Residual Coaching* | *Guide user through remaining issues (if Major)* |
 | 4'. RE-REVISE | academic-paper | Final revision (if needed) |
 | **4.5. FINAL INTEGRITY** | **integrity_verification_agent** | **100% final verification (zero issues required)** |
-| 5. FINALIZE | academic-paper | Ask format style → MD + DOCX + LaTeX → tectonic → PDF |
+| 5. FINALIZE | academic-paper | Ask format style → MD → DOCX via Pandoc when available (else instructions) → LaTeX → tectonic → PDF |
 | **6. PROCESS SUMMARY** | **pipeline** | **Paper creation process record + Collaboration Quality Evaluation (1–100)** |
 
 **Pipeline guarantees:**
@@ -766,7 +781,7 @@ Inspired by patterns from [aspi6246/Claude-Code-Skills-for-Academics](https://gi
 - **academic-paper-reviewer v1.1**: +Devil's Advocate Reviewer (7th agent), +re-review mode (verification), +post-review Socratic coaching
 - New agent: `integrity_verification_agent` — 100% reference/data verification with audit trail
 - New agent: `devils_advocate_reviewer_agent` — 8-dimension thesis challenger
-- Output order: MD + DOCX → ask LaTeX → confirm → PDF
+- Output order: MD → DOCX via Pandoc when available (else instructions) → ask LaTeX → confirm → PDF
 
 ### v1.0 (2026-02)
 - Initial release

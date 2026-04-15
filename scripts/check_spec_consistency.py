@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ERRORS: list[str] = []
+MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 
 def read(rel_path: str) -> str:
@@ -41,6 +42,20 @@ def extract_section(text: str, start: str, end: str) -> str:
         fail(f"missing section end after {start!r}: {end!r}")
         return text[start_idx:]
     return text[start_idx:end_idx]
+
+
+def check_relative_markdown_links(rel_path: str) -> None:
+    text = read(rel_path)
+    doc_path = ROOT / rel_path
+    for raw_target in MARKDOWN_LINK_RE.findall(text):
+        if raw_target.startswith(("http://", "https://", "mailto:", "#")):
+            continue
+        target = raw_target.split("#", 1)[0]
+        if not target:
+            continue
+        resolved = (doc_path.parent / target).resolve()
+        if not resolved.exists():
+            fail(f"{rel_path}: broken relative markdown link {raw_target!r}")
 
 
 def check_mode_registry() -> None:
@@ -164,6 +179,13 @@ def check_readme_sections() -> None:
         "Peer review gains 6th independent reviewer",
     ):
         expect_absent(rel_path, forbidden)
+    expect_contains(rel_path, "DOCX (via Pandoc when available)")
+    expect_contains(rel_path, "Direct `.docx` generation uses [Pandoc]")
+    expect_contains(
+        rel_path,
+        "Direct `.docx` generation requires Pandoc, and PDF generation requires `tectonic`",
+    )
+    check_relative_markdown_links(rel_path)
 
 
 def check_readme_zh_sections() -> None:
@@ -219,6 +241,38 @@ def check_readme_zh_sections() -> None:
         "Peer review gains 6th independent reviewer",
     ):
         expect_absent(rel_path, forbidden)
+    expect_contains(rel_path, "DOCX（Pandoc 可用時）")
+    expect_contains(rel_path, "若要直接產出 `.docx`，需要安裝 [Pandoc]")
+    expect_contains(rel_path, "直接產出 `.docx` 需要 Pandoc，PDF 需要 `tectonic`")
+    check_relative_markdown_links(rel_path)
+
+
+def check_docx_contract() -> None:
+    expect_contains(
+        "academic-paper/SKILL.md",
+        "LaTeX/DOCX-via-Pandoc/PDF output",
+    )
+    expect_contains(
+        "academic-paper/agents/formatter_agent.md",
+        "If Pandoc is available, generate the `.docx` file directly",
+    )
+    expect_contains(
+        "academic-paper/agents/formatter_agent.md",
+        "If Pandoc is unavailable, provide complete markdown + DOCX conversion instructions",
+    )
+    expect_contains(
+        "academic-pipeline/SKILL.md",
+        "DOCX via Pandoc when available, otherwise conversion instructions",
+    )
+    expect_contains(
+        "academic-pipeline/agents/pipeline_orchestrator_agent.md",
+        "DOCX via Pandoc when available (otherwise instructions)",
+    )
+    for rel_path in (
+        "academic-pipeline/SKILL.md",
+        "academic-pipeline/agents/pipeline_orchestrator_agent.md",
+    ):
+        expect_absent(rel_path, "Auto-produce MD + DOCX")
 
 
 def main() -> int:
@@ -228,6 +282,7 @@ def main() -> int:
     check_pipeline_docs()
     check_readme_sections()
     check_readme_zh_sections()
+    check_docx_contract()
 
     if ERRORS:
         print("Spec consistency check failed:")
