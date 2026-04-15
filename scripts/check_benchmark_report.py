@@ -61,7 +61,11 @@ def main() -> int:
     if errors:
         for e in errors:
             print(f"ERROR: {e}")
-        print(f"\n{len(errors)} schema violation(s).", file=sys.stderr)
+        print(
+            f"\n{len(errors)} schema violation(s). "
+            f"See shared/benchmark_report_pattern.md for field rationale.",
+            file=sys.stderr,
+        )
         return 1
 
     for w in warn_self_scored(report):

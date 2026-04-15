@@ -110,7 +110,11 @@ def main() -> int:
     if errors:
         for e in errors:
             print(f"ERROR: {e}")
-        print(f"\n{len(errors)} violation(s).", file=sys.stderr)
+        print(
+            f"\n{len(errors)} violation(s). "
+            f"See shared/artifact_reproducibility_pattern.md for required fields.",
+            file=sys.stderr,
+        )
         return 1
 
     print("OK: passport repro_lock is valid.")
