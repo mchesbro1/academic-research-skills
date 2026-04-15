@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.2] - 2026-04-15
+
+### Added
+- `metadata.data_access_level` field on every top-level SKILL.md. Three-tier vocabulary (`raw` | `redacted` | `verified_only`) declaring what kind of data each skill may consume. Inspired by the three-tier isolation pattern in Anthropic's automated-w2s-researcher (2026).
+  - `deep-research` = `raw`
+  - `academic-paper` = `redacted`
+  - `academic-paper-reviewer` = `verified_only`
+  - `academic-pipeline` = `verified_only`
+- `scripts/check_data_access_level.py` lint script with unit tests; wired into `.github/workflows/spec-consistency.yml`.
+- Pointer section in `shared/handoff_schemas.md` documenting the vocabulary for future skill authors.
+
+### Changed
+- Per-skill `metadata.version` patch-bumped on all 4 SKILL.md files; `last_updated` refreshed to 2026-04-15.
+- Suite version bumped to 3.3.2 across `README.md`, `README.zh-TW.md`, and `.claude/CLAUDE.md`.
+
 ## [3.3.1] - 2026-04-14
 
 ### Fixed
