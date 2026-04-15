@@ -651,6 +651,22 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## Changelog
 
+### v3.3.3 (2026-04-15) — Release Prep + Lint Hardening
+
+- Hardened SKILL frontmatter linting: missing closing `---` fences now fail cleanly instead of being parsed as valid YAML.
+- Frontmatter that parses as valid YAML but not as a mapping now reports a readable error instead of crashing.
+- Fixed the broken showcase link for the post-publication audit report in both READMEs.
+- Added README relative-link validation to the spec consistency check so dead links fail CI.
+- Aligned the DOCX output contract across the docs: direct `.docx` generation is Pandoc-dependent, with Markdown + conversion instructions as fallback.
+- Prepared the `v3.3.3` release: suite version bump, `academic-paper` -> v3.0.2, `academic-pipeline` -> v3.2.2.
+
+### v3.3.2 (2026-04-15) — Data Access Levels + Task Type Metadata
+
+- Added `metadata.data_access_level` to all top-level `SKILL.md` files with enforced vocabulary: `raw`, `redacted`, `verified_only`.
+- Added `metadata.task_type` to all top-level `SKILL.md` files with enforced vocabulary: `open-ended`, `outcome-gradable`.
+- Added lint scripts and unit tests for both metadata fields, wired into the GitHub Actions spec consistency workflow.
+- Added `shared/ground_truth_isolation_pattern.md` and linked the new vocabulary from `shared/handoff_schemas.md`.
+
 ### v3.3.1 (2026-04-14) — Spec Consistency Patch
 
 - Synced README, `.claude/CLAUDE.md`, `MODE_REGISTRY.md`, and `SKILL.md` files to the current mode counts and published skill versions.

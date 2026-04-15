@@ -138,6 +138,8 @@ def check_readme_sections() -> None:
 
     expect_contains(rel_path, "version-v3.3.3-blue")
     expect_contains(rel_path, "releases/tag/v3.3.3")
+    expect_contains(rel_path, "### v3.3.3 (2026-04-15)")
+    expect_contains(rel_path, "### v3.3.2 (2026-04-15)")
     for heading in (
         "#### Deep Research (7 modes)",
         "#### Academic Paper (10 modes)",
@@ -194,6 +196,8 @@ def check_readme_zh_sections() -> None:
 
     expect_contains(rel_path, "version-v3.3.3-blue")
     expect_contains(rel_path, "releases/tag/v3.3.3")
+    expect_contains(rel_path, "### v3.3.3 (2026-04-15)")
+    expect_contains(rel_path, "### v3.3.2 (2026-04-15)")
     for heading in (
         "#### Deep Research（深度研究，7 種模式）",
         "#### Academic Paper（學術論文撰寫，10 種模式）",

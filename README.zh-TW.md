@@ -622,6 +622,22 @@ https://github.com/Imbad0202/academic-research-skills
 
 ## 更新紀錄
 
+### v3.3.3 (2026-04-15) — Release Prep + Lint 強化
+
+- 強化 SKILL frontmatter lint：缺少 closing `---` fence 時，現在會明確報錯，不再把整份檔案後半段誤當成合法 YAML。
+- frontmatter 若可被 YAML 解析但不是 mapping，現在會回報可讀錯誤，而不是直接 crash。
+- 修正中英文 README 中 post-publication audit showcase 連結失效的問題。
+- 在 spec consistency check 補上 README 相對連結驗證，之後 dead link 會直接讓 CI fail。
+- 將 DOCX 輸出契約在文件中統一：直接產出 `.docx` 依賴 Pandoc，否則回退為 Markdown + 轉換說明。
+- 完成 `v3.3.3` 發版準備：suite version bump，`academic-paper` -> v3.0.2，`academic-pipeline` -> v3.2.2。
+
+### v3.3.2 (2026-04-15) — Data Access Level + Task Type Metadata
+
+- 所有頂層 `SKILL.md` 新增 `metadata.data_access_level`，並以 `raw`、`redacted`、`verified_only` 為強制詞彙。
+- 所有頂層 `SKILL.md` 新增 `metadata.task_type`，並以 `open-ended`、`outcome-gradable` 為強制詞彙。
+- 為兩個 metadata 欄位新增 lint script 與單元測試，並接到 GitHub Actions spec consistency workflow。
+- 新增 `shared/ground_truth_isolation_pattern.md`，並在 `shared/handoff_schemas.md` 中補上對新詞彙的說明入口。
+
 ### v3.3.1 (2026-04-14) — 規格一致性修補
 
 - 同步 README、`.claude/CLAUDE.md`、`MODE_REGISTRY.md` 與各 `SKILL.md` 的 mode 數量與公開版本標示。
