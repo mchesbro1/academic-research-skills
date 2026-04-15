@@ -13,7 +13,7 @@ metadata:
     - academic-paper-reviewer
 ---
 
-# Academic Pipeline v3.2 — Full Academic Research Workflow Orchestrator
+# Academic Pipeline v3.2.1 — Full Academic Research Workflow Orchestrator
 
 A lightweight orchestrator that manages the complete academic pipeline from research exploration to final manuscript. It does not perform substantive work — it only detects stages, recommends modes, dispatches skills, manages transitions, and tracks state.
 
@@ -532,8 +532,8 @@ Stage 5: academic-paper (format-convert mode)
 
 | Item | Content |
 |------|---------|
-| Skill Version | 3.2 |
-| Last Updated | 2026-04-09 |
+| Skill Version | 3.2.1 |
+| Last Updated | 2026-04-15 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | deep-research v2.0+, academic-paper v2.0+, academic-paper-reviewer v1.1+ |
 | Role | Full academic research workflow orchestrator |

@@ -46,7 +46,7 @@ def extract_section(text: str, start: str, end: str) -> str:
 def check_mode_registry() -> None:
     rel_path = "MODE_REGISTRY.md"
     text = read(rel_path)
-    expect_contains(rel_path, "Last updated: v3.3.1 (2026-04-14)")
+    expect_contains(rel_path, "Last updated: v3.3.2 (2026-04-15)")
     for heading in (
         "## deep-research (7 modes)",
         "## academic-paper (10 modes)",
@@ -60,7 +60,7 @@ def check_claude_md() -> None:
     rel_path = ".claude/CLAUDE.md"
     expect_contains(rel_path, "integrity check (Stage 2.5)")
     expect_contains(rel_path, "final integrity check (Stage 4.5)")
-    expect_contains(rel_path, "**Suite version**: 3.3.1")
+    expect_contains(rel_path, "**Suite version**: 3.3.2")
     for forbidden in (
         "6th independent reviewer",
         "Peer review gains 6th independent reviewer",
@@ -121,8 +121,8 @@ def check_readme_sections() -> None:
     rel_path = "README.md"
     text = read(rel_path)
 
-    expect_contains(rel_path, "version-v3.3.1-blue")
-    expect_contains(rel_path, "releases/tag/v3.3.1")
+    expect_contains(rel_path, "version-v3.3.2-blue")
+    expect_contains(rel_path, "releases/tag/v3.3.2")
     for heading in (
         "#### Deep Research (7 modes)",
         "#### Academic Paper (10 modes)",
@@ -170,8 +170,8 @@ def check_readme_zh_sections() -> None:
     rel_path = "README.zh-TW.md"
     text = read(rel_path)
 
-    expect_contains(rel_path, "version-v3.3.1-blue")
-    expect_contains(rel_path, "releases/tag/v3.3.1")
+    expect_contains(rel_path, "version-v3.3.2-blue")
+    expect_contains(rel_path, "releases/tag/v3.3.2")
     for heading in (
         "#### Deep Research（深度研究，7 種模式）",
         "#### Academic Paper（學術論文撰寫，10 種模式）",

@@ -11,7 +11,7 @@ metadata:
     - academic-pipeline
 ---
 
-# Academic Paper Reviewer v1.8 — Multi-Perspective Academic Paper Review Agent Team
+# Academic Paper Reviewer v1.8.1 — Multi-Perspective Academic Paper Review Agent Team
 
 Simulates a complete international journal peer review process: automatically identifies the paper's field, dynamically configures 5 reviewers (Editor-in-Chief + 3 peer reviewers + Devil's Advocate) who review from four non-overlapping perspectives — methodology, domain expertise, cross-disciplinary viewpoints, and core argument challenges — ultimately producing a structured Editorial Decision and Revision Roadmap.
 
@@ -375,8 +375,8 @@ Follows the paper's language. Academic terms remain in English. User can overrid
 
 | Item | Content |
 |------|---------|
-| Skill Version | 1.8 |
-| Last Updated | 2026-04-09 |
+| Skill Version | 1.8.1 |
+| Last Updated | 2026-04-15 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | academic-paper v1.0+ (upstream/downstream integration) |
 | Role | Multi-perspective academic paper review simulator |
