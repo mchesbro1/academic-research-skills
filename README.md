@@ -51,12 +51,7 @@ v3.3 was inspired by [**PaperOrchestra**](https://arxiv.org/abs/2604.05018) (Son
 
 ### Skill posture (v3.3.2+)
 
-| Skill | data_access_level | task_type |
-|---|---|---|
-| deep-research | raw | open-ended |
-| academic-paper | redacted | open-ended |
-| academic-paper-reviewer | verified_only | open-ended |
-| academic-pipeline | verified_only | open-ended |
+Each SKILL.md declares `data_access_level` and `task_type` in its frontmatter. See [`shared/handoff_schemas.md`](shared/handoff_schemas.md) for the vocabulary and [`shared/ground_truth_isolation_pattern.md`](shared/ground_truth_isolation_pattern.md) for the rationale.
 
 ### Full Pipeline
 

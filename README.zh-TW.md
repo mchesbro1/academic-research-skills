@@ -52,12 +52,7 @@ v3.3 的靈感來自 [**PaperOrchestra**](https://arxiv.org/abs/2604.05018)（So
 
 ### Skill 屬性一覽（v3.3.2+）
 
-| Skill | data_access_level | task_type |
-|---|---|---|
-| deep-research | raw | open-ended |
-| academic-paper | redacted | open-ended |
-| academic-paper-reviewer | verified_only | open-ended |
-| academic-pipeline | verified_only | open-ended |
+每個 SKILL.md 在 frontmatter 宣告 `data_access_level` 與 `task_type`。詞彙定義見 [`shared/handoff_schemas.md`](shared/handoff_schemas.md)，設計理念見 [`shared/ground_truth_isolation_pattern.md`](shared/ground_truth_isolation_pattern.md)。
 
 ### 完整 Pipeline
 
