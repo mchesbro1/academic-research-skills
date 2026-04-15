@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.3.1-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.1)
+[![Version](https://img.shields.io/badge/version-v3.3.2-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.3.2)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -47,6 +47,7 @@ v3.3 的靈感來自 [**PaperOrchestra**](https://arxiv.org/abs/2604.05018)（So
 - **Academic Paper** — 12 個 Agent 的論文撰寫團隊，含風格校準、寫作品質檢查、LaTeX 輸出強化、視覺化、修訂教練、引用格式轉換、**寫作判斷力框架**、**反洩漏協議**、**VLM 圖表驗證**
 - **Academic Paper Reviewer** — 多視角同儕審查，0-100 品質量表（主編 + 3 位動態審查者 + 魔鬼代言人，含**讓步門檻協議** + **攻擊強度保持** + **可選跨模型 DA critique / calibration**）+ **R&R 追溯矩陣** + **唯讀約束** + **審查品質思維框架**
 - **Academic Pipeline** — 10 階段全流程調度器，含自適應 checkpoint、宣稱驗證、素材護照、**可選跨模型誠信驗證**、**中途強化機制**、**自我檢查問題**、**分數軌跡追蹤**
+- **資料存取層級標註**（v3.3.2+）— 每個 skill 在 frontmatter 宣告 `data_access_level`（`raw`、`redacted`、`verified_only`），讓 pipeline 與 CI 能對隔離邊界做靜態檢查。由 `scripts/check_data_access_level.py` 強制執行。設計靈感來自 Anthropic 的 automated-w2s-researcher（2026）的三層隔離模式。
 
 ### 完整 Pipeline
 
