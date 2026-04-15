@@ -640,3 +640,5 @@ Every top-level `SKILL.md` declares `metadata.task_type` with one of two values:
 This is a declarative truth-in-advertising signal. All current ARS skills are `open-ended` because ARS targets humanities/QA/policy work, not benchmark tasks. When adding a new skill, do not invent a third value; if the skill genuinely spans both, split it into two skills.
 
 Enforced by `scripts/check_task_type.py` in CI.
+
+See [`ground_truth_isolation_pattern.md`](ground_truth_isolation_pattern.md) for the rationale and rules behind this annotation.
