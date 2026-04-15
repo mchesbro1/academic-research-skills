@@ -2,9 +2,10 @@
 name: academic-paper-reviewer
 description: "Multi-perspective academic paper review with dynamic reviewer personas. Simulates 5 independent reviewers (EIC + 3 peer reviewers + Devil's Advocate) with field-specific expertise. Supports full review, re-review (verification), quick assessment, methodology focus, Socratic guided, and calibration modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy."
 metadata:
-  version: "1.8"
-  last_updated: "2026-04-09"
+  version: "1.8.1"
+  last_updated: "2026-04-15"
   status: active
+  data_access_level: verified_only
   related_skills:
     - academic-paper
     - academic-pipeline
