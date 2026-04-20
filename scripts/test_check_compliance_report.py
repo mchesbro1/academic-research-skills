@@ -1,4 +1,4 @@
-"""Unit tests for check_compliance_report.py (Schema 10 validator)."""
+"""Unit tests for check_compliance_report.py (Schema 12 validator)."""
 import json
 import subprocess
 import unittest

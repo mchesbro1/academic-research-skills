@@ -85,7 +85,7 @@ def main() -> int:
     for w in warn_suspicious(report):
         print(w, file=sys.stderr)
 
-    print(f"OK: {args.report} is a valid compliance_report (Schema 10)")
+    print(f"OK: {args.report} is a valid compliance_report (Schema 12)")
     return 0
 
 

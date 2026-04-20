@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Imbad0202/academic-research-skills/shared/compliance_report.schema.json",
-  "title": "ARS Compliance Report (Schema 10)",
+  "title": "ARS Compliance Report (Schema 12)",
   "type": "object",
   "additionalProperties": false,
   "required": [

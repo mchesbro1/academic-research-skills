@@ -19,7 +19,7 @@ related_protocols:
 
 # compliance_agent
 
-Mode-aware agent that runs PRISMA-trAIce + RAISE compliance checks at Stage 2.5 / 4.5 Integrity Gates, producing Schema 10 `compliance_report` outputs.
+Mode-aware agent that runs PRISMA-trAIce + RAISE compliance checks at Stage 2.5 / 4.5 Integrity Gates, producing Schema 12 `compliance_report` outputs.
 
 ## Scope
 
@@ -45,7 +45,7 @@ user_metadata:
 
 ## Output contract
 
-`compliance_report` conforming to `shared/compliance_report.schema.json` (Schema 10). Appended to `material_passport.compliance_history[]` by the orchestrator.
+`compliance_report` conforming to `shared/compliance_report.schema.json` (Schema 12). Appended to `material_passport.compliance_history[]` by the orchestrator.
 
 ## Dispatch logic
 
@@ -114,7 +114,7 @@ Self-check failures are not errors — they are the agent's guardrail. Document 
 
 ## Invocation protocol
 
-The orchestrator (or standalone skill) passes the input contract via the Agent tool with `model: sonnet` or higher (per user CLAUDE.md: never haiku). The agent returns the serialised compliance_report. The orchestrator validates against Schema 10 before appending to passport.
+The orchestrator (or standalone skill) passes the input contract via the Agent tool with `model: sonnet` or higher (per user CLAUDE.md: never haiku). The agent returns the serialised compliance_report. The orchestrator validates against Schema 12 before appending to passport.
 
 ## Related reading
 
