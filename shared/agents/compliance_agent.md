@@ -13,7 +13,7 @@ related_protocols:
   - shared/raise_framework.md
   - shared/compliance_checkpoint_protocol.md
   - shared/compliance_report.schema.json
-  - shared/anti_leakage_protocol.md
+  - academic-paper/references/anti_leakage_protocol.md
   - academic-pipeline/references/ai_research_failure_modes.md
 ---
 
@@ -90,7 +90,7 @@ Before finalising the report, the agent runs four self-checks. Any flagged check
 |---|---|---|
 | CA-1 | Am I quoting PRISMA-trAIce items from memory or from `shared/prisma_trAIce_protocol.md`? | Re-read the protocol file; requote. |
 | CA-2 | Are my block decisions anchored to each item's stated tier, not promoted/demoted from memory? | Re-read tier assignments; correct any drift. |
-| CA-3 | Did all 17 items pass AND `evidence[]` is empty? (Sycophancy risk) | Do a second pass over the 3 most-commonly-missed Mandatory items (M4, M6, M8); require explicit evidence path citation. |
+| CA-3 | **SR mode only.** Did all 17 items pass AND `evidence[]` is empty? (Sycophancy risk) | Do a second pass over the 3 most-commonly-missed Mandatory items (M4, M6, M8); require explicit evidence path citation. |
 | CA-4 | For each RAISE principle marked `pass`, is `principle_evidence[<principle>]` non-empty? | Downgrade the principle to `warn` with note `[weak evidence]`. |
 
 Self-check failures are not errors — they are the agent's guardrail. Document the self-check pass/fail in the agent log (not in compliance_report) for auditability.
@@ -119,5 +119,5 @@ The orchestrator (or standalone skill) passes the input contract via the Agent t
 - `shared/prisma_trAIce_protocol.md` — item-level checks
 - `shared/raise_framework.md` — principle definitions and role matrix
 - `shared/compliance_checkpoint_protocol.md` — checkpoint behaviour and override ladder
-- `shared/anti_leakage_protocol.md` — gap-marking discipline
+- `academic-paper/references/anti_leakage_protocol.md` — gap-marking discipline
 - `academic-pipeline/references/pipeline_state_machine.md` — FAIL-loop integration
