@@ -24,19 +24,7 @@ Verbatim snapshot of the 17-item PRISMA-trAIce checklist from the GitHub canonic
 | Recommended (R) | **Info**: logged in compliance_report, shown as dashboard bullet |
 | Optional (O) | **Info**: same as R |
 
-## Canonical gap-tag vocabulary
-
-> **Provisional location.** This vocabulary is shared between `compliance_agent` (which writes reports) and this per-item protocol (which generates `[MATERIAL GAP]` reasons). It belongs in `shared/compliance_checkpoint_protocol.md` once Task 7 lands; kept here provisionally so the fixtures in `examples/compliance/` already have a reference.
-
-Compliance reports and fixture templates use these canonical tags in `gaps[].reason`, `principle_evidence[]`, and narrative fields. They are lexical signals — `compliance_agent` (Task 8) and downstream readers pattern-match on them.
-
-| Tag | Where it appears | Meaning |
-|---|---|---|
-| `[MATERIAL GAP]` | `gaps[].reason`, `principle_evidence[]`, `evidence[]` | The item cannot be verified because the underlying material (passport field, manuscript section, supplementary file) is missing. Apply [Anti-Leakage Protocol](../academic-paper/references/anti_leakage_protocol.md) — do not hallucinate. |
-| `[WEAK EVIDENCE]` | `principle_evidence[]` | The item is nominally reported but the description is too vague for auditor use. Triggers CA-4 downgrade: a RAISE principle marked `pass` with `[WEAK EVIDENCE]` in its evidence should be downgraded to `warn`. |
-| `[GAP]` | `roles[].evidence_synthesists` narrative and similar role-level fields | Short form for a role-level gap carried forward from item-level fails. Permitted only in the 8-role matrix narrative; item-level reasons MUST use the long `[MATERIAL GAP]` form. |
-
-Casing is significant — uppercase square-bracketed. Lowercase or missing brackets are treated as plain prose and will not be recognised as gap signals.
+> **Gap-tag vocabulary.** Tags `[MATERIAL GAP]`, `[WEAK EVIDENCE]`, `[GAP]` used in this protocol's `reason` fields are defined in `shared/compliance_checkpoint_protocol.md §Canonical gap-tag vocabulary`.
 
 ## Stage assignment
 
