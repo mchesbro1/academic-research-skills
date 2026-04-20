@@ -15,6 +15,7 @@ class TestValidateComplianceFixtures(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
         self.assertIn("OK", result.stdout)
         self.assertNotIn("FAIL", result.stdout)
+        self.assertNotIn("no fixture", result.stderr.lower())
 
     def test_empty_dir_fails(self) -> None:
         with TemporaryDirectory() as tmp:

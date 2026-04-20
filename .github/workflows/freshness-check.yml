@@ -10,6 +10,10 @@ on:
       - "scripts/check_prisma_trAIce_freshness.py"
   workflow_dispatch:
 
+concurrency:
+  group: freshness-check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   freshness:
     runs-on: ubuntu-latest
