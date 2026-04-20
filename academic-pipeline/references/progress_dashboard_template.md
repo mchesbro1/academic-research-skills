@@ -25,7 +25,9 @@ Users can say "status" or "pipeline status" at any time to view:
 | Integrity Verification:                     |
 |   Pre-review:  PASS (0 issues)              |
 |   Final:       In progress...               |
-| compliance     | [pass/warn/block] | PRISMA-trAIce: N/17 • RAISE: 4/4 principles |
+| Compliance (v3.4.0):                        |
+|   PRISMA-trAIce: pass (17/17)               |
+|   RAISE principles: pass (4/4)              |
 +---------------------------------------------+
 | Review History:                             |
 |   Round 1: Major Revision (5 required)      |
