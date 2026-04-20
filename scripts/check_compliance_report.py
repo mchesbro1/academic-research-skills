@@ -24,7 +24,10 @@ def load_schema() -> dict:
 
 def validate(report: dict) -> list[str]:
     schema = load_schema()
-    validator = jsonschema.Draft202012Validator(schema)
+    validator = jsonschema.Draft202012Validator(
+        schema,
+        format_checker=jsonschema.Draft202012Validator.FORMAT_CHECKER,
+    )
     return [f"{list(e.absolute_path)}: {e.message}" for e in validator.iter_errors(report)]
 
 
@@ -32,18 +35,21 @@ def warn_suspicious(report: dict) -> list[str]:
     """Non-blocking soft warnings for semantic red flags."""
     warnings = []
 
-    # Sycophancy risk: all 17 items pass with no evidence citations.
+    # CA-3: sycophancy risk — all 17 items pass with no evidence citations.
     pt = report.get("prisma_trAIce")
     if isinstance(pt, dict):
         by_tier = pt.get("by_tier", {})
-        mand = by_tier.get("mandatory", {})
-        if mand.get("total") == mand.get("pass") and not report.get("evidence"):
+        all_pass = all(
+            isinstance(t, dict) and t.get("total") == t.get("pass")
+            for t in by_tier.values()
+        )
+        if all_pass and by_tier and not report.get("evidence"):
             warnings.append(
                 "WARNING: all 17 PRISMA-trAIce items pass but evidence[] is empty. "
                 "CA-3 self-check should trigger in the agent. Consider re-running."
             )
 
-    # RAISE pass with empty evidence array for that principle.
+    # CA-4: RAISE pass with empty evidence array for that principle.
     raise_obj = report.get("raise", {})
     for name, status in raise_obj.get("principles", {}).items():
         if status == "pass" and not raise_obj.get("principle_evidence", {}).get(name):
@@ -68,7 +74,12 @@ def main() -> int:
     errors = validate(report)
     if errors:
         for e in errors:
-            print(f"SCHEMA ERROR: {e}")
+            print(f"ERROR: {e}")
+        print(
+            f"\n{len(errors)} schema violation(s). "
+            "See shared/compliance_report.schema.json for field definitions.",
+            file=sys.stderr,
+        )
         return 1
 
     for w in warn_suspicious(report):

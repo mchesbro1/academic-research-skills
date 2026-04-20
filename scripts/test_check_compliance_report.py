@@ -12,6 +12,7 @@ SCHEMA = Path(__file__).resolve().parent.parent / "shared" / "compliance_report.
 
 
 def _valid_sr_report() -> dict:
+    """Returns a fresh fully-valid SR compliance report. Callers may mutate freely."""
     return {
         "mode": "systematic_review",
         "stage": "2.5",
@@ -59,6 +60,7 @@ def _valid_sr_report() -> dict:
 
 
 def _valid_primary_report() -> dict:
+    """Returns a fresh fully-valid primary-research compliance report. Callers may mutate freely."""
     return {
         "mode": "primary_research",
         "stage": "4.5",
@@ -94,79 +96,63 @@ def _write(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data), encoding="utf-8")
 
 
+def _run_with(report: dict) -> subprocess.CompletedProcess:
+    """Write report to a temp file and run the validator against it."""
+    with TemporaryDirectory() as tmp:
+        p = Path(tmp) / "r.json"
+        _write(p, report)
+        return _run(p)
+
+
 class TestComplianceReportValidator(unittest.TestCase):
     def test_valid_sr_report_passes(self) -> None:
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, _valid_sr_report())
-            result = _run(p)
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+        result = _run_with(_valid_sr_report())
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
 
     def test_valid_primary_report_passes(self) -> None:
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, _valid_primary_report())
-            result = _run(p)
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+        result = _run_with(_valid_primary_report())
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
 
     def test_missing_required_field_fails(self) -> None:
         report = _valid_sr_report()
         del report["overall_decision"]
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
-            self.assertIn("overall_decision", result.stdout + result.stderr)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("overall_decision", result.stdout + result.stderr)
 
     def test_invalid_mode_enum_fails(self) -> None:
         report = _valid_sr_report()
         report["mode"] = "random_mode"
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_invalid_stage_enum_fails(self) -> None:
         report = _valid_sr_report()
         report["stage"] = "3.5"
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_primary_with_populated_prisma_trAIce_fails(self) -> None:
         # Schema enforces: mode=primary_research implies prisma_trAIce is null.
         # This cross-field rule was added when hardening the schema per code review.
         report = _valid_primary_report()
         report["prisma_trAIce"] = _valid_sr_report()["prisma_trAIce"]
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_sr_with_null_prisma_trAIce_fails(self) -> None:
         # Cross-field rule: systematic_review requires prisma_trAIce object.
         report = _valid_sr_report()
         report["prisma_trAIce"] = None
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_raise_full_without_roles_fails(self) -> None:
         # Cross-field rule: raise.mode=full requires roles.
         report = _valid_sr_report()
         del report["raise"]["roles"]
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_invalid_scope_pattern_fails(self) -> None:
         # user_override.scope must match PRISMA-trAIce IDs or RAISE principles.
@@ -177,21 +163,15 @@ class TestComplianceReportValidator(unittest.TestCase):
             "rationale": "Test invalid scope",
             "scope": ["NOT_AN_ITEM"],
         }
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_extra_top_level_property_fails(self) -> None:
         # additionalProperties: false on top-level rejects typos.
         report = _valid_sr_report()
         report["bogus_extra"] = "x"
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_user_override_missing_rationale_fails(self) -> None:
         report = _valid_sr_report()
@@ -201,11 +181,8 @@ class TestComplianceReportValidator(unittest.TestCase):
             "rationale": "",
             "scope": ["M4"],
         }
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_user_override_empty_scope_fails(self) -> None:
         report = _valid_sr_report()
@@ -215,11 +192,8 @@ class TestComplianceReportValidator(unittest.TestCase):
             "rationale": "Insufficient time to backfill M4 details before submission deadline.",
             "scope": [],
         }
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 1)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
 
     def test_valid_override_with_real_ids_passes(self) -> None:
         # Positive: scope containing real PRISMA-trAIce IDs and RAISE principle names.
@@ -230,11 +204,77 @@ class TestComplianceReportValidator(unittest.TestCase):
             "rationale": "Material unavailable to backfill M4 before venue deadline.",
             "scope": ["M4", "transparency"],
         }
-        with TemporaryDirectory() as tmp:
-            p = Path(tmp) / "r.json"
-            _write(p, report)
-            result = _run(p)
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+
+    # --- Fix 6: 8 new tests ---
+
+    def test_invalid_generated_at_format_fails(self) -> None:
+        """I1: date-time format enforcement."""
+        report = _valid_sr_report()
+        report["generated_at"] = "NOT_A_DATE"
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
+
+    def test_invalid_override_timestamp_format_fails(self) -> None:
+        """I1: date-time format applies to user_override.timestamp too."""
+        report = _valid_sr_report()
+        report["user_override"] = {
+            "decision": True,
+            "timestamp": "not-a-timestamp",
+            "rationale": "test",
+            "scope": ["M4"],
+        }
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
+
+    def test_items_total_not_17_fails(self) -> None:
+        """Schema enforces items_total == 17 (const)."""
+        report = _valid_sr_report()
+        report["prisma_trAIce"]["items_total"] = 18
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
+
+    def test_invalid_decision_enum_fails(self) -> None:
+        """$defs.decision enum enforcement (block/warn/pass)."""
+        report = _valid_sr_report()
+        report["overall_decision"] = "maybe"
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
+
+    def test_invalid_principle_status_enum_fails(self) -> None:
+        """$defs.principle_status enum enforcement (pass/warn/fail)."""
+        report = _valid_sr_report()
+        report["raise"]["principles"]["human_oversight"] = "undecided"
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 1)
+
+    def test_ca3_all_17_pass_empty_evidence_warns(self) -> None:
+        """CA-3 fires when all 17 items pass AND evidence[] is empty. Exit 0; warning on stderr."""
+        report = _valid_sr_report()
+        report["evidence"] = []
+        # All tiers already all-pass in _valid_sr_report
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("CA-3", result.stderr)
+
+    def test_ca3_mandatory_only_pass_does_not_warn(self) -> None:
+        """CA-3 must NOT fire when only Mandatory is all-pass but HR/R/O have failures."""
+        report = _valid_sr_report()
+        report["prisma_trAIce"]["by_tier"]["highly_recommended"]["pass"] = 0
+        report["prisma_trAIce"]["by_tier"]["highly_recommended"]["fail"] = ["M7"]
+        report["evidence"] = []
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertNotIn("CA-3", result.stderr)
+
+    def test_ca4_principle_pass_no_evidence_warns(self) -> None:
+        """CA-4 fires when a RAISE principle is 'pass' but principle_evidence for it is empty."""
+        report = _valid_sr_report()
+        report["raise"]["principle_evidence"]["transparency"] = []
+        result = _run_with(report)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("CA-4", result.stderr)
 
 
 if __name__ == "__main__":
