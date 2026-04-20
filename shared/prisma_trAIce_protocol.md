@@ -11,24 +11,28 @@ citation: "Holst D, et al. Transparent Reporting of AI in Systematic Literature 
 
 Verbatim snapshot of the 17-item PRISMA-trAIce checklist from the GitHub canonical source (`cqh4046/PRISMA-trAIce`), dated 2025-12-10, with per-item ARS check procedures and tier-based behaviour.
 
+**Used by**: `compliance_agent` (Task 8), `scripts/check_prisma_trAIce_freshness.py` (Task 12).
+
 > ⚠️ **Upstream sync warning.** If `cqh4046/PRISMA-trAIce` updates, a freshness CI check emits an annotation but does not block merges. Maintainers must manually re-sync this file and bump `snapshot_date` + `upstream_version_commit`. See `scripts/check_prisma_trAIce_freshness.py`.
 
 ## Tier legend
 
 | Tier | Behaviour when item FAILs |
 |---|---|
-| Mandatory (M) | **Block**: pipeline halts; user must backfill, retreat a stage, or use the 3-round override ladder |
+| Mandatory (M) | **Block**: pipeline halts; user must backfill, retreat a stage, or use the 3-round override ladder (see `shared/compliance_checkpoint_protocol.md §override-ladder`) |
 | Highly Recommended (HR) | **Warn**: surfaced at checkpoint; user can skip |
 | Recommended (R) | **Info**: logged in compliance_report, shown as dashboard bullet |
 | Optional (O) | **Info**: same as R |
 
 ## Canonical gap-tag vocabulary
 
+> **Provisional location.** This vocabulary is shared between `compliance_agent` (which writes reports) and this per-item protocol (which generates `[MATERIAL GAP]` reasons). It belongs in `shared/compliance_checkpoint_protocol.md` once Task 7 lands; kept here provisionally so the fixtures in `examples/compliance/` already have a reference.
+
 Compliance reports and fixture templates use these canonical tags in `gaps[].reason`, `principle_evidence[]`, and narrative fields. They are lexical signals — `compliance_agent` (Task 8) and downstream readers pattern-match on them.
 
 | Tag | Where it appears | Meaning |
 |---|---|---|
-| `[MATERIAL GAP]` | `gaps[].reason`, `principle_evidence[]`, `evidence[]` | The item cannot be verified because the underlying material (passport field, manuscript section, supplementary file) is missing. Apply Anti-Leakage Protocol — do not hallucinate. |
+| `[MATERIAL GAP]` | `gaps[].reason`, `principle_evidence[]`, `evidence[]` | The item cannot be verified because the underlying material (passport field, manuscript section, supplementary file) is missing. Apply [Anti-Leakage Protocol](../academic-paper/references/anti_leakage_protocol.md) — do not hallucinate. |
 | `[WEAK EVIDENCE]` | `principle_evidence[]` | The item is nominally reported but the description is too vague for auditor use. Triggers CA-4 downgrade: a RAISE principle marked `pass` with `[WEAK EVIDENCE]` in its evidence should be downgraded to `warn`. |
 | `[GAP]` | `roles[].evidence_synthesists` narrative and similar role-level fields | Short form for a role-level gap carried forward from item-level fails. Permitted only in the 8-role matrix narrative; item-level reasons MUST use the long `[MATERIAL GAP]` form. |
 
@@ -147,11 +151,11 @@ Casing is significant — uppercase square-bracketed. Lowercase or missing brack
 
 ## Summary counts
 
-- Mandatory: 9 — M1, M2, M3, M4, M5, M6, M8, M9, R1, R2 (count: 10)
-
-> **Note on tier count discrepancy:** The upstream GitHub README summary states "Mandatory: 9". Reading the per-item tier annotations yields 10 items marked Mandatory (M1–M6, M8, M9, R1, R2). The extra is R2, which is listed as Mandatory in item-level markup but counted within the Results section Mandatory group (R1+R2). ARS treats **both** R1 and R2 as Mandatory. If upstream clarifies, update here.
+- Mandatory: 10 — M1, M2, M3, M4, M5, M6, M8, M9, R1, R2
 - Highly Recommended: 1 — M7
-- Recommended: 4 — I1, M10, D1, + 1 tier-ambiguous item resolved via upstream hierarchy (see note)
+- Recommended: 3 — I1, M10, D1
 - Optional: 3 — T1, A1, D2
 
-Total: 17 items, as stated upstream.
+Total: 17 items.
+
+> **ARS promotion note.** Upstream's README header summary says "Mandatory: 9". Per-item tier annotations in upstream (and mirrored here) mark **both R1 and R2 as Mandatory**, summing to 10. ARS treats the per-item annotation as authoritative, since the Results-stage items (R1: AI/human split in flow diagram; R2: AI performance metric reporting) are both operationally block-level for a compliance audit. If upstream clarifies the discrepancy, re-sync.

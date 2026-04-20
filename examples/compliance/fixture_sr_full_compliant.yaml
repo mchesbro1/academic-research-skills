@@ -10,16 +10,16 @@ prisma_trAIce:
   items_total: 17
   by_tier:
     mandatory:
-      total: 9
-      pass: 9
+      total: 10
+      pass: 10
       fail: []
     highly_recommended:
       total: 1
       pass: 1
       fail: []
     recommended:
-      total: 4
-      pass: 4
+      total: 3
+      pass: 3
       fail: []
     optional:
       total: 3
