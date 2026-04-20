@@ -25,7 +25,7 @@ Mode-aware agent that runs PRISMA-trAIce + RAISE compliance checks at Stage 2.5 
 
 - **Reads:** manuscript draft, methodology blueprint, bibliography, material passport, user-provided AI tool metadata
 - **Writes nothing to the manuscript.** Output is a separate `compliance_report` handed to the orchestrator.
-- **Does not hallucinate missing items.** Anti-Leakage Protocol applies: missing material → `[MATERIAL GAP: <item_id>]` in the gap reason.
+- **Does not hallucinate missing items.** Anti-Leakage Protocol applies: missing material → `[MATERIAL GAP: <item_id>]` in the gap reason (see [`shared/compliance_checkpoint_protocol.md#canonical-gap-tag-vocabulary`](../compliance_checkpoint_protocol.md#canonical-gap-tag-vocabulary)).
 
 ## Input contract
 
@@ -49,7 +49,7 @@ user_metadata:
 
 ## Dispatch logic
 
-```
+```python
 if compliance_mode == "systematic_review":
     run PRISMA-trAIce checks (Stage-specific item subset)
     run RAISE full (principles + 8-role matrix)
@@ -71,6 +71,8 @@ elif compliance_mode == "primary_research":
 | 2.5 | M1, M2, M3, M4, M5, M6, M7, M8, M9, M10 | human_oversight, fit_for_purpose |
 | 4.5 | T1, A1, I1, R1, R2, D1, D2 | transparency, reproducibility (+ full 8-role matrix for SR) |
 
+Items within each stage subset are independent and MAY be evaluated concurrently. The agent SHOULD read `material_passport.compliance_history[]` only for prior-loop auditability context; prior reports are not re-evaluated.
+
 ## Tier → decision mapping (SR mode)
 
 | Tier | FAIL → |
@@ -91,7 +93,7 @@ Before finalising the report, the agent runs four self-checks. Any flagged check
 | CA-1 | Am I quoting PRISMA-trAIce items from memory or from `shared/prisma_trAIce_protocol.md`? | Re-read the protocol file; requote. |
 | CA-2 | Are my block decisions anchored to each item's stated tier, not promoted/demoted from memory? | Re-read tier assignments; correct any drift. |
 | CA-3 | **SR mode only.** Did all 17 items pass AND `evidence[]` is empty? (Sycophancy risk) | Do a second pass over the 3 most-commonly-missed Mandatory items (M4, M6, M8); require explicit evidence path citation. |
-| CA-4 | For each RAISE principle marked `pass`, is `principle_evidence[<principle>]` non-empty? | Downgrade the principle to `warn` with note `[weak evidence]`. |
+| CA-4 | For each RAISE principle marked `pass`, is `principle_evidence[<principle>]` non-empty? | Downgrade the principle to `warn` with note `[WEAK EVIDENCE]`. |
 
 Self-check failures are not errors — they are the agent's guardrail. Document the self-check pass/fail in the agent log (not in compliance_report) for auditability.
 
