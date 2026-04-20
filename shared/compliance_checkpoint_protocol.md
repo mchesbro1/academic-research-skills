@@ -89,6 +89,8 @@ Triggered when user picks "acknowledge limitation" on a block.
 
 Round count is per-stage-per-pipeline-run, stored in `compliance_history[].user_override` entries.
 
+> **Enforcement boundary.** This ladder is enforced at **runtime by `compliance_agent`** using the `compliance_history[]` round counter, NOT by Schema 10. Schema 10 intentionally permits `user_override.rationale.minLength: 1` so that legacy passports and cross-session resume do not fail validation on historical entries. The round-counter increment and ≥100-char rationale check live in the agent's write-path, not in the JSON Schema. If you bypass the agent and hand-write a `user_override` entry into the passport, Schema 10 will accept any rationale length — but that entry will not have gone through the friction ladder and must be treated as unaudited.
+
 On any successful override, the agent generates `disclosure_addendum` text and the orchestrator **auto-injects** it into the manuscript's AI disclosure section. The addendum is non-removable — this is the concrete form of the `no detection evasion` iron rule in CONTRIBUTING.md.
 
 ### `disclosure_addendum` template
@@ -98,6 +100,15 @@ The authors acknowledge the following compliance limitations for this <evidence 
 - PRISMA-trAIce <item_id> (<item_title>) not fully reported. Rationale: <user text>.
 - RAISE principle <principle_name>: <partial|not met>. Rationale: <user text>.
 ```
+
+**Template fill rules** (compliance_agent uses these deterministically):
+
+- `<evidence synthesis|manuscript>`: pick `evidence synthesis` when `mode in {systematic_review, other_evidence_synthesis}`; pick `manuscript` when `mode == primary_research`.
+- `<partial|not met>`: pick `partial` when the principle's original status was `warn`; pick `not met` when it was `fail`.
+- `<item_id>`: the PRISMA-trAIce item ID as listed in `user_override.scope[]`.
+- `<item_title>`: look up the short title from `shared/prisma_trAIce_protocol.md` (e.g. `M4` → "Input data").
+- `<principle_name>`: one of `human_oversight`, `transparency`, `reproducibility`, `fit_for_purpose`.
+- `<user text>`: verbatim copy of `user_override.rationale`, truncated to first 500 chars if longer (the addendum keeps prose; the full rationale lives in the compliance_history).
 
 ## Fail loop integration
 
