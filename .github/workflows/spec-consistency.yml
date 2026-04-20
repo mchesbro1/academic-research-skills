@@ -33,3 +33,13 @@ jobs:
         env:
           PYTHONPATH: scripts
         run: python3 scripts/check_task_type.py
+
+      - name: Validate compliance_report fixtures against Schema 12
+        env:
+          PYTHONPATH: .
+        run: python3 scripts/validate_compliance_fixtures.py
+
+      - name: Run compliance validator unit tests
+        env:
+          PYTHONPATH: .
+        run: python3 -m unittest scripts.test_check_compliance_report scripts.test_validate_compliance_fixtures -v
