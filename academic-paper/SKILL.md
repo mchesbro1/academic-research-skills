@@ -138,7 +138,7 @@ Phase 7: FORMAT        -> [formatter]                  -> Final Output Package
 
 ---
 
-> **v3.4.0 compliance:** Before finalisation, `compliance_agent` runs RAISE principles-only check (warn-only; primary research is outside PRISMA-trAIce scope). Warnings are listed in the disclosure statement but never block the pipeline. See `shared/raise_framework.md §Scope disclaimer`.
+> **v3.4.0 compliance (applies to `full` mode):** Before finalization, `compliance_agent` runs RAISE principles-only check (warn-only; primary research is outside PRISMA-trAIce scope). Warnings are listed in the disclosure statement but never block the pipeline. See `shared/raise_framework.md §Scope disclaimer`.
 
 ## Operational Modes (10 Modes)
 
@@ -318,8 +318,8 @@ academic-paper + academic-paper-reviewer -> Peer review -> revision loop
 
 | Item | Content |
 |------|---------|
-| Skill Version | 3.0.2 |
-| Last Updated | 2026-04-15 |
+| Skill Version | 3.1.0 |
+| Last Updated | 2026-04-20 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | deep-research v1.0+ (upstream), academic-paper-reviewer v1.0+ (downstream) |
 

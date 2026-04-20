@@ -472,8 +472,8 @@ deep-research (systematic-review) + academic-paper -> PRISMA systematic review p
 
 | Item | Content |
 |------|---------|
-| Skill Version | 2.8.1 |
-| Last Updated | 2026-04-15 |
+| Skill Version | 2.9.0 |
+| Last Updated | 2026-04-20 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | academic-paper v1.0+ (downstream) |
 
