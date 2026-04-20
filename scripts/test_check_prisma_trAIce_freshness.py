@@ -1,5 +1,4 @@
 """Unit tests for check_prisma_trAIce_freshness.py."""
-import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -52,6 +51,17 @@ class TestFreshnessCheck(unittest.TestCase):
             _write_protocol(p, "not-a-date")
             result = run_script(SCRIPT, str(p))
             self.assertEqual(result.returncode, 1)
+
+    def test_malformed_yaml_fails_cleanly(self) -> None:
+        with TemporaryDirectory() as tmp:
+            p = Path(tmp) / "prisma_trAIce_protocol.md"
+            p.write_text(
+                '---\nsnapshot_date: "2026-03-01\nunclosed_quote: "yes\n---\n# body\n',
+                encoding="utf-8",
+            )
+            result = run_script(SCRIPT, str(p))
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("ERROR", result.stderr)
 
 
 if __name__ == "__main__":

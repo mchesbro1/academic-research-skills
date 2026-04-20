@@ -36,16 +36,16 @@
 完整 pipeline 設計為 human-in-the-loop，每個階段都需使用者確認。實務上一次完整執行會跨越數小時到數天，遠長於 Anthropic 的 prompt cache TTL（5 分鐘）。兩項結果：
 
 1. **階段間 cache miss 是常態。** 當 stage checkpoint 停留超過 5 分鐘，下一階段會以未快取狀態讀取 context。這是 human-paced pipeline 不可避免的成本。
-2. **跨 session 續跑依賴 Material Passport。** ARS 不在 Claude Code 內保留 session state；要在新 session 續跑，把 Material Passport YAML 貼回即可。orchestrator 讀取 `compliance_history[]` 與階段完成標記定位中斷點。
+2. **跨 session 續跑依賴 Material Passport。** ARS 本身不跨 session 保留 orchestrator 狀態。要在新 session 續跑，把 Material Passport YAML 貼回即可；orchestrator 讀取 `compliance_history[]` 與階段完成標記定位中斷點。
 
 ### v3.4.0 compliance agent 成本
 
 在 Stage 2.5 與 Stage 4.5 加上 mode-aware `compliance_agent` 會讓 SR 全 pipeline token 多出：
 
-| Skill / mode | Input token 增量 | Output token 增量 | 成本增量 |
+| Skill / 模式 | 輸入 Token | 輸出 Token | 估算費用 |
 |---|---|---|---|
-| `deep-research systematic-review`（僅 2.5）| ~5–8K | ~3–5K | ~$0.15 |
-| 全 pipeline SR（2.5 + 4.5）| ~10–15K | ~5–8K | ~$0.30 |
-| `academic-paper full`（pre-finalize）| ~3–5K | ~2–3K | ~$0.08 |
+| `deep-research systematic-review`（僅 2.5）| +~5–8K | +~3–5K | +~$0.15 |
+| 全 pipeline SR（2.5 + 4.5）| +~10–15K | +~5–8K | +~$0.30 |
+| `academic-paper full`（pre-finalize）| +~3–5K | +~2–3K | +~$0.08 |
 
-以上是在既有 per-skill 成本之上額外產生。Cross-model verification 成本（若啟用）維持不變。
+以上為既有 per-skill 成本之上的額外增量（與上表共用 15,000 字 / 60 篇引用基準，見上表下方 footnote）。跨模型驗證成本（若啟用）維持不變。

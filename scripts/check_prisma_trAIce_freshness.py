@@ -62,7 +62,7 @@ def main() -> int:
         text = args.path.read_text(encoding="utf-8")
         fm = extract_frontmatter(text)
         snapshot = parse_snapshot_date(fm)
-    except (FileNotFoundError, ValueError) as exc:
+    except (FileNotFoundError, ValueError, yaml.YAMLError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
@@ -71,11 +71,10 @@ def main() -> int:
         print(
             f"WARNING: prisma_trAIce_protocol.md snapshot is {age_days} days old "
             f"(threshold {STALE_THRESHOLD_DAYS}). Upstream may have updated — "
-            f"please review {fm.get('upstream_source', 'cqh4046/PRISMA-trAIce')} "
+            f"please review {fm.get('upstream_source', 'https://github.com/cqh4046/PRISMA-trAIce')} "
             f"and re-sync if needed. (STALE status surfaced; non-blocking.)",
             file=sys.stderr,
         )
-        # Non-blocking: exit 0 per E6 in spec
     else:
         print(f"OK: snapshot is {age_days} days old (current)")
     return 0
