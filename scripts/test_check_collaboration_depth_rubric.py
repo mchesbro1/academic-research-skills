@@ -1,4 +1,4 @@
-"""Unit tests for check_collaboration_depth_rubric.py (ARS v3.4)."""
+"""Unit tests for check_collaboration_depth_rubric.py (ARS v3.5)."""
 from __future__ import annotations
 
 import textwrap

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Collaboration Depth Observer artifacts (ARS v3.4).
+"""Validate the Collaboration Depth Observer artifacts (ARS v3.5).
 
 Usage: python scripts/check_collaboration_depth_rubric.py [--path REPO_ROOT]
 Exit codes: 0 all checks pass; 1 at least one check failed.

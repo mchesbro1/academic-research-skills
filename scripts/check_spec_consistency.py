@@ -152,7 +152,7 @@ def check_readme_sections() -> None:
         "### Deep Research (v2.8)",
         "### Academic Paper (v3.0)",
         "### Academic Paper Reviewer (v1.8)",
-        "### Academic Pipeline (v3.4)",
+        "### Academic Pipeline (v3.5)",
     ):
         if heading not in text:
             fail(f"{rel_path}: missing heading {heading!r}")
@@ -211,7 +211,7 @@ def check_readme_zh_sections() -> None:
         "### Deep Research (v2.8)",
         "### Academic Paper (v3.0)",
         "### Academic Paper Reviewer (v1.8)",
-        "### Academic Pipeline (v3.4)",
+        "### Academic Pipeline (v3.5)",
     ):
         if heading not in text:
             fail(f"{rel_path}: missing heading {heading!r}")
