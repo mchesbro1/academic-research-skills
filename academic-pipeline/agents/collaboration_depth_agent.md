@@ -1,5 +1,6 @@
 ---
 name: collaboration_depth_agent
+description: "Post-hoc observer scoring user-AI collaboration depth against the canonical rubric; advisory-only, never blocks pipeline progression"
 role: observer
 blocking: false
 measures: collaboration_depth
