@@ -74,7 +74,7 @@ I received reviewer comments, help me revise
 ### Trigger Exclusions
 
 - If the user only needs a single function (just search materials, just check citations), no pipeline is needed — directly trigger the corresponding skill
-- If the user is already using a specific mode of a skill, do not force them into the pipeline
+- If the user is already using a specific mode of a skill, respect that entry point; the pipeline is opt-in
 - The pipeline is optional, not mandatory
 
 ---
