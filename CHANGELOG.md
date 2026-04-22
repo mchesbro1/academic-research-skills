@@ -19,6 +19,22 @@ All notable changes to this project will be documented in this file.
 - Kept-as-debt: ~50 anti-hallucination references across `deep-research/`, `academic-paper/references/anti_leakage_protocol.md`, `academic-pipeline/references/ai_research_failure_modes.md`, `shared/agents/compliance_agent.md`, `shared/compliance_checkpoint_protocol.md` — load-bearing integrity architecture (Lu 2026 7-mode; S2 API Tier-0; `[MATERIAL GAP]` taxonomy). Not retired under the iron rule clause for silent-failure domains.
 - All 73 script-suite tests green after the rewrites (version_consistency, spec_consistency, collaboration_depth_rubric, prisma_trAIce_freshness, compliance_report, benchmark_report, data_access_level, repro_lock, task_type, validate_compliance_fixtures).
 
+## [3.5.1] — 2026-04-22
+
+### Added
+
+- **Opt-in Socratic reading-check probe.** When `ARS_SOCRATIC_READING_PROBE=1` is set, the Socratic Mentor fires a one-time honesty probe during goal-oriented sessions where the user has cited a specific paper. The probe asks the user to paraphrase one passage. Decline is logged without penalty. Outcome is recorded in the Research Plan Summary and flows into the Stage 6 AI Self-Reflection Report when the pipeline continues. Default OFF. Roadmap slot: v3.7.3. See `deep-research/agents/socratic_mentor_agent.md` §"Optional Reading Probe Layer".
+
+### Changed
+
+- `deep-research/SKILL.md`, `deep-research/references/socratic_mode_protocol.md`, `academic-pipeline/references/process_summary_protocol.md` — aligned text updates for the new probe section. No behaviour change when the env var is unset.
+
+### Version
+
+- Suite: 3.5.0 → 3.5.1 (patch; opt-in, default OFF, no breaking change)
+- `deep-research` skill: 2.9.0 → 2.9.1
+- `academic-pipeline` skill: 3.5.0 → 3.5.1 (tracks suite version per `check_version_consistency.py` invariant)
+
 ## [3.5.0] - 2026-04-21
 
 ### Added
