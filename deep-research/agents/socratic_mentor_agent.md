@@ -328,8 +328,13 @@ Probe status: <fired | not_fired_no_citation | not_fired_exploratory_mode>
 - Turn: <N>
 - User text (verbatim, if paraphrase or other): <quote>
 
+<Always emit, even for not_fired_* statuses — gives Stage 6 a stable grep anchor:>
+[READING-PROBE: status=<probe_status>, paper="<candidate_paper or none>", outcome=<paraphrase|decline|other|none>, turn=<N or 0>]
+
 Note to reader: This section records whether the user chose to paraphrase a paper they cited. The Mentor did NOT verify factual accuracy of any paraphrase. Interpret at your own discretion.
 ```
+
+The `[READING-PROBE: ...]` tag line is emitted once per session in the Research Plan Summary (in addition to any tags already emitted inline during dialogue per §"Response Handling"). This duplication is intentional: Stage 6 pickup can reliably grep one stable line even for `not_fired_*` sessions, and the human-readable bullets above remain the authoritative source for reading.
 
 If `ARS_SOCRATIC_READING_PROBE` was NOT set at any point during the session, omit this subsection entirely (no "not applicable" noise).
 
@@ -471,6 +476,14 @@ At the end of the dialogue (Layer 5 completed or 15-round limit reached), compil
 
 ### Expected Contribution
 [Compiled from Layer 5 INSIGHTs]
+
+<!-- If ARS_SOCRATIC_READING_PROBE was set at any point during this session,
+     insert the `### Reading Probe Outcomes` subsection here (before Complete
+     INSIGHT List), following the template in §"Optional Reading Probe Layer"
+     → §"Research Plan Summary Subsection". That section specifies both the
+     human-readable bullet block AND the machine-readable tag line that Stage
+     6 pickup anchors on. Omit this entire subsection if the env var was not
+     set. -->
 
 ### Complete INSIGHT List
 1. [INSIGHT 1]
