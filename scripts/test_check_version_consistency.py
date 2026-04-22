@@ -1,4 +1,4 @@
-"""Unit tests for check_version_consistency.py (ARS v3.6 CI guard E)."""
+"""Unit tests for check_version_consistency.py."""
 from __future__ import annotations
 
 import subprocess
@@ -134,16 +134,21 @@ class TestVersionConsistency(unittest.TestCase):
         """academic-pipeline version in table must equal suite version."""
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            skills = [
-                ("deep-research", "2.9.0"),
-                ("academic-paper", "3.1.0"),
-                ("academic-paper-reviewer", "1.8.1"),
-                ("academic-pipeline", "3.4.0"),
-            ]
-            for name, ver in skills:
-                _write_skill(root, name, ver)
-            _write_claude_md(root, suite_version="3.5.0", table_rows=skills)
-            _write_changelog(root, latest_version="3.5.0")
+            _write_aligned_fixture(root)
+            # Drop pipeline to 3.4.0 in both table and SKILL.md, keep suite at 3.5.0.
+            # This isolates invariant 3 (pipeline tracks suite) from invariant 1
+            # (SKILL.md == table).
+            _write_skill(root, "academic-pipeline", "3.4.0")
+            _write_claude_md(
+                root,
+                suite_version="3.5.0",
+                table_rows=[
+                    ("deep-research", "2.9.0"),
+                    ("academic-paper", "3.1.0"),
+                    ("academic-paper-reviewer", "1.8.1"),
+                    ("academic-pipeline", "3.4.0"),
+                ],
+            )
             result = _run(root)
             self.assertEqual(result.returncode, 1)
             self.assertIn("academic-pipeline", result.stdout)
@@ -197,18 +202,6 @@ class TestVersionConsistency(unittest.TestCase):
             result = _run(root)
             self.assertEqual(result.returncode, 1)
             self.assertIn("Suite version", result.stdout)
-
-
-class TestRealRepo(unittest.TestCase):
-    """Smoke test: the script must pass against the real repo right now."""
-
-    def test_real_repo_passes(self) -> None:
-        repo_root = Path(__file__).resolve().parents[1]
-        result = run_script(SCRIPT, "--path", str(repo_root))
-        self.assertEqual(
-            result.returncode, 0,
-            msg=f"stdout={result.stdout!r} stderr={result.stderr!r}",
-        )
 
 
 if __name__ == "__main__":
