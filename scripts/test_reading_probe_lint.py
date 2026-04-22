@@ -65,7 +65,6 @@ def _extract_probe_section(text: str) -> str:
 class ReadingProbeLintTests(unittest.TestCase):
     """Spec §5.1 — 7 file-content lints for the reading-check probe."""
 
-    # Test 1 — spec §5.1 item 1
     def test_mentor_file_has_probe_section(self) -> None:
         """Mentor file contains §'Optional Reading Probe Layer' with 6 subsections."""
         text = MENTOR_AGENT.read_text(encoding="utf-8")
@@ -76,7 +75,6 @@ class ReadingProbeLintTests(unittest.TestCase):
             self.assertIn(sub, text,
                           f"{MENTOR_AGENT} missing subsection {sub!r}")
 
-    # Test 2 — spec §5.1 item 2
     def test_env_var_name_consistent_across_repo(self) -> None:
         """ARS_SOCRATIC_READING_PROBE appears verbatim across agent/protocol/SKILL/READMEs.
 
@@ -92,19 +90,12 @@ class ReadingProbeLintTests(unittest.TestCase):
             text = f.read_text(encoding="utf-8")
             self.assertIn(expected, text,
                           f"{f.relative_to(REPO_ROOT)} missing env var {expected!r}")
-        # Defense: no case-drifted siblings should exist anywhere in the repo
-        for f in files:
-            text = f.read_text(encoding="utf-8")
-            # Matches e.g. ARS_SOCRATIC_READING_PROBE_FOO or typos like ARS_SOCRATIC_READINGPROBE
-            wrong_cases = re.findall(
-                r"\bARS_SOCRATIC[_A-Z]*\b", text
-            )
+            wrong_cases = re.findall(r"\bARS_SOCRATIC[_A-Z]*\b", text)
             for hit in wrong_cases:
                 self.assertEqual(hit, expected,
                                  f"{f.relative_to(REPO_ROOT)} has case-drifted "
                                  f"env var {hit!r}, expected {expected!r}")
 
-    # Test 3 — spec §5.1 item 3
     def test_probe_gated_by_goal_oriented(self) -> None:
         """Mentor probe section states goal-oriented-only activation."""
         text = MENTOR_AGENT.read_text(encoding="utf-8")
@@ -116,14 +107,12 @@ class ReadingProbeLintTests(unittest.TestCase):
                          r"goal[- ]oriented",
                          "probe section must state goal-oriented gating")
 
-    # Test 4 — spec §5.1 item 4
     def test_decline_is_zero_penalty(self) -> None:
         """Decline outcome is explicitly excluded from all 5 scoring channels."""
         text = MENTOR_AGENT.read_text(encoding="utf-8")
         probe_section = _extract_probe_section(text)
         self.assertTrue(probe_section,
                         f"{MENTOR_AGENT.name}: §'{PROBE_HEADING}' section not found")
-        # The 5 channels decline must not touch (spec §3.5 OUTCOME=decline)
         exclusions = [
             "Persistent-Agreement",
             "Conflict-Avoidance",
@@ -134,30 +123,25 @@ class ReadingProbeLintTests(unittest.TestCase):
         for chan in exclusions:
             self.assertIn(chan, probe_section,
                           f"probe section must mention {chan!r} in decline-zero-penalty clause")
-        # Positive: must contain "no penalty" or "not penalised"/"not penalized"
         self.assertRegex(probe_section,
                          r"(no penalty|not penali[sz]ed)",
                          "probe section must state decline is not penalised")
 
-    # Test 5 — spec §5.1 item 5
     def test_probe_tag_format(self) -> None:
         """[READING-PROBE:] tag format is defined in mentor and picked up identically in process_summary_protocol."""
         mentor_text = MENTOR_AGENT.read_text(encoding="utf-8")
         process_text = PIPELINE_PROCESS_SUMMARY.read_text(encoding="utf-8")
-        # The literal tag prefix
         tag_prefix = "[READING-PROBE:"
         self.assertIn(tag_prefix, mentor_text,
                       f"{MENTOR_AGENT.name} must define {tag_prefix!r} tag format")
         self.assertIn(tag_prefix, process_text,
                       f"{PIPELINE_PROCESS_SUMMARY.name} must reference {tag_prefix!r} for Stage 6 pickup")
-        # Consistency of the fields mentioned in both files
         for field in ["paper=", "outcome=", "turn="]:
             self.assertIn(field, mentor_text,
                           f"{MENTOR_AGENT.name} tag spec missing field {field!r}")
             self.assertIn(field, process_text,
                           f"{PIPELINE_PROCESS_SUMMARY.name} pickup rule missing field {field!r}")
 
-    # Test 6 — spec §5.1 item 6
     def test_no_probe_in_scoring_files(self) -> None:
         """Probe identifiers must not leak into scoring/rubric files; prevents probe becoming a gate."""
         # Candidate files where a probe-as-gate regression could land.
@@ -181,13 +165,11 @@ class ReadingProbeLintTests(unittest.TestCase):
             mentor_without_probe = mentor_text
 
         banned_identifiers = ["reading_probe", "READING-PROBE", "reading-probe"]
-        # Check mentor file sections OUTSIDE the probe section
         for ident in banned_identifiers:
             self.assertNotIn(
                 ident, mentor_without_probe,
                 f"{MENTOR_AGENT.name} has {ident!r} leaking OUTSIDE §'{PROBE_HEADING}'"
             )
-        # Check all scoring / rubric files
         for f in scoring_files:
             text = f.read_text(encoding="utf-8")
             for ident in banned_identifiers:
@@ -197,7 +179,6 @@ class ReadingProbeLintTests(unittest.TestCase):
                     f"probe must not appear in scoring/rubric files"
                 )
 
-    # Test 7 — spec §5.1 item 7
     def test_banned_praise_phrases(self) -> None:
         """Banned-phrases list contains the 8 exact quoted strings from spec §3.6; "check" absent."""
         text = MENTOR_AGENT.read_text(encoding="utf-8")
@@ -221,7 +202,6 @@ class ReadingProbeLintTests(unittest.TestCase):
         for phrase in expected_banned:
             self.assertIn(phrase, banned_section,
                           f"banned-phrases list missing {phrase!r}")
-        # Negative: "check" must NOT be in the banned list
         # (per spec §3.6 note — "check" has non-evaluative uses elsewhere in the section)
         self.assertNotRegex(
             banned_section,
