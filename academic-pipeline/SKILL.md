@@ -567,7 +567,7 @@ Stage 5: academic-paper (format-convert mode)
 | Item | Content |
 |------|---------|
 | Skill Version | 3.5.1 |
-| Last Updated | 2026-04-21 |
+| Last Updated | 2026-04-22 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | deep-research v2.0+, academic-paper v2.0+, academic-paper-reviewer v1.1+ |
 | Role | Full academic research workflow orchestrator |

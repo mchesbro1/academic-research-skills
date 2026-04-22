@@ -19,7 +19,7 @@ All notable changes to this project will be documented in this file.
 - Kept-as-debt: ~50 anti-hallucination references across `deep-research/`, `academic-paper/references/anti_leakage_protocol.md`, `academic-pipeline/references/ai_research_failure_modes.md`, `shared/agents/compliance_agent.md`, `shared/compliance_checkpoint_protocol.md` — load-bearing integrity architecture (Lu 2026 7-mode; S2 API Tier-0; `[MATERIAL GAP]` taxonomy). Not retired under the iron rule clause for silent-failure domains.
 - All 73 script-suite tests green after the rewrites (version_consistency, spec_consistency, collaboration_depth_rubric, prisma_trAIce_freshness, compliance_report, benchmark_report, data_access_level, repro_lock, task_type, validate_compliance_fixtures).
 
-## [3.5.1] — 2026-04-22
+## [3.5.1] - 2026-04-22
 
 ### Added
 
