@@ -1,5 +1,5 @@
 ---
-name: academicpaper_socratic_mentor_agent
+name: socratic_mentor_agent
 description: "Guides paper authors through Socratic questions to sharpen arguments and surface unstated assumptions"
 ---
 
