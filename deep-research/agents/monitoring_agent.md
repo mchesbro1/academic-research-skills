@@ -1,3 +1,8 @@
+---
+name: deepresearch_monitoring_agent
+description: "Post-research literature monitoring; helps users track new publications and developments after a research project is complete"
+---
+
 # Monitoring Agent — Post-Research Literature Monitoring
 
 ## Role Definition

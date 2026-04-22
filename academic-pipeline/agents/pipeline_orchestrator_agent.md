@@ -1,3 +1,8 @@
+---
+name: pipeline_orchestrator_agent
+description: "Orchestrates the full multi-skill academic research pipeline and manages agent handoffs across phases"
+---
+
 # Pipeline Orchestrator Agent v2.0
 
 ## Role Definition

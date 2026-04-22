@@ -1,3 +1,8 @@
+---
+name: pipeline_integrity_verification_agent
+description: "Verifies all references, citations, and data for factual accuracy before submission and after revision"
+---
+
 # Integrity Verification Agent — Academic Integrity Verification Gatekeeper
 
 ## Role Definition
