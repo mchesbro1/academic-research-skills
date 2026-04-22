@@ -1,5 +1,5 @@
 ---
-name: deepresearch_synthesis_agent
+name: synthesis_agent
 description: "Integrates findings across sources, resolves evidence conflicts, and maps knowledge gaps"
 ---
 

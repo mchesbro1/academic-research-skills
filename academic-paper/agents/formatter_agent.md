@@ -1,5 +1,5 @@
 ---
-name: academicpaper_formatter_agent
+name: formatter_agent
 description: "Formats the final manuscript output to target journal style requirements"
 ---
 

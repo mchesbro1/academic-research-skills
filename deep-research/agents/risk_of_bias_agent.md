@@ -1,5 +1,5 @@
 ---
-name: deepresearch_risk_of_bias_agent
+name: risk_of_bias_agent
 description: "Assesses risk of bias in included studies using RoB 2 (RCTs) and ROBINS-I (non-randomized studies)"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_editorial_synthesizer_agent
+name: editorial_synthesizer_agent
 description: "Synthesizes all reviewer reports into a unified editorial decision letter and revision roadmap"
 ---
 

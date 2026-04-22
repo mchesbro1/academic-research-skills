@@ -1,5 +1,5 @@
 ---
-name: deepresearch_source_verification_agent
+name: source_verification_agent
 description: "Grades evidence, detects predatory publications, and fact-checks claims entering the research pipeline"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: deepresearch_meta_analysis_agent
+name: meta_analysis_agent
 description: "Quantitative synthesis of included studies; computes effect sizes, assesses heterogeneity, and applies GRADE framework"
 ---
 

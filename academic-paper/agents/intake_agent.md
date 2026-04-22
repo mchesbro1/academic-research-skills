@@ -1,5 +1,5 @@
 ---
-name: academicpaper_intake_agent
+name: intake_agent
 description: "Conducts the paper configuration interview and produces the Paper Configuration Record for downstream agents"
 ---
 

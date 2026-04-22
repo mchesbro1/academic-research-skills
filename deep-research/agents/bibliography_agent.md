@@ -1,5 +1,5 @@
 ---
-name: deepresearch_bibliography_agent
+name: bibliography_agent
 description: "Systematic literature search and curation; identifies, annotates, and formats sources in APA 7.0"
 ---
 

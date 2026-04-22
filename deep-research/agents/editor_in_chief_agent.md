@@ -1,5 +1,5 @@
 ---
-name: deepresearch_editor_in_chief_agent
+name: editor_in_chief_agent
 description: "Q1 journal editorial review; delivers Accept/Reject verdict with actionable feedback on research reports"
 ---
 

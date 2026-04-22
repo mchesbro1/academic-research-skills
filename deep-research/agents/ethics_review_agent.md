@@ -1,5 +1,5 @@
 ---
-name: deepresearch_ethics_review_agent
+name: ethics_review_agent
 description: "Research ethics gate; ensures AI-assisted research meets attribution, disclosure, and integrity standards before delivery"
 ---
 

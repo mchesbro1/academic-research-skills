@@ -1,5 +1,5 @@
 ---
-name: academicpaper_draft_writer_agent
+name: draft_writer_agent
 description: "Writes the full paper draft section by section from the structured outline and Paper Configuration Record"
 ---
 

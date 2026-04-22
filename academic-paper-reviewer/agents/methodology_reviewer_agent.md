@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_methodology_reviewer_agent
+name: methodology_reviewer_agent
 description: "Peer Reviewer 1; assesses methodological soundness, research design validity, and statistical rigor"
 ---
 

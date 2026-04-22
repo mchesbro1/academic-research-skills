@@ -1,5 +1,5 @@
 ---
-name: academicpaper_structure_architect_agent
+name: structure_architect_agent
 description: "Designs the papers section architecture and detailed outline before drafting begins"
 ---
 

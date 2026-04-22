@@ -1,5 +1,5 @@
 ---
-name: academicpaper_citation_compliance_agent
+name: citation_compliance_agent
 description: "Verifies citations against the target journals format requirements and flags non-compliant entries"
 ---
 

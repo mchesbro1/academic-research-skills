@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_perspective_reviewer_agent
+name: perspective_reviewer_agent
 description: "Peer Reviewer 3; evaluates cross-disciplinary relevance, broader impact, and alternative interpretations"
 ---
 

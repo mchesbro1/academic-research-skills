@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_devils_advocate_reviewer_agent
+name: devils_advocate_reviewer_agent
 description: "Challenges core arguments and logical coherence as the devils advocate reviewer in the editorial panel"
 ---
 

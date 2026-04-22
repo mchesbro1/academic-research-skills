@@ -1,5 +1,5 @@
 ---
-name: academicpaper_revision_coach_agent
+name: revision_coach_agent
 description: "Parses reviewer comments and builds the structured revision plan for the author"
 ---
 

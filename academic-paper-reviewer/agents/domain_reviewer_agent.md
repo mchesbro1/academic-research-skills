@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_domain_reviewer_agent
+name: domain_reviewer_agent
 description: "Peer Reviewer 2; assesses domain expertise, substantive accuracy, and field-specific adequacy"
 ---
 

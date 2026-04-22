@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_field_analyst_agent
+name: field_analyst_agent
 description: "Identifies the papers field and dynamically configures the reviewer teams identities and expertise"
 ---
 

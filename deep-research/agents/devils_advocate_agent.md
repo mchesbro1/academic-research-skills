@@ -1,5 +1,5 @@
 ---
-name: deepresearch_devils_advocate_agent
+name: devils_advocate_agent
 description: "Challenges assumptions, tests logical chains, and stress-tests research arguments at mandatory checkpoints"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: deepresearch_research_question_agent
+name: research_question_agent
 description: "Transforms vague topics into precise, FINER-evaluated researchable questions through iterative refinement"
 ---
 

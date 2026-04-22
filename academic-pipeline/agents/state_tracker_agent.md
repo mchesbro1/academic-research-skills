@@ -1,5 +1,5 @@
 ---
-name: pipeline_state_tracker_agent
+name: state_tracker_agent
 description: "Tracks pipeline state and maintains the research session history across multi-phase workflows"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: academicpaper_abstract_bilingual_agent
+name: abstract_bilingual_agent
 description: "Writes and translates abstracts in English and the target language to journal format standards"
 ---
 

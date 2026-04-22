@@ -1,5 +1,5 @@
 ---
-name: academicpaper_literature_strategist_agent
+name: literature_strategist_agent
 description: "Designs the literature search strategy and manages source selection for the paper"
 ---
 

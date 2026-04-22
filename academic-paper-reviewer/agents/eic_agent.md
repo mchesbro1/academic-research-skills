@@ -1,5 +1,5 @@
 ---
-name: paperreviewer_eic_agent
+name: eic_agent
 description: "Editor-in-Chief; orchestrates the review panel and delivers the final editorial decision"
 ---
 
