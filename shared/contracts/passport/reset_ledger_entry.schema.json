@@ -36,9 +36,9 @@
           "description": "Stage number or name that just completed (e.g., '1', '2', '2.5', 'RESEARCH')."
         },
         "next": {
-          "type": "string",
+          "type": ["string", "null"],
           "minLength": 1,
-          "description": "Default next stage after resume. Advisory when pending_decision is set; the orchestrator must re-prompt the user and route by the matched option's next_stage before using next. When pending_decision is set and a terminating branch (option with next_stage: null) is in options[], set next to any non-terminating branch's next_stage as a placeholder value; it is overridden at resume time."
+          "description": "Default next stage after resume. When pending_decision is unset, this is the authoritative route. When pending_decision is set, this field is advisory: the matched option's next_stage takes precedence, and next MAY be null (including when all branches terminate). The orchestrator MUST NOT auto-advance using next when pending_decision is present."
         },
         "generated_at": {
           "type": "string",

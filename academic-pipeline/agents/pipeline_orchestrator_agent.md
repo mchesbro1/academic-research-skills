@@ -63,6 +63,29 @@ Determine the entry point from the user's first message. Use the following keywo
    ```
 
    The `[override: ...]` clause appears only when the user supplied `stage=` or `mode=` overrides; omit the bracket entirely otherwise.
+
+   When `pending_decision` is set on the boundary entry, replace `<next>` with `(pending user decision)` in the template above. The actual next stage is determined after the user picks a branch (step 8). After the user picks, print the resolved `next_stage` from the matched option as part of the decision-prompt flow.
+
+   Example rendering (no `pending_decision`, no override):
+   ```
+   ### Resume Acknowledged
+   - Hash: a3f2b7c9d0e1
+   - Source session: sess-42 (generated 2026-04-23T14:00:00Z)
+   - Recovered stage: 2
+   - Next stage: 2.5
+   ```
+
+   Example rendering (`pending_decision` set, resolved after user chose `revise`):
+   ```
+   ### Resume Acknowledged
+   - Hash: a3f2b7c9d0e1
+   - Source session: sess-42 (generated 2026-04-23T14:00:00Z)
+   - Recovered stage: 3
+   - Next stage: (pending user decision)
+
+   [after user picks `revise`]
+   - Resolved next stage: 4 (mode: revision)
+   ```
 7. Honor `verification_status`. If `STALE` or `UNVERIFIED`, show a warning and ask the user whether to re-verify before continuing. If `VERIFIED`, proceed without prompting.
 8. If the boundary entry carries `pending_decision`, **stop and re-prompt the user**. Display `pending_decision.question` and each option's `value`. Do NOT use `next` to auto-advance. After the user picks, look up the matching entry in `options[]` by `value`. Use that entry's `next_stage` and `next_mode` to determine actual routing. Record the chosen `value` as `chosen_branch` on the resume entry (step 9). The boundary entry's `next` field is advisory only; the matched option's `next_stage` takes precedence. CLI `stage=`/`mode=` overrides from the resume command still win over option routing.
 9. Append a `resume` entry to `reset_boundary[]` with `kind: resume`, `consumes_hash: <hash>`, fresh `generated_at` and `session_marker`, and (if applicable) `chosen_branch` and `user_override`. This marks the boundary as consumed for any downstream reader. Release the passport lock after this append is durable on disk.
