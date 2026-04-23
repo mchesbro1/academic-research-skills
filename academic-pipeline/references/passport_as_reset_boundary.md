@@ -24,16 +24,16 @@ When the orchestrator reaches a FULL checkpoint with the flag ON:
    - Entries are separated by a single `\x0a` (LF) byte. The first entry has no leading separator; the last entry has a trailing LF.
    - The new entry is serialized with `hash` set to the canonical placeholder `"000000000000"` and all other fields populated; concatenated AFTER every prior entry (each already carrying its own finalized `hash`).
    - SHA-256 the byte stream. Take the lowercase hex digest. Take the first 12 characters. That IS the new entry's `hash`. Overwrite the placeholder before appending to the ledger.
-   - **Iron rule (see §Iron rules 3 + 7):** never hash an entry that already contains a non-placeholder `hash` for itself; never reorder prior entries; never include `kind: resume` entries in a boundary hash computation.
+   - **Iron rule (see §Iron rules 2 + 7):** never hash an entry that already contains a non-placeholder `hash` for itself; never reorder prior entries; never include `kind: resume` entries in a boundary hash computation.
 3. **Emit reset tag.** In the checkpoint notification block, append a machine-stable line:
    ```
-   [PASSPORT-RESET: hash=<short>, stage=<stage_number>, next=<next_stage_number_or_name>]
+   [PASSPORT-RESET: hash=<hash>, stage=<completed>, next=<next>]
    ```
 4. **Emit human instruction.** In the same checkpoint notification, include a `### Resume Instruction` subsection with:
    - Passport file path (absolute or repo-relative)
    - The exact resume command the user pastes into a fresh session:
      ```
-     resume_from_passport=<short-hash>
+     resume_from_passport=<hash>
      ```
    - A one-line note that the next stage should be invoked in a fresh Claude Code session to realize the token-savings intent.
 5. **Halt after emission.** The orchestrator stops after emitting the reset boundary and awaits resume in a fresh session.
@@ -46,11 +46,11 @@ When the orchestrator reaches a FULL checkpoint with the flag ON:
 Invocation shape (prompt-layer, user-pasted or auto-dispatched in a new session):
 
 ```
-resume_from_passport=<short-hash> [stage=<stage_number_or_name>] [mode=<downstream_mode>]
+resume_from_passport=<hash> [stage=<stage_number_or_name>] [mode=<downstream_mode>]
 ```
 
 Required:
-- `resume_from_passport=<short-hash>` — must match the short-hash from a `[PASSPORT-RESET: ...]` tag emitted in a prior session. Orchestrator verifies hash against the passport ledger on disk; mismatch is a hard error.
+- `resume_from_passport=<hash>` — must match the 12-hex `hash` from a `[PASSPORT-RESET: ...]` tag emitted in a prior session. Orchestrator verifies the hash against the passport ledger on disk; mismatch is a hard error.
 
 Optional:
 - `stage=<stage_number_or_name>` — override the `next=` recorded in the reset tag. Useful when the user wants to re-run a stage rather than proceed. If omitted, the orchestrator uses `next=` from the reset tag.
@@ -85,7 +85,7 @@ A `boundary` entry with hash `H` is considered **awaiting resume** iff no `resum
 4. `systematic-review` with flag ON refuses in-session continuation across FULL checkpoints.
 5. Hash mismatch on resume is a hard error; orchestrator never proceeds on a guessed or coerced hash.
 6. MANDATORY checkpoints are not downgraded by reset; they co-occur.
-7. Hash is computed over the entry with the canonical placeholder `"000000000000"` in the `hash` field. Any other convention (exclude-field, variable-length placeholder, post-hoc mutation) breaks cross-implementation interoperability and is forbidden.
+7. Hash is computed over the entry with the canonical placeholder `"000000000000"` in the `hash` field, serialized per the byte rules in §"The reset boundary protocol" step 2. `kind: resume` entries are never included in a `boundary` hash computation — the hash covers only prior `boundary` entries plus the new boundary entry itself. Any other convention (exclude-field, variable-length placeholder, post-hoc mutation, including resume entries) breaks cross-implementation interoperability and is forbidden.
 8. A `boundary` entry is "consumed" only by appending a `resume` entry with matching `consumes_hash`. If a `boundary` entry has `pending_decision` set, the orchestrator MUST re-prompt the user on resume and MUST NOT auto-advance using `next`.
 
 ## Interaction with existing features

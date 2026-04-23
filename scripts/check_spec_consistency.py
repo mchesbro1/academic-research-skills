@@ -318,6 +318,17 @@ def check_reference_docs() -> None:
         "academic-pipeline/references/passport_as_reset_boundary.md",
         "## Iron rules",
     )
+    # Unified PASSPORT-RESET tag format across protocol doc + orchestrator emission + checkpoint template.
+    # Divergence here breaks cross-session machine-stable handoff.
+    tag_format = "[PASSPORT-RESET: hash=<hash>, stage=<completed>, next=<next>]"
+    expect_contains(
+        "academic-pipeline/references/passport_as_reset_boundary.md",
+        tag_format,
+    )
+    expect_contains(
+        "academic-pipeline/agents/pipeline_orchestrator_agent.md",
+        tag_format,
+    )
 
 
 def main() -> int:

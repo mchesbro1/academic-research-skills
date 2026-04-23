@@ -22,7 +22,6 @@ All notable changes to this project will be documented in this file.
 
 ### Notes
 - **Flag OFF is the default.** Pre-v3.6.3 behavior is preserved byte-for-byte when `ARS_PASSPORT_RESET` is unset or `=0`.
-- Two rounds of `/codex review` on the branch caught 3 contract-level bugs (self-referential hash, pending MANDATORY decisions, awaiting_resume derivation) + 5 cascade inconsistencies introduced by round-1 fixes — all resolved before ship.
 - Out of scope (deferred to v3.6.4): `examples/adapters/{folder_scan, zotero, obsidian}/` reference adapters and the `literature_corpus` entry shape on Schema 9.
 - No breaking changes. No existing mode behavior changes when the flag is OFF.
 
