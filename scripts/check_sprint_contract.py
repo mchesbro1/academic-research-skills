@@ -41,22 +41,22 @@ def check_structural_invariants(contract: dict) -> list[str]:
     errors: list[str] = []
 
     dims = contract.get("acceptance_dimensions", [])
-    ids = [d.get("id") for d in dims]
-    names = [d.get("name") for d in dims]
-    for dup_id in {x for x in ids if ids.count(x) > 1}:
+    ids = [d.get("id") for d in dims if d.get("id") is not None]
+    names = [d.get("name") for d in dims if d.get("name") is not None]
+    for dup_id in sorted({x for x in ids if ids.count(x) > 1}):
         errors.append(
             f"duplicate acceptance_dimensions id '{dup_id}'; "
             "downstream aggregation assumes unique ids"
         )
-    for dup_name in {x for x in names if names.count(x) > 1}:
+    for dup_name in sorted({x for x in names if names.count(x) > 1}):
         errors.append(
             f"duplicate acceptance_dimensions name '{dup_name}'; "
             "downstream lint assumes unique names"
         )
 
     conds = contract.get("failure_conditions", [])
-    cids = [c.get("condition_id") for c in conds]
-    for dup_cid in {x for x in cids if cids.count(x) > 1}:
+    cids = [c.get("condition_id") for c in conds if c.get("condition_id") is not None]
+    for dup_cid in sorted({x for x in cids if cids.count(x) > 1}):
         errors.append(
             f"duplicate failure_conditions condition_id '{dup_cid}'; "
             "precedence resolution assumes unique condition_ids"
