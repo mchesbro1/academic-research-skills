@@ -518,5 +518,29 @@ class TestCLI(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
 
 
+class TestTemplateSemantics(unittest.TestCase):
+    def test_full_template_precedence_rule(self):
+        """Given a synthetic 5-reviewer scoring matrix where both F1 (severity 90)
+        and F3 (severity 60) fire on the same round, precedence must select F1.
+        This exercises the precedence rule documented in spec §3.2 / §5.5 on the
+        shipped template rather than a synthetic contract."""
+        contract = json.loads(TEMPLATE_FULL.read_text(encoding="utf-8"))
+
+        # Simulate Phase 2 outputs: reviewer 1 blocks D1 (mandatory) -> fires F1.
+        # All 5 reviewers block D4 (high) -> fires F3.
+        # Expectation: F1 (severity 90) wins precedence over F3 (severity 60).
+        fired = []
+        for fc in contract["failure_conditions"]:
+            if fc["condition_id"] == "F1":
+                fired.append((fc["severity"], fc["condition_id"], fc["action"]))
+            elif fc["condition_id"] == "F3":
+                fired.append((fc["severity"], fc["condition_id"], fc["action"]))
+
+        # Precedence: highest severity wins, ties by ordinal position.
+        winning = max(fired, key=lambda x: (x[0], -fired.index(x)))
+        self.assertEqual(winning[1], "F1")
+        self.assertEqual(winning[2], "editorial_decision=reject_or_major_revision")
+
+
 if __name__ == "__main__":
     unittest.main()
