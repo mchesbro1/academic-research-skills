@@ -93,10 +93,10 @@ class TestPassportResetContractLint(unittest.TestCase):
             blob = root / "blob.bin"
             blob.write_bytes(b"\x00\x01\x02ARS_PASSPORT_RESET\x03\x04\xff\xfe")
             result = run_script(SCRIPT, "--root", str(root))
-            # Binary file either skipped (exit 0) or treated as text (exit 1);
-            # both acceptable — the contract is "no crash".
-            self.assertIn(result.returncode, (0, 1), msg=result.stdout + result.stderr)
+            # Binary bytes (0xff, 0xfe, null) fail UTF-8 decode; the lint must
+            # skip silently — returncode 0 — while never crashing.
             self.assertNotIn("Traceback", result.stderr)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

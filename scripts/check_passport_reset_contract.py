@@ -7,9 +7,10 @@ so a reader encountering the flag can trace it back to the authoritative spec at
 `academic-pipeline/references/passport_as_reset_boundary.md`.
 
 Exemptions:
-  - The protocol doc itself (path suffix
-    `academic-pipeline/references/passport_as_reset_boundary.md`) — it IS the
-    reference, no self-link required.
+  - The protocol doc itself — identified by filename + parent-dir match
+    (`references/passport_as_reset_boundary.md`). More robust than path-suffix
+    match against `--root`: works whether the lint is invoked from repo root
+    or from a sub-tree.
   - Binary / non-UTF-8 files — skipped silently to avoid false positives from
     embedded bytes that happen to spell the flag token.
 
@@ -24,7 +25,8 @@ from pathlib import Path
 
 FLAG_TOKEN = "ARS_PASSPORT_RESET"
 PROTOCOL_TOKEN = "passport_as_reset_boundary"
-PROTOCOL_PATH_SUFFIX = "academic-pipeline/references/passport_as_reset_boundary.md"
+PROTOCOL_FILENAME = "passport_as_reset_boundary.md"
+PROTOCOL_PARENT_DIRNAME = "references"
 
 # Directories we never scan: VCS, caches, build output, local tooling scratch.
 SKIP_DIRS = {
@@ -36,10 +38,6 @@ SKIP_DIRS = {
     "build",
     ".gstack",
 }
-
-# Extensions we always treat as text. Files outside this set still get scanned
-# if they decode cleanly as UTF-8.
-TEXT_EXTS = {".md", ".py", ".yml", ".yaml", ".json", ".txt", ".toml", ".cfg"}
 
 
 def _is_under_skip_dir(path: Path, root: Path) -> bool:
@@ -59,6 +57,11 @@ def _read_text_or_none(path: Path) -> str | None:
         return None
 
 
+def _is_protocol_doc(path: Path) -> bool:
+    """True if `path` IS the authoritative protocol reference doc."""
+    return path.name == PROTOCOL_FILENAME and path.parent.name == PROTOCOL_PARENT_DIRNAME
+
+
 def scan(root: Path) -> list[str]:
     """Walk `root` and return list of violation messages (empty if clean)."""
     violations: list[str] = []
@@ -68,24 +71,16 @@ def scan(root: Path) -> list[str]:
         if _is_under_skip_dir(path, root):
             continue
 
-        # Prefer fast-path for known text extensions; otherwise attempt UTF-8
-        # decode and let non-text files silently drop.
         content = _read_text_or_none(path)
-        if content is None:
-            continue
-        if path.suffix.lower() not in TEXT_EXTS and FLAG_TOKEN not in content:
-            # Non-whitelisted extension with no mention — nothing to check.
+        if content is None or FLAG_TOKEN not in content:
             continue
 
-        if FLAG_TOKEN not in content:
-            continue
-
-        rel = path.relative_to(root).as_posix()
-        if rel.endswith(PROTOCOL_PATH_SUFFIX):
+        if _is_protocol_doc(path):
             # Protocol doc is exempt — it IS the reference.
             continue
 
         if PROTOCOL_TOKEN not in content:
+            rel = path.relative_to(root).as_posix()
             violations.append(
                 f"{rel}: mentions {FLAG_TOKEN} but does not reference "
                 f"{PROTOCOL_TOKEN} (co-location required by ARS v3.6.3 contract)"
