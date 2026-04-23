@@ -285,5 +285,33 @@ class TestSchemaValidation(unittest.TestCase):
         )
 
 
+class TestStructuralInvariants(unittest.TestCase):
+    def test_structural_invariant_duplicate_dimension_id(self):
+        from scripts.check_sprint_contract import check_structural_invariants
+        c = _valid_reviewer_full_contract()
+        # force duplicate id
+        c["acceptance_dimensions"][1] = dict(c["acceptance_dimensions"][1], id="D1")
+        errors = check_structural_invariants(c)
+        self.assertTrue(any("duplicate" in e.lower() and "id" in e.lower() for e in errors))
+
+    def test_structural_invariant_duplicate_dimension_name(self):
+        from scripts.check_sprint_contract import check_structural_invariants
+        c = _valid_reviewer_full_contract()
+        c["acceptance_dimensions"][1] = dict(c["acceptance_dimensions"][1], name="methodology_rigor")
+        errors = check_structural_invariants(c)
+        self.assertTrue(any("duplicate" in e.lower() and "name" in e.lower() for e in errors))
+
+    def test_structural_invariant_duplicate_condition_id(self):
+        from scripts.check_sprint_contract import check_structural_invariants
+        c = _valid_reviewer_full_contract()
+        c["failure_conditions"][1] = dict(c["failure_conditions"][1], condition_id="F1")
+        errors = check_structural_invariants(c)
+        self.assertTrue(any("duplicate" in e.lower() and "condition_id" in e.lower() for e in errors))
+
+    def test_structural_invariant_clean_contract_passes(self):
+        from scripts.check_sprint_contract import check_structural_invariants
+        self.assertEqual(check_structural_invariants(_valid_reviewer_full_contract()), [])
+
+
 if __name__ == "__main__":
     unittest.main()

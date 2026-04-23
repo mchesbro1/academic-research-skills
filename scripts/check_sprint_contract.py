@@ -38,7 +38,31 @@ def check_structural_invariants(contract: dict) -> list[str]:
     per spec §4.1 item 2. Empty list means pass; only meaningful if
     validate() already returned [].
     """
-    return []
+    errors: list[str] = []
+
+    dims = contract.get("acceptance_dimensions", [])
+    ids = [d.get("id") for d in dims]
+    names = [d.get("name") for d in dims]
+    for dup_id in {x for x in ids if ids.count(x) > 1}:
+        errors.append(
+            f"duplicate acceptance_dimensions id '{dup_id}'; "
+            "downstream aggregation assumes unique ids"
+        )
+    for dup_name in {x for x in names if names.count(x) > 1}:
+        errors.append(
+            f"duplicate acceptance_dimensions name '{dup_name}'; "
+            "downstream lint assumes unique names"
+        )
+
+    conds = contract.get("failure_conditions", [])
+    cids = [c.get("condition_id") for c in conds]
+    for dup_cid in {x for x in cids if cids.count(x) > 1}:
+        errors.append(
+            f"duplicate failure_conditions condition_id '{dup_cid}'; "
+            "precedence resolution assumes unique condition_ids"
+        )
+
+    return errors
 
 
 def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str]:
