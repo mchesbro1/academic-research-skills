@@ -70,7 +70,17 @@
           "properties": {
             "required": {
               "type": "array",
-              "items": { "type": "string", "minLength": 1 }
+              "minItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "dimension_id",
+                  "what_to_look_for",
+                  "what_triggers_block",
+                  "what_triggers_warn"
+                ]
+              },
+              "$comment": "Codex P2-2: the four canonical Phase-1 fields are fixed by sprint_contract_protocol.md §4. minItems:4 + uniqueItems:true + enum-constrained items rejects empty lists, partial lists, and typoed entries (e.g. what_trigger_block) at CI time instead of letting them fail at runtime as Phase-1 lint."
             }
           }
         },
@@ -85,6 +95,15 @@
     "failure_conditions": {
       "type": "array",
       "minItems": 1,
+      "contains": {
+        "type": "object",
+        "properties": {
+          "condition_id": { "const": "F0" },
+          "action": { "const": "editorial_decision=accept" }
+        },
+        "required": ["condition_id", "action"]
+      },
+      "$comment": "Codex P2-1: every contract must include an F0 accept-grade condition. Without it the synthesizer can reach a 'no condition fired' state with no editorial_decision to emit, aborting the review round at runtime instead of failing CI. Pinning F0's action to editorial_decision=accept also prevents future templates from misusing the reserved id.",
       "items": {
         "type": "object",
         "additionalProperties": false,

@@ -182,6 +182,69 @@ class TestSchemaValidation(unittest.TestCase):
         errors = validate(c)
         self.assertTrue(any("condition_id" in e.lower() or "pattern" in e for e in errors))
 
+    def test_failure_conditions_must_contain_F0_accept_grade(self):
+        """Codex review P2-1: removing the F0 accept-grade condition must fail
+        schema validation. Without F0 the synthesizer protocol can reach a
+        "no condition fired" state where there is no editorial_decision to
+        emit, aborting the review round at runtime instead of at CI."""
+        from scripts.check_sprint_contract import validate
+        c = _valid_reviewer_full_contract()
+        c["failure_conditions"] = [
+            fc for fc in c["failure_conditions"] if fc["condition_id"] != "F0"
+        ]
+        errors = validate(c)
+        self.assertTrue(
+            any("contain" in e.lower() or "F0" in e or "accept" in e.lower() for e in errors),
+            f"expected contains-clause violation, got: {errors}",
+        )
+
+    def test_failure_conditions_F0_must_be_accept_action(self):
+        """Codex review P2-1: F0 with non-accept action must fail. F0 is the
+        accept-grade reservation per shipped templates §6.1 + §6.2; tying its
+        action to editorial_decision=accept at schema level prevents future
+        templates from misusing the reserved id."""
+        from scripts.check_sprint_contract import validate
+        c = _valid_reviewer_full_contract()
+        for fc in c["failure_conditions"]:
+            if fc["condition_id"] == "F0":
+                fc["action"] = "editorial_decision=reject"
+        errors = validate(c)
+        self.assertTrue(
+            any("F0" in e or "accept" in e.lower() or "contains" in e.lower() for e in errors),
+            f"expected F0/accept/contains in errors, got: {errors}",
+        )
+
+    def test_scoring_plan_required_must_contain_all_four_canonical_fields(self):
+        """Codex review P2-2: scoring_plan_schema.required must list the four
+        Phase-1 canonical fields. Empty list or partial list lets a contract
+        clear CI while making the Phase 1 hard gate vacuous."""
+        from scripts.check_sprint_contract import validate
+        c = _valid_reviewer_full_contract()
+        c["measurement_procedure"]["scoring_plan_schema"]["required"] = []
+        errors = validate(c)
+        self.assertTrue(
+            any("required" in e.lower() or "minItems" in e.lower() or "scoring_plan" in e for e in errors),
+            f"expected required/minItems/scoring_plan in errors, got: {errors}",
+        )
+
+    def test_scoring_plan_required_rejects_typo_field_names(self):
+        """Codex review P2-2: typoed entries (e.g. what_trigger_block instead
+        of what_triggers_block) must fail schema validation. Otherwise every
+        reviewer fails Phase 1 lint at runtime on nonexistent field names."""
+        from scripts.check_sprint_contract import validate
+        c = _valid_reviewer_full_contract()
+        c["measurement_procedure"]["scoring_plan_schema"]["required"] = [
+            "dimension_id",
+            "what_to_look_for",
+            "what_trigger_block",  # typo: missing 's'
+            "what_triggers_warn",
+        ]
+        errors = validate(c)
+        self.assertTrue(
+            any("enum" in e.lower() or "what_trigger_block" in e for e in errors),
+            f"expected enum/what_trigger_block in errors, got: {errors}",
+        )
+
     def test_failure_condition_id_pattern_rejects_leading_zero(self):
         """Audit-induced (Task 2 quality review I-1): leading-zero forms F00,
         F01, F02... must be rejected to keep ordinal tie-break (§3.2 severity
