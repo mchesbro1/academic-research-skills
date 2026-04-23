@@ -18,8 +18,13 @@ MANDATORY checkpoints (integrity Stage 2.5 / 4.5, review decisions, Stage 5 fina
 
 When the orchestrator reaches a FULL checkpoint with the flag ON:
 
-1. **Freeze state.** `state_tracker` stages the current stage's deliverables and prepares a new ledger entry — but does NOT yet write `hash` (append happens in Step 2 after hash is known).
-2. **Compute hash.** Serialize the prepared entry with `hash` set to the canonical placeholder `"000000000000"` (12 zeroes) and all other fields populated. Concatenate with every prior `reset_boundary[]` entry (each already carrying its own finalized `hash`). SHA-256 the resulting byte stream, lowercase hex, first 12 characters — this IS the `hash` for the new entry. Overwrite the placeholder with this value before appending to the ledger. **The placeholder rule is canonical**: two implementations must produce the same `hash` for the same input, so never hash an entry that already contains a non-placeholder `hash` for itself.
+1. **Freeze state.** `state_tracker` stages the current stage's deliverables and prepares a new `kind: boundary` ledger entry — but does NOT yet write `hash` (append happens in Step 2 after hash is known).
+2. **Compute hash.** Canonical byte serialization is normative; two implementations must produce the same bytes from the same ledger:
+   - Each entry is serialized as **JSON Canonical Form (RFC 8785 / JCS)**: UTF-8, no insignificant whitespace, keys sorted ASCII-ascending at every object level, numbers in JCS canonical form.
+   - Entries are separated by a single `\x0a` (LF) byte. The first entry has no leading separator; the last entry has a trailing LF.
+   - The new entry is serialized with `hash` set to the canonical placeholder `"000000000000"` and all other fields populated; concatenated AFTER every prior entry (each already carrying its own finalized `hash`).
+   - SHA-256 the byte stream. Take the lowercase hex digest. Take the first 12 characters. That IS the new entry's `hash`. Overwrite the placeholder before appending to the ledger.
+   - **Iron rule (see §Iron rules 3 + 7):** never hash an entry that already contains a non-placeholder `hash` for itself; never reorder prior entries; never include `kind: resume` entries in a boundary hash computation.
 3. **Emit reset tag.** In the checkpoint notification block, append a machine-stable line:
    ```
    [PASSPORT-RESET: hash=<short>, stage=<stage_number>, next=<next_stage_number_or_name>]
@@ -52,12 +57,12 @@ Optional:
 - `mode=<downstream_mode>` — override the mode of the next stage (e.g., swap `full` for `quick`). Orchestrator validates the override against Mode Advisor rules.
 
 Orchestrator obligations on resume:
-- Read the passport ledger entry matching the hash. Load artifacts by reference (paths or IDs recorded in the entry).
-- Do NOT ask the user to re-summarize prior stages; the passport is authoritative.
-- Honor the `verification_status` field. If `STALE`, display a warning and prompt the user to re-verify before continuing.
-- If `pending_decision` is set on the ledger entry, re-prompt the user for that decision BEFORE invoking any downstream stage. `next` is advisory in this case.
-- Emit a `### Resume Acknowledged` section at the start of the new session with: hash, source session ISO-8601 timestamp, recovered stage number, and next-stage plan.
-- Append a `resume_event` entry to `reset_boundary[]` recording that this ledger position has been consumed (see "Append-only ledger semantics" below). This prevents double-resume and lets downstream readers compute `awaiting_resume` state from the ledger alone.
+- Locate the target `kind: boundary` entry by matching `hash`. Hard error if no match, or if a later `kind: resume` entry already carries `consumes_hash == <hash>` (double-resume is forbidden).
+- Do NOT ask the user to re-summarize prior stages; the passport is authoritative. Load artifacts by reference (paths or IDs recorded in the entry).
+- Honor the `verification_status` field. If `STALE` or `UNVERIFIED`, display a warning and prompt the user to re-verify before continuing. If `VERIFIED`, proceed without prompting.
+- If `pending_decision` is set on the ledger entry, re-prompt the user for that decision BEFORE invoking any downstream stage. `next` is advisory in this case. The user's chosen option is recorded on the new `resume` entry's `chosen_branch` field. Note: a user-supplied `stage=<n>` override on the resume command does NOT satisfy `pending_decision` — the decision prompt always fires when `pending_decision` is present.
+- Emit a `### Resume Acknowledged` section at the start of the new session with: hash, source session `session_marker` + `generated_at`, recovered stage, and next-stage plan.
+- Append a new `kind: resume` entry to `reset_boundary[]` with `consumes_hash = <hash>`, fresh `generated_at` and `session_marker`, and (if applicable) `chosen_branch` + `user_override`. This is how resume leaves an append-only trace and lets downstream readers compute `awaiting_resume` from the ledger alone.
 
 ## Append-only ledger semantics
 

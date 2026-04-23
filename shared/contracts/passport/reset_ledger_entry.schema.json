@@ -81,8 +81,9 @@
             "options": {
               "type": "array",
               "minItems": 2,
+              "uniqueItems": true,
               "items": { "type": "string", "minLength": 1 },
-              "description": "Enumerated decision branches. Orchestrator must prompt the user to pick one before auto-advancing."
+              "description": "Enumerated decision branches. Must be unique — chosen_branch on the resume entry is a bare string, so duplicate labels would make the append-only audit trail ambiguous. Orchestrator must prompt the user to pick one before auto-advancing."
             }
           },
           "description": "Set when the boundary co-occurs with a MANDATORY user decision (Stage 3 rejection, Stage 5 finalization, etc.). When present, resume must re-prompt the user; 'next' is advisory."

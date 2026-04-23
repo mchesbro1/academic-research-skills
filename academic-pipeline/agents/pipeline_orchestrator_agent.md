@@ -167,7 +167,7 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 **Reset-boundary emission sequence (flag ON, FULL checkpoint):**
 
 1. `state_tracker` stages a new `kind: boundary` entry for `reset_boundary[]` (Schema 9). Entry matches `shared/contracts/passport/reset_ledger_entry.schema.json` `#/$defs/boundary`.
-2. Orchestrator computes `hash` — SHA-256 of the concatenated ledger (prior entries + the new entry with `hash` set to the canonical placeholder `"000000000000"`), first 12 lowercase hex characters. The placeholder rule is normative; see protocol doc §"The reset boundary protocol" step 2. Write the computed hash into the new entry, then append to the ledger.
+2. Orchestrator computes `hash` using the normative byte serialization defined in protocol doc §"The reset boundary protocol" step 2: JSON Canonical Form (RFC 8785) per entry, LF-separated, new entry appended with `hash` set to placeholder `"000000000000"`, SHA-256 first 12 lowercase hex. Write the computed hash back into the new entry, then append to the ledger. Follow the protocol doc exactly — any deviation breaks cross-session resume.
 3. If the checkpoint co-occurs with a MANDATORY user decision (e.g., Stage 3 review outcome, Stage 5 finalization format), set `pending_decision` on the new entry with the enumerated options. `next` is still populated as a best-guess default but must NOT be used to auto-advance — the orchestrator re-prompts the user on resume (see §Resume Mode obligations).
 4. In the checkpoint notification, orchestrator emits — as a distinct block below the Decision Dashboard but above the continue/pause prompt:
 
@@ -189,7 +189,7 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 
 1. Flag OFF produces byte-identical output to pre-v3.6.3 for every mode.
 2. Ledger append-only. Re-runs append new `kind: boundary` entries with bumped `version_label`; resume adds `kind: resume` entries; prior entries are never deleted, reordered, or mutated.
-3. Hash is computed over the entry with `hash` set to the canonical placeholder `"000000000000"`. Any other convention breaks cross-implementation interoperability.
+3. Hash is computed over the JCS-serialized, LF-separated ledger with `hash` set to placeholder `"000000000000"` on the new entry. Any deviation from the protocol doc's byte-serialization rules breaks cross-implementation interoperability.
 4. The `[PASSPORT-RESET: ...]` tag is the sole machine-stable handoff anchor. The `### Resume Instruction` subsection is for user ergonomics.
 5. Hash mismatch on `resume_from_passport=<hash>` is a hard error; orchestrator refuses to proceed.
 6. A `boundary` is consumed only by appending a `kind: resume` entry with matching `consumes_hash`. Double-resume (second resume of an already-consumed boundary) is a hard error.

@@ -301,7 +301,7 @@ Iron rules:
 - `systematic-review` under flag ON cannot transition `Stage N → Stage N+1` without a fresh-session resume. In-session continuation is refused.
 - Other modes under flag ON allow in-session continuation as a fallback, but the orchestrator must still load Stage N+1 input strictly from the passport (no replay of prior turns).
 - SLIM checkpoints never enter `awaiting_resume`.
-- MANDATORY checkpoints enter `awaiting_resume` when they are also FULL and flag is ON; the mandatory user-confirmation prompt is carried in the `### Resume Instruction` subsection emitted alongside the `[PASSPORT-RESET: ...]` tag.
-- If a `boundary` entry carries `pending_decision`, `next` is advisory only. The orchestrator MUST re-prompt the user for the decision before transitioning to any `Stage N+1`. The `resume` entry records the chosen branch via `chosen_branch`.
+- MANDATORY checkpoints enter `awaiting_resume` when they are also FULL and flag is ON. Integrity gates remain MANDATORY; the reset does not downgrade them. The `### Resume Instruction` subsection emitted alongside `[PASSPORT-RESET: ...]` carries the passport file path and resume command — it does NOT carry the user decision prompt. The decision prompt happens on resume, after the fresh session loads the passport (see next rule).
+- If a `boundary` entry carries `pending_decision`, `next` is advisory only. The user's branch choice happens AFTER `resume_from_passport=<hash>` in the fresh session, never in the reset checkpoint itself. The orchestrator re-prompts the user in the new session before transitioning to any `Stage N+1`. The `resume` entry records the chosen branch via `chosen_branch`.
 
 See [`passport_as_reset_boundary.md`](passport_as_reset_boundary.md) for the full protocol.
