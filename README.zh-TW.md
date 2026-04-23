@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.6.2-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.6.2)
+[![Version](https://img.shields.io/badge/version-v3.6.3-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.6.3)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -269,6 +269,15 @@ https://github.com/Imbad0202/academic-research-skills
 ---
 
 ## 更新紀錄
+
+### v3.6.3（2026-04-23）— 選用式 Passport 重置邊界
+
+- **Opt-in passport 重置邊界**（`ARS_PASSPORT_RESET=1`）。把每個 FULL checkpoint 提升為 context 重置邊界。新增 `resume_from_passport=<hash>` 模式，讓使用者在新的 Claude Code session 單憑 Material Passport ledger 就恢復 pipeline，不重播先前對話。`systematic-review` 模式 flag ON 時，每個 FULL checkpoint 一律強制重置；其他模式視重置為 flag 開啟後的強預設。Flag OFF 時 byte-for-byte 維持 pre-v3.6.3 行為。
+- Schema 9 新增 append-only `reset_boundary[]` ledger，兩種 entry kind（`kind: boundary` + `kind: resume`）。Hash 用 JSON Canonical Form + SHA-256，搭配 canonical placeholder 處理自我參照問題。選填 `pending_decision` 負責 MANDATORY 分支決策。
+- 新 CI lint `scripts/check_passport_reset_contract.py`：任何提到 flag 的檔案都必須指向權威協議文件。
+- 協議文件：`academic-pipeline/references/passport_as_reset_boundary.md`。
+- `docs/PERFORMANCE.zh-TW.md` 更新 long-running session 指引。
+- 無破壞性變更，flag 預設關閉。
 
 ### v3.6.2（2026-04-23）— 審稿 Sprint Contract Hard Gate
 

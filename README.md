@@ -1,6 +1,6 @@
 # Academic Research Skills for Claude Code
 
-[![Version](https://img.shields.io/badge/version-v3.6.2-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.6.2)
+[![Version](https://img.shields.io/badge/version-v3.6.3-blue)](https://github.com/Imbad0202/academic-research-skills/releases/tag/v3.6.3)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Sponsor](https://img.shields.io/badge/sponsor-Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/crucify020v)
 
@@ -288,6 +288,15 @@ https://github.com/Imbad0202/academic-research-skills
 ---
 
 ## Changelog
+
+### v3.6.3 (2026-04-23) — Opt-in Passport Reset Boundary
+
+- **Opt-in passport reset boundary** (`ARS_PASSPORT_RESET=1`). Promotes every FULL checkpoint to a context-reset boundary. New `resume_from_passport=<hash>` mode lets users resume in a fresh Claude Code session from the Material Passport ledger alone. `systematic-review` mode with the flag ON makes reset mandatory at every FULL checkpoint; other modes treat reset as the flag-gated default. Flag OFF preserves pre-v3.6.3 behavior byte-for-byte.
+- Schema 9 gains an append-only `reset_boundary[]` ledger with two entry kinds (`kind: boundary` + `kind: resume`). Hash uses JSON Canonical Form + SHA-256 with canonical placeholder for self-reference safety. Optional `pending_decision` handles MANDATORY branch choices.
+- New `scripts/check_passport_reset_contract.py` CI lint: every mention of the flag must co-locate a pointer to the authoritative protocol doc.
+- Protocol doc: `academic-pipeline/references/passport_as_reset_boundary.md`.
+- `docs/PERFORMANCE.md` updated with long-running-session guidance.
+- No breaking changes. Flag default is OFF.
 
 ### v3.6.2 (2026-04-23) — Reviewer Sprint Contract Hard Gate
 
