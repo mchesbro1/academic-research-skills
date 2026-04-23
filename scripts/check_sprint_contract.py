@@ -65,6 +65,8 @@ def check_structural_invariants(contract: dict) -> list[str]:
     return errors
 
 
+# v? accepts both 'v3.6.2' and '3.6.2' on --ars-version CLI input;
+# baseline_version is schema-bound to require the v prefix.
 _VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
 
 

@@ -328,6 +328,15 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertFalse(any("SC-1" in w or "baseline" in w.lower() for w in warnings))
 
+    def test_sc1_lag_exactly_2_does_not_warn(self):
+        """Boundary: spec §4.3 line 340 says SC-1 fires when baseline 'lags
+        current ARS by more than 2 minor versions'. lag == 2 must NOT warn."""
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["baseline_version"] = "v3.4.0"  # lag = 2 vs v3.6.2
+        warnings = warn_suspicious(c, "v3.6.2")
+        self.assertFalse(any("SC-1" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
