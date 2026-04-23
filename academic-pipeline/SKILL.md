@@ -52,9 +52,11 @@ I received reviewer comments, help me revise
 ```
 resume_from_passport=<hash>
 ```
---> Loads the Material Passport (Schema 9), locates the `kind: boundary` entry matching `<hash>`, confirms it has no later `kind: resume` entry consuming it, re-prompts if `pending_decision` is set, then continues the pipeline from the recorded stage using the passport as sole input. No prior session turns are replayed.
-- **Gate**: opt-in; requires `ARS_PASSPORT_RESET=1` was set in the emitting session. The `resume_from_passport=<hash>` invocation itself is always accepted — you can resume a passport emitted in any earlier session as long as the hash matches.
-- **Stage**: any — resumes at whatever stage the boundary entry recorded as `next`.
+--> Loads the Material Passport (Schema 9), locates the `kind: boundary` entry matching `<hash>`, confirms it has no later `kind: resume` entry consuming it, re-prompts if `pending_decision` is set, then continues the pipeline from the recorded stage using the passport as sole input. The pipeline continues with no dependency on prior session context.
+- **Gate (emit)**: `ARS_PASSPORT_RESET=1` must be set in the emitting session. Without the flag, no `kind: boundary` entries are written and there is nothing to resume from.
+- **Gate (resume)**: No flag required. Any session can invoke `resume_from_passport=<hash>` against a passport that carries a valid boundary entry matching the hash.
+- **Intent**: Invoke in a *fresh* Claude Code session. Resuming within the same session that emitted the boundary provides no token savings and may drop still-live in-session context.
+- **Stage**: Any — resumes at whatever stage the boundary entry recorded as `next`.
 - **Reference**: [`references/passport_as_reset_boundary.md`](references/passport_as_reset_boundary.md) — see §"`resume_from_passport` mode contract".
 
 **Execution flow:**
