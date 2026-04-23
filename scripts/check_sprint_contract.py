@@ -134,6 +134,19 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
                     f"references {tok} which is not in acceptance_dimensions"
                 )
 
+    # SC-5 measurement_procedure.reviewer_must_output_before_paper missing required outputs.
+    # Schema enforces minItems:2 but cannot constrain which specific strings are present;
+    # SC-5 covers that semantic gap. mp hoisted here for SC-9 (Task 11) reuse.
+    mp = contract.get("measurement_procedure", {})
+    outputs = mp.get("reviewer_must_output_before_paper", [])
+    required_outputs = {"contract_paraphrase", "scoring_plan"}
+    missing = required_outputs - set(outputs)
+    if missing:
+        warnings.append(
+            f"SC-5 WARNING: hard-gate protocol requires both 'contract_paraphrase' "
+            f"and 'scoring_plan' in reviewer_must_output_before_paper; missing: {sorted(missing)}"
+        )
+
     return warnings
 
 

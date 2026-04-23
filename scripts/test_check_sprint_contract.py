@@ -387,6 +387,13 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertTrue(any("SC-4" in w and "D9" in w for w in warnings))
 
+    def test_sc5_measurement_procedure_missing_required_outputs_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["measurement_procedure"]["reviewer_must_output_before_paper"] = ["contract_paraphrase"]
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-5" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
