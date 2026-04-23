@@ -40,7 +40,7 @@ Determine the entry point from the user's first message. Use the following keywo
 - Cannot jump directly to Stage 3 (unless user can provide a previous integrity verification report)
 - When user enters mid-pipeline, check for Material Passport — see "Mid-Entry Material Passport Check" below
 
-### Resume Mode: `resume_from_passport`
+#### Resume Mode: `resume_from_passport`
 
 **Trigger:** user input starts with or contains `resume_from_passport=<12-hex>`.
 
@@ -137,7 +137,7 @@ consecutive_continue_count: integer (reset to 0 when user chooses any action oth
 
 **IRON RULE**: the user's response handling above considers only the checkpoint's metrics, deliverables, and integrity results. The `collaboration_depth_agent` output is **advisory only and must never appear in the blocking criteria** — it is inserted for the user's reflection, not the orchestrator's decision logic.
 
-### Passport Reset Boundary (v3.6.3+, opt-in)
+#### Passport Reset Boundary (v3.6.3+, opt-in)
 
 **Flag:** `ARS_PASSPORT_RESET=1`. When unset or `=0`, all behavior below is skipped and pre-v3.6.3 continuation semantics apply exactly.
 
