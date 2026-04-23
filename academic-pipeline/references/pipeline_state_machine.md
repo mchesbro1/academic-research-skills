@@ -278,3 +278,28 @@ Unresolved issues -> Acknowledged Limitations.
 | 4 reviewers | 5 reviewers (+Devil's Advocate) |
 | Can skip any stage | Stage 2.5 and 4.5 cannot be skipped |
 | No mandatory checkpoints | Every stage requires a checkpoint |
+
+## Reset-boundary transitions (v3.6.3, flag-gated)
+
+When `ARS_PASSPORT_RESET=1`, every FULL checkpoint carries an implicit state transition to a terminal `awaiting_resume` state. The next stage only starts when a new session posts `resume_from_passport=<hash>`.
+
+Transition semantics:
+
+```
+Stage N [working]
+  -> FULL checkpoint
+    -> [flag OFF]  Stage N+1 [working]           (pre-v3.6.3 continuation)
+    -> [flag ON]   awaiting_resume
+         -> resume_from_passport=<hash>
+              -> Stage N+1 [working]              (fresh session, passport-loaded)
+```
+
+Iron rules:
+
+- `awaiting_resume` is not persisted in `state_tracker` state the way stage indices are; it is an emergent attribute of the passport ledger (the last `reset_boundary[]` entry with no consuming resume).
+- `systematic-review` under flag ON cannot transition `Stage N → Stage N+1` without a fresh-session resume. In-session continuation is refused.
+- Other modes under flag ON allow in-session continuation as a fallback, but the orchestrator must still load Stage N+1 input strictly from the passport (no replay of prior turns).
+- SLIM checkpoints never enter `awaiting_resume`.
+- MANDATORY checkpoints enter `awaiting_resume` when they are also FULL and flag is ON; the mandatory user-confirmation prompt is carried in the `### Resume Instruction` subsection emitted alongside the `[PASSPORT-RESET: ...]` tag.
+
+See [`passport_as_reset_boundary.md`](passport_as_reset_boundary.md) for the full protocol.
