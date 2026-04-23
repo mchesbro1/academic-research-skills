@@ -405,6 +405,16 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertFalse(any("SC-6" in w for w in warnings))
 
+    def test_sc7_conflicting_failure_condition_actions_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["failure_conditions"][0]["severity"] = 80
+        c["failure_conditions"][0]["action"] = "editorial_decision=reject"
+        c["failure_conditions"][2]["severity"] = 80
+        c["failure_conditions"][2]["action"] = "editorial_decision=major_revision"
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-7" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()

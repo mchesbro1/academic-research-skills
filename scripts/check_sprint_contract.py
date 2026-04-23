@@ -12,6 +12,7 @@ import argparse
 import json
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 import jsonschema
@@ -146,6 +147,22 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
             f"SC-5 WARNING: hard-gate protocol requires both 'contract_paraphrase' "
             f"and 'scoring_plan' in reviewer_must_output_before_paper; missing: {sorted(missing)}"
         )
+
+    # SC-7 conflicting failure-condition actions at same severity.
+    # Skip entries with missing severity — schema validation catches those upstream.
+    by_sev: dict[int, list[tuple[str, str]]] = defaultdict(list)
+    for fc in contract.get("failure_conditions", []):
+        sev = fc.get("severity")
+        if sev is not None:
+            by_sev[sev].append((fc.get("condition_id"), fc.get("action")))
+    for sev, pairs in by_sev.items():
+        actions = {a for _, a in pairs}
+        if len(pairs) > 1 and len(actions) > 1:
+            ids = ", ".join(p[0] for p in pairs)
+            warnings.append(
+                f"SC-7 WARNING: {ids} share severity={sev} but map to different actions; "
+                "precedence tie-breaking falls back to ordinal position"
+            )
 
     return warnings
 
