@@ -75,7 +75,7 @@ def check_claude_md() -> None:
     rel_path = ".claude/CLAUDE.md"
     expect_contains(rel_path, "integrity check (Stage 2.5)")
     expect_contains(rel_path, "final integrity check (Stage 4.5)")
-    expect_contains(rel_path, "**Suite version**: 3.5.1")
+    expect_contains(rel_path, "**Suite version**: 3.6.2")
     for forbidden in (
         "6th independent reviewer",
         "Peer review gains 6th independent reviewer",
@@ -136,8 +136,9 @@ def check_readme_sections() -> None:
     rel_path = "README.md"
     text = read(rel_path)
 
-    expect_contains(rel_path, "version-v3.5.1-blue")
-    expect_contains(rel_path, "releases/tag/v3.5.1")
+    expect_contains(rel_path, "version-v3.6.2-blue")
+    expect_contains(rel_path, "releases/tag/v3.6.2")
+    expect_contains(rel_path, "### v3.6.2 (2026-04-23)")
     expect_contains(rel_path, "### v3.5.1 (2026-04-22)")
     expect_contains(rel_path, "### v3.5.0 (2026-04-21)")
     expect_contains(rel_path, "### v3.4.0 (2026-04-20)")
@@ -153,7 +154,7 @@ def check_readme_sections() -> None:
         "### Deep Research (v2.8)",
         "### Academic Paper (v3.0)",
         "### Academic Paper Reviewer (v1.8)",
-        "### Academic Pipeline (v3.5)",
+        "### Academic Pipeline (v3.6)",
     ):
         if heading not in text:
             fail(f"{rel_path}: missing heading {heading!r}")
@@ -196,8 +197,9 @@ def check_readme_zh_sections() -> None:
     rel_path = "README.zh-TW.md"
     text = read(rel_path)
 
-    expect_contains(rel_path, "version-v3.5.1-blue")
-    expect_contains(rel_path, "releases/tag/v3.5.1")
+    expect_contains(rel_path, "version-v3.6.2-blue")
+    expect_contains(rel_path, "releases/tag/v3.6.2")
+    expect_contains(rel_path, "### v3.6.2（2026-04-23）")
     expect_contains(rel_path, "### v3.5.1（2026-04-22）")
     expect_contains(rel_path, "### v3.5.0（2026-04-21）")
     expect_contains(rel_path, "### v3.4.0（2026-04-20）")
@@ -213,7 +215,7 @@ def check_readme_zh_sections() -> None:
         "### Deep Research (v2.8)",
         "### Academic Paper (v3.0)",
         "### Academic Paper Reviewer (v1.8)",
-        "### Academic Pipeline (v3.5)",
+        "### Academic Pipeline (v3.6)",
     ):
         if heading not in text:
             fail(f"{rel_path}: missing heading {heading!r}")
