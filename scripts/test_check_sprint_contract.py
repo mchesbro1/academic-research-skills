@@ -374,6 +374,19 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(_valid_reviewer_full_contract(), None)
         self.assertFalse(any("SC-3" in w for w in warnings))
 
+    def test_sc4_orphan_dimension_reference_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["failure_conditions"].append({
+            "condition_id": "F9",
+            "severity": 50,
+            "cross_reviewer_quantifier": "any",
+            "expression": "D9 scores 'block'",  # D9 not in acceptance_dimensions
+            "action": "editorial_decision=major_revision",
+        })
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-4" in w and "D9" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()

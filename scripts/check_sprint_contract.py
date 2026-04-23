@@ -69,6 +69,9 @@ def check_structural_invariants(contract: dict) -> list[str]:
 # baseline_version is schema-bound to require the v prefix.
 _VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
 
+# Module-level alongside _VERSION_RE; reused by SC-10 (Task 12).
+_DIM_REF_RE = re.compile(r"\bD\d+\b")
+
 
 def _parse_version(v: str | None) -> tuple[int, int, int] | None:
     if not v:
@@ -118,6 +121,18 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
             f"SC-3 WARNING: 0 of {len(dims)} acceptance dimensions are mandatory; "
             "failure_conditions referencing 'mandatory' will be vacuous"
         )
+
+    # SC-4 orphan dimension reference in failure_conditions[].expression.
+    # Intentionally loose: does not parse expression semantics, just tokenises D\d+.
+    dim_ids = {d.get("id") for d in dims if d.get("id") is not None}
+    for fc in contract.get("failure_conditions", []):
+        expr = fc.get("expression", "")
+        for tok in _DIM_REF_RE.findall(expr):
+            if tok not in dim_ids:
+                warnings.append(
+                    f"SC-4 WARNING: failure condition {fc.get('condition_id')} "
+                    f"references {tok} which is not in acceptance_dimensions"
+                )
 
     return warnings
 
