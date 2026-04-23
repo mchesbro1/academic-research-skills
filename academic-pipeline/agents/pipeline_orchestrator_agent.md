@@ -50,9 +50,19 @@ Determine the entry point from the user's first message. Use the following keywo
 1. Parse `<hash>` from user input. Validate `^[0-9a-f]{12}$`.
 2. Locate passport file: prefer explicit path in user input; else look in `./passports/` or `./material_passport*.yaml` relative to CWD; else ask the user for the path.
 3. Load `reset_boundary[]`; find entry with matching `hash`. No match → hard error: "Passport hash `<hash>` not found in `<path>`. Cannot resume."
-4. Emit `### Resume Acknowledged` section with: hash, source `session_marker`, source `generated_at`, recovered `stage`, next-stage plan (from `next` field or user-override).
+4. Emit `### Resume Acknowledged` section using this exact template (mirror of the Resume Instruction emission):
+
+   ```
+   ### Resume Acknowledged
+   - Hash: <hash>
+   - Source session: <session_marker> (generated <generated_at>)
+   - Recovered stage: <stage>
+   - Next stage: <next> [override: stage=<user-stage>, mode=<user-mode>]
+   ```
+
+   All fields come from the matched `reset_boundary[]` ledger entry (Schema 9). The `[override: ...]` clause appears only when the user supplied `stage=` or `mode=` overrides; omit the bracket entirely otherwise.
 5. Invoke the next stage with the passport as the sole input. Do NOT ask the user to re-summarize prior stages.
-6. Honor `verification_status`. If `STALE`, show a warning and ask the user whether to re-verify before continuing.
+6. Honor `verification_status`. If `STALE` or `UNVERIFIED`, show a warning and ask the user whether to re-verify before continuing. If `VERIFIED`, proceed without prompting.
 7. Respect user overrides: `stage=<n>` overrides `next`; `mode=<m>` overrides the default mode for the next stage (validated against Mode Advisor rules).
 
 ### 2. Mode Recommendation
@@ -158,14 +168,16 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 3. In the checkpoint notification, orchestrator emits — as a distinct block below the Decision Dashboard but above the continue/pause prompt:
 
    ```
-   [PASSPORT-RESET: hash=<short>, stage=<completed>, next=<next>]
+   [PASSPORT-RESET: hash=<hash>, stage=<completed>, next=<next>]
 
    ### Resume Instruction
    - Passport file: <path>
    - To continue, start a fresh Claude Code session and invoke:
-     resume_from_passport=<short>
+     resume_from_passport=<hash>
    - Continuing in-session defeats the token-savings intent of `ARS_PASSPORT_RESET=1`.
    ```
+
+   `<hash>` is 12 lowercase hex characters per `reset_ledger_entry.schema.json` — the schema is authoritative for the format.
 
 4. Orchestrator halts after emission. For `systematic-review` mode, orchestrator refuses any in-session `continue` and repeats the Resume Instruction. For other modes, an in-session `continue` is honored once but the orchestrator uses ONLY the passport ledger as input to the next stage (no replay of prior turns).
 
@@ -231,12 +243,12 @@ For FULL checkpoints, the orchestrator must collect from state_tracker:
 **Reset-boundary tag (emitted only when `ARS_PASSPORT_RESET=1`):**
 
 ```
-[PASSPORT-RESET: hash=<12-hex>, stage=<completed>, next=<next>]
+[PASSPORT-RESET: hash=<hash>, stage=<completed>, next=<next>]
 
 ### Resume Instruction
 - Passport file: <absolute or repo-relative path>
 - To continue, start a fresh Claude Code session and invoke:
-  resume_from_passport=<12-hex>
+  resume_from_passport=<hash>
 - Continuing in-session defeats the token-savings intent of `ARS_PASSPORT_RESET=1`.
 ```
 
