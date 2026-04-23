@@ -394,6 +394,17 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertTrue(any("SC-5" in w for w in warnings))
 
+    def test_sc6_placeholder_unreachable_on_schema_valid_contract(self):
+        """SC-6 was retained in spec as dead-path defense-in-depth — can never
+        fire on a schema-valid contract because additionalProperties=false on
+        agent_amendments blocks the only condition it checks. Assert that
+        warn_suspicious does not emit SC-6 on any schema-valid input."""
+        from scripts.check_sprint_contract import warn_suspicious, validate
+        c = _valid_reviewer_full_contract()
+        self.assertEqual(validate(c), [])  # schema-valid precondition
+        warnings = warn_suspicious(c, None)
+        self.assertFalse(any("SC-6" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
