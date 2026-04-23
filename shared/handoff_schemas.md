@@ -501,6 +501,7 @@ score_trajectory: {
 | `upstream_dependencies` | list[string] | Version labels of artifacts this one depends on |
 | `repro_lock` | object \| null | configuration lockfile for artifact reproducibility. See [`artifact_reproducibility_pattern.md`](artifact_reproducibility_pattern.md). `null` = honest opt-out. Required from v3.3.5+ — omitted key fails lint. |
 | `compliance_history` | list[object] | Append-only audit trail of `compliance_report` entries (Schema 12). Added v3.4.0+. See [Schema 12](#schema-12--compliance-report-v340) and [`shared/compliance_report.schema.json`](compliance_report.schema.json). |
+| `reset_boundary` | list[object] | Append-only ledger of reset-boundary entries (one per FULL checkpoint when `ARS_PASSPORT_RESET=1`). Added v3.6.3+. Entry shape: [`shared/contracts/passport/reset_ledger_entry.schema.json`](contracts/passport/reset_ledger_entry.schema.json). See [`academic-pipeline/references/passport_as_reset_boundary.md`](../academic-pipeline/references/passport_as_reset_boundary.md). |
 
 ### Example
 
@@ -516,6 +517,27 @@ score_trajectory: {
 - Content Hash: a3f2b7c9...
 - Upstream Dependencies: [research_v1, bibliography_v1, synthesis_v1]
 ```
+
+### Reset Boundary Extension (v3.6.3)
+
+When `ARS_PASSPORT_RESET=1`, Schema 9 gains an append-only `reset_boundary[]` ledger:
+
+```yaml
+reset_boundary:
+  - hash: a3f2b7c9d0e1
+    stage: "2"
+    next: "2.5"
+    generated_at: 2026-04-23T14:00:00Z
+    session_marker: sess-20260423-1a2b
+    version_label: paper_draft_v1
+    mode: full
+    verification_status: VERIFIED
+  # append-only; never overwrite, never reorder
+```
+
+Consumers (`resume_from_passport` mode) match the short-hash from a user-pasted resume command against the `hash` field of an entry in this list. Mismatch is a hard error.
+
+See [`academic-pipeline/references/passport_as_reset_boundary.md`](../academic-pipeline/references/passport_as_reset_boundary.md) for the full protocol.
 
 ---
 
