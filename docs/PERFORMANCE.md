@@ -49,3 +49,30 @@ Adding the mode-aware `compliance_agent` to Stage 2.5 and Stage 4.5 increases fu
 | `academic-paper full` (pre-finalize) | +~3–5K | +~2–3K | +~$0.08 |
 
 These are on top of the existing per-skill costs in the table above (same 15,000-word / 60-reference basis; see footnote on line 23). Cross-model verification costs (if enabled) are unchanged.
+
+### v3.6.3 Passport reset boundary (opt-in)
+
+When `ARS_PASSPORT_RESET=1` is set, every FULL checkpoint becomes a context-reset boundary. The intended workflow is:
+
+1. Run a stage to FULL checkpoint in session A.
+2. Copy the `[PASSPORT-RESET: hash=<hash>, stage=<completed>, next=<next>]` tag from the checkpoint notification.
+3. Start a fresh Claude Code session (session B) and paste `resume_from_passport=<hash>`.
+4. Session B loads only the passport ledger — no replay of session A's turns. The orchestrator locates the matching `kind: boundary` entry, appends a `kind: resume` entry to consume it, and continues from the recorded next stage.
+
+**When reset beats continuation:**
+
+- Long pipelines where session A has accumulated >100K input tokens of context that the next stage does not actually need.
+- `systematic-review` mode runs where stage independence is cleanly defined by the Material Passport.
+- Any case where you hit the 5-minute prompt-cache TTL mid-pipeline; a reset lets the next stage start fresh instead of paying a cache miss on a bloated context.
+
+**When continuation still wins:**
+
+- Short pipelines (< 30K input tokens end-to-end).
+- Stages with implicit in-session state that the passport does not capture (e.g., a Socratic dialogue branch the user wants to keep warm).
+- When the flag is OFF, continuation is the unchanged pre-v3.6.3 default.
+
+**Passport file location convention:**
+
+By default, the orchestrator looks for the passport file in `./passports/` or matching `./material_passport*.yaml` relative to the current working directory. Users can override by passing an explicit path on the resume command or by pointing the orchestrator to a custom location in their project's `CLAUDE.md`. The convention is a default, not a hard requirement — passport files can live anywhere the user chooses, as long as the orchestrator can find them on resume.
+
+**Empirical token savings:** measurement pending a real `systematic-review` run with instrumentation. This section will be updated with observed token deltas once available; until then, no numeric claim is made. See [`../academic-pipeline/references/passport_as_reset_boundary.md`](../academic-pipeline/references/passport_as_reset_boundary.md) for the full protocol.
