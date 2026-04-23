@@ -28,6 +28,7 @@ Determine the entry point from the user's first message. Use the following keywo
 | Revise, reviewer feedback, reviewer comments | Stage 4 (REVISE) |
 | Format, LaTeX, DOCX, PDF, convert | Stage 5 (FINALIZE) |
 | Full workflow, end-to-end, pipeline, complete process | Stage 1 (start from beginning) |
+| `resume_from_passport=<hash>` (any continuation phrasing) | Resume Mode (see §"Resume Mode: `resume_from_passport`" below) |
 
 **Material detection logic:**
 - User mentions "I already have..." "I've written..." "This is my..." --> detect existing materials
@@ -38,6 +39,21 @@ Determine the entry point from the user's first message. Use the following keywo
 - User brings a paper and requests "review" -> go to Stage 2.5 (INTEGRITY) first, then Stage 3 (REVIEW) after passing
 - Cannot jump directly to Stage 3 (unless user can provide a previous integrity verification report)
 - When user enters mid-pipeline, check for Material Passport — see "Mid-Entry Material Passport Check" below
+
+### Resume Mode: `resume_from_passport`
+
+**Trigger:** user input starts with or contains `resume_from_passport=<12-hex>`.
+
+**Contract:** full spec in [`../references/passport_as_reset_boundary.md`](../references/passport_as_reset_boundary.md) §"`resume_from_passport` mode contract".
+
+**Orchestrator obligations:**
+1. Parse `<hash>` from user input. Validate `^[0-9a-f]{12}$`.
+2. Locate passport file: prefer explicit path in user input; else look in `./passports/` or `./material_passport*.yaml` relative to CWD; else ask the user for the path.
+3. Load `reset_boundary[]`; find entry with matching `hash`. No match → hard error: "Passport hash `<hash>` not found in `<path>`. Cannot resume."
+4. Emit `### Resume Acknowledged` section with: hash, source `session_marker`, source `generated_at`, recovered `stage`, next-stage plan (from `next` field or user-override).
+5. Invoke the next stage with the passport as the sole input. Do NOT ask the user to re-summarize prior stages.
+6. Honor `verification_status`. If `STALE`, show a warning and ask the user whether to re-verify before continuing.
+7. Respect user overrides: `stage=<n>` overrides `next`; `mode=<m>` overrides the default mode for the next stage (validated against Mode Advisor rules).
 
 ### 2. Mode Recommendation
 
@@ -121,6 +137,49 @@ consecutive_continue_count: integer (reset to 0 when user chooses any action oth
 
 **IRON RULE**: the user's response handling above considers only the checkpoint's metrics, deliverables, and integrity results. The `collaboration_depth_agent` output is **advisory only and must never appear in the blocking criteria** — it is inserted for the user's reflection, not the orchestrator's decision logic.
 
+### Passport Reset Boundary (v3.6.3+, opt-in)
+
+**Flag:** `ARS_PASSPORT_RESET=1`. When unset or `=0`, all behavior below is skipped and pre-v3.6.3 continuation semantics apply exactly.
+
+**Applicability:**
+
+| Flag state | Mode | Behavior at FULL checkpoint |
+|------------|------|-----------------------------|
+| unset / `=0` | any | Continuation (pre-v3.6.3 default) — no reset tag |
+| `=1` | `systematic-review` | **Mandatory reset**; orchestrator refuses in-session continuation |
+| `=1` | any other mode | **Strong-default reset**; user `continue` may override for the next stage only |
+
+SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when applicable (reset does not downgrade mandatory).
+
+**Reset-boundary emission sequence (flag ON, FULL checkpoint):**
+
+1. `state_tracker` appends a new `reset_boundary[]` entry to the Material Passport (Schema 9). Entry matches `shared/contracts/passport/reset_ledger_entry.schema.json`.
+2. Orchestrator computes `hash` = SHA-256 of concatenated ledger entries through this checkpoint, first 12 hex characters.
+3. In the checkpoint notification, orchestrator emits — as a distinct block below the Decision Dashboard but above the continue/pause prompt:
+
+   ```
+   [PASSPORT-RESET: hash=<short>, stage=<completed>, next=<next>]
+
+   ### Resume Instruction
+   - Passport file: <path>
+   - To continue, start a fresh Claude Code session and invoke:
+     resume_from_passport=<short>
+   - Continuing in-session defeats the token-savings intent of `ARS_PASSPORT_RESET=1`.
+   ```
+
+4. Orchestrator halts after emission. For `systematic-review` mode, orchestrator refuses any in-session `continue` and repeats the Resume Instruction. For other modes, an in-session `continue` is honored once but the orchestrator uses ONLY the passport ledger as input to the next stage (no replay of prior turns).
+
+**Iron rules (reset boundary):**
+
+1. Flag OFF produces byte-identical output to pre-v3.6.3 for every mode.
+2. Ledger append-only. Re-runs of a stage append new entries with bumped `version_label`; prior entries are never deleted, reordered, or mutated.
+3. The `[PASSPORT-RESET: ...]` tag is the sole machine-stable handoff anchor. The `### Resume Instruction` subsection is for user ergonomics.
+4. Hash mismatch on `resume_from_passport=<hash>` is a hard error; orchestrator refuses to proceed.
+5. MANDATORY checkpoints (Stage 2.5 / 4.5, review decisions, Stage 5) remain MANDATORY even when reset co-occurs. Integrity gates are never diluted.
+6. `collaboration_depth_agent` observer fires on FULL checkpoints as before; its output is included in the checkpoint notification regardless of reset state. Observer state does NOT cross reset boundaries.
+
+Full protocol: [`../references/passport_as_reset_boundary.md`](../references/passport_as_reset_boundary.md).
+
 #### FULL Checkpoint Template (with Decision Dashboard)
 
 ```
@@ -168,6 +227,20 @@ For FULL checkpoints, the orchestrator must collect from state_tracker:
 | Integrity scores | Integrity report | Stages 2.5, 4.5 |
 | Review decision + item counts | Review report | Stages 3, 3' |
 | Revision completion ratio | Response to Reviewers | Stages 4, 4' |
+
+**Reset-boundary tag (emitted only when `ARS_PASSPORT_RESET=1`):**
+
+```
+[PASSPORT-RESET: hash=<12-hex>, stage=<completed>, next=<next>]
+
+### Resume Instruction
+- Passport file: <absolute or repo-relative path>
+- To continue, start a fresh Claude Code session and invoke:
+  resume_from_passport=<12-hex>
+- Continuing in-session defeats the token-savings intent of `ARS_PASSPORT_RESET=1`.
+```
+
+See [`../references/passport_as_reset_boundary.md`](../references/passport_as_reset_boundary.md) §"Reset-boundary emission sequence".
 
 #### SLIM Checkpoint Template
 
