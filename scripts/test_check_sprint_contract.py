@@ -1,15 +1,18 @@
 """Unit tests for check_sprint_contract.py (Schema 13 validator)."""
 from __future__ import annotations
 
-import json
-import subprocess
+import json  # noqa: F401  # used by Group C CLI tests (Task 14)
+import subprocess  # noqa: F401  # used by Group C CLI tests (Task 14)
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory  # noqa: F401  # used by Group C CLI tests (Task 14)
 
-from scripts._test_helpers import run_script
+from scripts._test_helpers import run_script  # noqa: F401  # used by Group C CLI tests (Task 14)
 
 SCRIPT = Path(__file__).resolve().parent / "check_sprint_contract.py"
+# SCHEMA / TEMPLATE_FULL / TEMPLATE_METHOD reserved for Tasks 14-17
+# (CLI tests + shipped-template assertions); kept module-level so later tasks
+# don't have to reshuffle imports.
 SCHEMA = Path(__file__).resolve().parent.parent / "shared" / "sprint_contract.schema.json"
 TEMPLATE_FULL = (
     Path(__file__).resolve().parent.parent / "shared" / "contracts" / "reviewer" / "full.json"

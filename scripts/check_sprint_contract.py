@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import re  # noqa: F401  # used by SC-1 (Task 5) and SC-4 (Task 7)
+import re  # noqa: F401  # used by warn_suspicious() — keep, do not remove
 import sys
 from pathlib import Path
 
@@ -34,20 +34,16 @@ def validate(contract: dict) -> list[str]:
 
 
 def check_structural_invariants(contract: dict) -> list[str]:
-    """Return list of hard structural-invariant errors. Empty means pass.
-    Only meaningful if validate() already returned [].
-
-    Stub. Filled by Task 4 (uniqueness checks for dimension id, dimension
-    name, condition_id; spec §4.1 item 2).
+    """Uniqueness checks for dimension id, dimension name, and condition_id
+    per spec §4.1 item 2. Empty list means pass; only meaningful if
+    validate() already returned [].
     """
     return []
 
 
 def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str]:
-    """Return list of soft warnings. Non-blocking.
-
-    Stub. Filled incrementally by Tasks 5-13 (SC-1 baseline lag through
-    SC-11 panel_size sanity; spec §4.3).
+    """Soft warnings per spec §4.3 (SC-1 baseline lag through SC-11
+    panel_size sanity). Non-blocking; printed to stderr by main().
     """
     return []
 
@@ -62,13 +58,13 @@ def main() -> int:
     try:
         contract = json.loads(args.contract.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError) as exc:
-        print(f"ERROR: failed to load {args.contract}: {exc}")
+        print(f"ERROR: failed to load {args.contract}: {exc}", file=sys.stderr)
         return 1
 
     errors = validate(contract)
     if errors:
         for e in errors:
-            print(f"ERROR: {e}")
+            print(f"ERROR: {e}", file=sys.stderr)
         print(
             f"\n{len(errors)} schema violation(s). "
             "See shared/sprint_contract.schema.json for field definitions.",
@@ -79,7 +75,7 @@ def main() -> int:
     struct_errors = check_structural_invariants(contract)
     if struct_errors:
         for e in struct_errors:
-            print(f"ERROR: {e}")
+            print(f"ERROR: {e}", file=sys.stderr)
         print(
             f"\n{len(struct_errors)} structural invariant violation(s).",
             file=sys.stderr,
