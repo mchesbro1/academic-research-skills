@@ -35,12 +35,20 @@ def validate(contract: dict) -> list[str]:
 
 def check_structural_invariants(contract: dict) -> list[str]:
     """Return list of hard structural-invariant errors. Empty means pass.
-    Only meaningful if validate() already returned []."""
+    Only meaningful if validate() already returned [].
+
+    Stub. Filled by Task 4 (uniqueness checks for dimension id, dimension
+    name, condition_id; spec §4.1 item 2).
+    """
     return []
 
 
 def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str]:
-    """Return list of soft warnings. Non-blocking."""
+    """Return list of soft warnings. Non-blocking.
+
+    Stub. Filled incrementally by Tasks 5-13 (SC-1 baseline lag through
+    SC-11 panel_size sanity; spec §4.3).
+    """
     return []
 
 

@@ -90,7 +90,11 @@
         "additionalProperties": false,
         "required": ["condition_id", "severity", "expression", "action"],
         "properties": {
-          "condition_id": { "type": "string", "pattern": "^F[0-9][0-9]?$" },
+          "condition_id": {
+            "type": "string",
+            "pattern": "^F(0|[1-9][0-9]?)$",
+            "$comment": "F0 reserved for accept-grade conditions per shipped templates §6.1+§6.2; spec §3.2 line 174 mistakenly writes ^F[1-9][0-9]?$ — DO NOT 'align' the schema back. Leading-zero forms (F00, F01) rejected to keep ordinal-position tie-break (§3.2 severity precedence) unambiguous."
+          },
           "severity": { "type": "integer", "minimum": 0, "maximum": 100 },
           "cross_reviewer_quantifier": { "enum": ["any", "majority", "all"] },
           "expression": { "type": "string", "minLength": 1 },
