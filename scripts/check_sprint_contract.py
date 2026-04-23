@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import re  # noqa: F401  # used by warn_suspicious() — keep, do not remove
+import re
 import sys
 from pathlib import Path
 
@@ -65,11 +65,43 @@ def check_structural_invariants(contract: dict) -> list[str]:
     return errors
 
 
+_VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
+
+
+def _parse_version(v: str | None) -> tuple[int, int, int] | None:
+    if not v:
+        return None
+    m = _VERSION_RE.match(v)
+    if not m:
+        return None
+    return int(m.group(1)), int(m.group(2)), int(m.group(3))
+
+
 def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str]:
     """Soft warnings per spec §4.3 (SC-1 baseline lag through SC-11
     panel_size sanity). Non-blocking; printed to stderr by main().
     """
-    return []
+    warnings: list[str] = []
+
+    # SC-1 baseline lag: contract.baseline_version lags current ARS by > 2 minor
+    bv = _parse_version(contract.get("baseline_version"))
+    cv = _parse_version(ars_current_version)
+    if bv and cv:
+        bv_major, bv_minor, _ = bv
+        cv_major, cv_minor, _ = cv
+        if bv_major == cv_major and (cv_minor - bv_minor) > 2:
+            warnings.append(
+                f"SC-1 WARNING: contract baseline v{bv_major}.{bv_minor}.* lags "
+                f"current ARS v{cv_major}.{cv_minor}.* by {cv_minor - bv_minor} minor; "
+                "retirement candidate"
+            )
+        elif bv_major != cv_major:
+            warnings.append(
+                f"SC-1 WARNING: contract baseline major v{bv_major} differs from "
+                f"current ARS v{cv_major}; retirement candidate"
+            )
+
+    return warnings
 
 
 def main() -> int:

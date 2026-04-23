@@ -313,5 +313,21 @@ class TestStructuralInvariants(unittest.TestCase):
         self.assertEqual(check_structural_invariants(_valid_reviewer_full_contract()), [])
 
 
+class TestSoftWarnings(unittest.TestCase):
+    def test_sc1_baseline_lag_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["baseline_version"] = "v3.3.0"
+        warnings = warn_suspicious(c, "v3.6.2")
+        self.assertTrue(any("SC-1" in w or "baseline" in w.lower() for w in warnings))
+
+    def test_sc1_no_ars_version_skips(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["baseline_version"] = "v3.3.0"
+        warnings = warn_suspicious(c, None)
+        self.assertFalse(any("SC-1" in w or "baseline" in w.lower() for w in warnings))
+
+
 if __name__ == "__main__":
     unittest.main()
