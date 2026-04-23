@@ -1,13 +1,12 @@
 """Unit tests for check_sprint_contract.py (Schema 13 validator)."""
 from __future__ import annotations
 
-import json  # noqa: F401  # used by Group C CLI tests (Task 14)
-import subprocess  # noqa: F401  # used by Group C CLI tests (Task 14)
+import json
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory  # noqa: F401  # used by Group C CLI tests (Task 14)
+from tempfile import TemporaryDirectory
 
-from scripts._test_helpers import run_script  # noqa: F401  # used by Group C CLI tests (Task 14)
+from scripts._test_helpers import run_script
 
 SCRIPT = Path(__file__).resolve().parent / "check_sprint_contract.py"
 # SCHEMA / TEMPLATE_FULL / TEMPLATE_METHOD reserved for Tasks 14-17
@@ -477,6 +476,26 @@ class TestSoftWarnings(unittest.TestCase):
         c["panel_size"] = 5
         warnings = warn_suspicious(c, None)
         self.assertTrue(any("SC-11" in w and "reviewer_methodology_focus" in w for w in warnings))
+
+
+class TestCLI(unittest.TestCase):
+    def test_cli_missing_file_returns_1(self):
+        result = run_script(SCRIPT, "/nonexistent/path.json")
+        self.assertEqual(result.returncode, 1)
+
+    def test_cli_bad_json_returns_1(self):
+        with TemporaryDirectory() as tmp:
+            bad = Path(tmp) / "bad.json"
+            bad.write_text("{not json", encoding="utf-8")
+            result = run_script(SCRIPT, str(bad))
+            self.assertEqual(result.returncode, 1)
+
+    def test_cli_valid_returns_0(self):
+        with TemporaryDirectory() as tmp:
+            good = Path(tmp) / "good.json"
+            good.write_text(json.dumps(_valid_reviewer_full_contract()), encoding="utf-8")
+            result = run_script(SCRIPT, str(good))
+            self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":
