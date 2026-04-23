@@ -19,6 +19,11 @@ TEMPLATE_METHOD = (
 )
 
 
+def _load_template(path: Path) -> dict:
+    """Load a shipped reviewer contract template as dict."""
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def _valid_reviewer_full_contract() -> dict:
     """Returns a fresh fully-valid reviewer_full contract. Callers may mutate freely."""
     return {
@@ -283,24 +288,24 @@ class TestSchemaValidation(unittest.TestCase):
 
     def test_shipped_template_full_passes_schema_and_invariants(self):
         from scripts.check_sprint_contract import validate, check_structural_invariants
-        contract = json.loads(TEMPLATE_FULL.read_text(encoding="utf-8"))
+        contract = _load_template(TEMPLATE_FULL)
         self.assertEqual(validate(contract), [])
         self.assertEqual(check_structural_invariants(contract), [])
 
     def test_shipped_template_full_produces_zero_soft_warnings(self):
         from scripts.check_sprint_contract import warn_suspicious
-        contract = json.loads(TEMPLATE_FULL.read_text(encoding="utf-8"))
+        contract = _load_template(TEMPLATE_FULL)
         self.assertEqual(warn_suspicious(contract, "v3.6.2"), [])
 
     def test_shipped_template_methodology_focus_passes_schema_and_invariants(self):
         from scripts.check_sprint_contract import validate, check_structural_invariants
-        contract = json.loads(TEMPLATE_METHOD.read_text(encoding="utf-8"))
+        contract = _load_template(TEMPLATE_METHOD)
         self.assertEqual(validate(contract), [])
         self.assertEqual(check_structural_invariants(contract), [])
 
     def test_shipped_template_methodology_focus_produces_zero_soft_warnings(self):
         from scripts.check_sprint_contract import warn_suspicious
-        contract = json.loads(TEMPLATE_METHOD.read_text(encoding="utf-8"))
+        contract = _load_template(TEMPLATE_METHOD)
         self.assertEqual(warn_suspicious(contract, "v3.6.2"), [])
 
 
@@ -520,24 +525,19 @@ class TestCLI(unittest.TestCase):
 
 class TestTemplateSemantics(unittest.TestCase):
     def test_full_template_precedence_rule(self):
-        """Given a synthetic 5-reviewer scoring matrix where both F1 (severity 90)
-        and F3 (severity 60) fire on the same round, precedence must select F1.
-        This exercises the precedence rule documented in spec §3.2 / §5.5 on the
-        shipped template rather than a synthetic contract."""
-        contract = json.loads(TEMPLATE_FULL.read_text(encoding="utf-8"))
+        """When F1 (severity 90) and F3 (severity 60) both fire in the same round,
+        spec §3.2 / §5.5 precedence selects F1. Exercises the rule against the
+        shipped template rather than a synthetic contract.
 
-        # Simulate Phase 2 outputs: reviewer 1 blocks D1 (mandatory) -> fires F1.
-        # All 5 reviewers block D4 (high) -> fires F3.
-        # Expectation: F1 (severity 90) wins precedence over F3 (severity 60).
-        fired = []
-        for fc in contract["failure_conditions"]:
-            if fc["condition_id"] == "F1":
-                fired.append((fc["severity"], fc["condition_id"], fc["action"]))
-            elif fc["condition_id"] == "F3":
-                fired.append((fc["severity"], fc["condition_id"], fc["action"]))
-
-        # Precedence: highest severity wins, ties by ordinal position.
-        winning = max(fired, key=lambda x: (x[0], -fired.index(x)))
+        Severities differ by construction so ordinal tie-break is not exercised
+        here (a separate test would be needed for that)."""
+        contract = _load_template(TEMPLATE_FULL)
+        fired = [
+            (fc["severity"], fc["condition_id"], fc["action"])
+            for fc in contract["failure_conditions"]
+            if fc["condition_id"] in ("F1", "F3")
+        ]
+        winning = max(fired, key=lambda x: x[0])
         self.assertEqual(winning[1], "F1")
         self.assertEqual(winning[2], "editorial_decision=reject_or_major_revision")
 
