@@ -306,7 +306,6 @@ def check_docx_contract() -> None:
 
 
 def check_reference_docs() -> None:
-    # v3.6.3 passport reset boundary protocol doc
     expect_contains(
         "academic-pipeline/references/passport_as_reset_boundary.md",
         "# Passport as Reset Boundary (v3.6.3)",
