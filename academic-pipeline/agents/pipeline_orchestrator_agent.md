@@ -63,7 +63,7 @@ Determine the entry point from the user's first message. Use the following keywo
 
    The `[override: ...]` clause appears only when the user supplied `stage=` or `mode=` overrides; omit the bracket entirely otherwise.
 6. Honor `verification_status`. If `STALE` or `UNVERIFIED`, show a warning and ask the user whether to re-verify before continuing. If `VERIFIED`, proceed without prompting.
-7. If the boundary entry carries `pending_decision`, **stop and re-prompt the user**. Display the `pending_decision.question` and `pending_decision.options` verbatim. Do NOT use `next` to auto-advance. After the user picks an option, record it as `chosen_branch` on the resume entry (step 8) and use it to determine the actual next stage.
+7. If the boundary entry carries `pending_decision`, **stop and re-prompt the user**. Display `pending_decision.question` and each option's `value`. Do NOT use `next` to auto-advance. After the user picks, look up the matching entry in `options[]` by `value`. Use that entry's `next_stage` and `next_mode` to determine actual routing. Record the chosen `value` as `chosen_branch` on the resume entry (step 8). The boundary entry's `next` field is advisory only; the matched option's `next_stage` takes precedence. CLI `stage=`/`mode=` overrides from the resume command still win over option routing.
 8. Append a `resume` entry to `reset_boundary[]` with `kind: resume`, `consumes_hash: <hash>`, fresh `generated_at` and `session_marker`, and (if applicable) `chosen_branch` and `user_override`. This marks the boundary as consumed for any downstream reader.
 9. Invoke the next stage with the passport as the sole input. Do NOT ask the user to re-summarize prior stages.
 10. Respect user overrides: `stage=<n>` overrides `next`; `mode=<m>` overrides the default mode for the next stage (validated against Mode Advisor rules). User overrides are recorded on the resume entry's `user_override` field.
@@ -168,7 +168,7 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 
 1. `state_tracker` stages a new `kind: boundary` entry for `reset_boundary[]` (Schema 9). Entry matches `shared/contracts/passport/reset_ledger_entry.schema.json` `#/$defs/boundary`.
 2. Orchestrator computes `hash` using the normative byte serialization defined in protocol doc §"The reset boundary protocol" step 2: JSON Canonical Form (RFC 8785) per entry, LF-separated, new entry appended with `hash` set to placeholder `"000000000000"`, SHA-256 first 12 lowercase hex. Write the computed hash back into the new entry, then append to the ledger. Follow the protocol doc exactly — any deviation breaks cross-session resume.
-3. If the checkpoint co-occurs with a MANDATORY user decision (e.g., Stage 3 review outcome, Stage 5 finalization format), set `pending_decision` on the new entry with the enumerated options. `next` is still populated as a best-guess default but must NOT be used to auto-advance — the orchestrator re-prompts the user on resume (see §Resume Mode obligations).
+3. If the checkpoint co-occurs with a MANDATORY user decision (e.g., Stage 3 review outcome, Stage 5 finalization format), set `pending_decision` on the new entry. Each option is an object with `value` (branch identifier), `next_stage` (stage to route to, or `null` to terminate), and optional `next_mode`. `next` on the boundary entry is still populated as a best-guess default but must NOT be used to auto-advance — on resume the orchestrator looks up the chosen `value` in `options[]` and routes via that option's `next_stage`/`next_mode` (see §Resume Mode obligations).
 4. In the checkpoint notification, orchestrator emits — as a distinct block below the Decision Dashboard but above the continue/pause prompt:
 
    ```
@@ -193,7 +193,7 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 4. The `[PASSPORT-RESET: ...]` tag is the sole machine-stable handoff anchor. The `### Resume Instruction` subsection is for user ergonomics.
 5. Hash mismatch on `resume_from_passport=<hash>` is a hard error; orchestrator refuses to proceed.
 6. A `boundary` is consumed only by appending a `kind: resume` entry with matching `consumes_hash`. Double-resume (second resume of an already-consumed boundary) is a hard error.
-7. MANDATORY checkpoints (Stage 2.5 / 4.5, review decisions, Stage 5) remain MANDATORY even when reset co-occurs. Integrity gates are never diluted. If the boundary carries `pending_decision`, resume must re-prompt the user; `next` is advisory.
+7. MANDATORY checkpoints (Stage 2.5 / 4.5, review decisions, Stage 5) remain MANDATORY even when reset co-occurs. Integrity gates are never diluted. If the boundary carries `pending_decision`, resume must re-prompt the user; `next` is advisory. Actual routing comes from the matched option's `next_stage`/`next_mode`, not from the boundary `next` field.
 8. `collaboration_depth_agent` observer fires on FULL checkpoints as before; its output is included in the checkpoint notification regardless of reset state. Observer state does NOT cross reset boundaries.
 
 Full protocol: [`../references/passport_as_reset_boundary.md`](../references/passport_as_reset_boundary.md).

@@ -545,8 +545,16 @@ reset_boundary:
     version_label: paper_draft_v2
     mode: full
     pending_decision:
-      question: "Stage 3 review outcome: revise, restructure, or abort?"
-      options: ["revise", "restructure", "abort"]
+      question: "Stage 3 reviewer decision"
+      options:
+        - value: revise
+          next_stage: "4"
+          next_mode: revision
+        - value: restructure
+          next_stage: "2"
+          next_mode: plan
+        - value: abort
+          next_stage: null   # null = terminate pipeline
 
   # Kind 2: resume event consuming the first boundary (Stage 2 → 2.5)
   - kind: resume

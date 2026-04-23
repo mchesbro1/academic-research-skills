@@ -38,7 +38,7 @@
         "next": {
           "type": "string",
           "minLength": 1,
-          "description": "Default next stage after resume. Advisory when pending_decision is set — the orchestrator must re-prompt the user before using next."
+          "description": "Default next stage after resume. Advisory when pending_decision is set; the orchestrator must re-prompt the user and route by the matched option's next_stage before using next. When pending_decision is set and a terminating branch (option with next_stage: null) is in options[], set next to any non-terminating branch's next_stage as a placeholder value; it is overridden at resume time."
         },
         "generated_at": {
           "type": "string",
@@ -82,11 +82,31 @@
               "type": "array",
               "minItems": 2,
               "uniqueItems": true,
-              "items": { "type": "string", "minLength": 1 },
-              "description": "Enumerated decision branches. Must be unique — chosen_branch on the resume entry is a bare string, so duplicate labels would make the append-only audit trail ambiguous. Orchestrator must prompt the user to pick one before auto-advancing."
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["value", "next_stage"],
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Branch identifier. Must be unique across the options array — chosen_branch on the resume entry matches this field."
+                  },
+                  "next_stage": {
+                    "type": ["string", "null"],
+                    "description": "Stage number or name to route to when this branch is chosen. null means terminate the pipeline."
+                  },
+                  "next_mode": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Optional downstream mode override when this branch is chosen. Omit to use the default mode for next_stage."
+                  }
+                }
+              },
+              "description": "Enumerated decision branches. Each option carries its own routing: on resume, the orchestrator looks up chosen_branch in options[].value, then uses that entry's next_stage and next_mode to determine actual routing. The boundary entry's next field is advisory (best-guess default) and is superseded by the matched option's next_stage at resume time. CLI stage=/mode= overrides from resume_from_passport still win over option routing."
             }
           },
-          "description": "Set when the boundary co-occurs with a MANDATORY user decision (Stage 3 rejection, Stage 5 finalization, etc.). When present, resume must re-prompt the user; 'next' is advisory."
+          "description": "Set when the boundary co-occurs with a MANDATORY user decision (Stage 3 rejection, Stage 5 finalization, etc.). When present, resume must re-prompt the user. Each option carries its own next_stage/next_mode routing; the boundary entry's 'next' field is advisory only and is overridden by the matched option's next_stage at resume time."
         }
       }
     },
