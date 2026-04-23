@@ -17,12 +17,12 @@ For each reviewer in `range(panel_size)`:
 
 1. **Prepare contract.** Load template from `shared/contracts/<domain>/<mode>.json`. Populate `generated_at` (ISO-8601 UTC). Optionally populate `agent_amendments` (field-specific notes from `field_analyst_agent`). Run `check_sprint_contract.py` on the in-memory object; abort on error.
 2. **Phase 1 call (paper-content-blind).**
-   - System prompt: reviewer agent's `## v3.6.2 Sprint Contract Protocol — Phase 1` section.
+   - System prompt: the `### Phase 1 — Paper-content-blind pre-commitment` sub-section of the reviewer agent's `## v3.6.2 Sprint Contract Protocol` block.
    - User content: contract JSON + paper metadata ONLY (`title`, `field`, `word_count`).
    - Expected output: `## Contract Paraphrase`, `## Scoring Plan`, terminal `[CONTRACT-ACKNOWLEDGED]` tag.
 3. **Phase 1 output lint.** See §4 below.
 4. **Phase 2 call (paper-visible).**
-   - System prompt: reviewer agent's `## v3.6.2 Sprint Contract Protocol — Phase 2` section.
+   - System prompt: the `### Phase 2 — Paper-visible review` sub-section of the same `## v3.6.2 Sprint Contract Protocol` block.
    - User content: contract JSON (re-injected) + Phase 1 output wrapped in `<phase1_output>...</phase1_output>` data delimiter + full paper.
    - Expected output: optional `## Scoring Plan Dissent`, `## Dimension Scores`, `## Failure Condition Checks`, `## Review Body`, `## Editorial Decision`.
 5. **Phase 2 output lint.** See §5 below.
@@ -58,25 +58,25 @@ Structural checks run before handoff to synthesizer. **No Phase 2 retry** (revie
 - `## Failure Condition Checks` has one subsection per `failure_conditions[]` entry with `fired: true | false`.
 - **Multi-dissent rule:** If `## Scoring Plan Dissent` names two or more `dimension_id` entries, orchestrator aborts this reviewer and retries from **Phase 1** once. If the retried Phase 1/2 also multi-dissents, mark the reviewer unusable (`[PROTOCOL-VIOLATION]`). One-dimension-per-reviewer-per-Phase-2-call is the cap.
 - **Consistency check (structural):** For every dimension not under dissent, the Phase 2 score must substring-match the reviewer's Phase 1 `scoring_plan` trigger tokens. Vacuous triggers bypass this check — documented limitation.
-- `## Editorial Decision` is one of the `action` values derivable from `## Failure Condition Checks` via the synthesizer precedence rule (§7 step 3). Inconsistency marks the reviewer unusable.
+- `## Editorial Decision` is one of the `action` values derivable from `## Failure Condition Checks` via the synthesizer precedence rule (§8 step 3). Inconsistency marks the reviewer unusable.
 
 On any Phase 2 lint failure other than multi-dissent: emit `[PROTOCOL-VIOLATION]` and mark reviewer unusable. Do not synthesise a substitute score for the synthesizer.
 
 ## 6. Multi-reviewer orchestration
 
 - **Independent cycles.** Each of the `panel_size` reviewers runs its own Phase 1 + Phase 2. Failures in one do not pause the others.
-- **Panel cardinality invariant (§5.1 step 6).** After all reviewers complete, if `len(usable_phase2_outputs) < panel_size`, abort the editorial round with `[PANEL-SHRUNK]`. Do not silently recompute `cross_reviewer_quantifier` thresholds against a smaller panel — the contract's published aggregation semantics bind on a specific `panel_size`.
-- **Monitor (per §10 risk 10).** Track `[PANEL-SHRUNK]` rate in real SR runs. If > 5% of rounds abort in first 3 months, v3.6.3 introduces graceful-degradation fallback.
+- **Panel cardinality invariant (§2 step 6).** After all reviewers complete, if `len(usable_phase2_outputs) < panel_size`, abort the editorial round with `[PANEL-SHRUNK]`. Do not silently recompute `cross_reviewer_quantifier` thresholds against a smaller panel — the contract's published aggregation semantics bind on a specific `panel_size`.
+- **Operational monitor.** Track `[PANEL-SHRUNK]` rate in real SR runs. If > 5% of rounds abort in first 3 months, v3.6.3 introduces graceful-degradation fallback.
 
 ## 7. Reviewer panel mapping
 
-| mode                            | panel_size | invoked reviewers |
-|----------------------------------|-----------|-------------------|
-| `reviewer_full`                  | 5         | EIC + methodology + domain + perspective + DA |
-| `reviewer_methodology_focus`     | 2         | EIC + methodology (only) |
-| `reviewer_re_review`             | —         | not shipped in v3.6.2; continues pre-v3.6.2 behaviour |
-| `reviewer_calibration`           | —         | not shipped in v3.6.2 |
-| `reviewer_guided`                | —         | not shipped in v3.6.2 |
+| mode                          | panel_size | invoked reviewers |
+|-------------------------------|------------|-------------------|
+| `reviewer_full`               | 5          | EIC + methodology + domain + perspective + DA |
+| `reviewer_methodology_focus`  | 2          | EIC + methodology (only) |
+| `reviewer_re_review`          | —          | not shipped in v3.6.2; continues pre-v3.6.2 behaviour |
+| `reviewer_calibration`        | —          | not shipped in v3.6.2 |
+| `reviewer_guided`             | —          | not shipped in v3.6.2 |
 
 The orchestrator uses `mode` to determine the panel and the contract's `panel_size` as the invariant target. SC-11 validator check ensures mode and `panel_size` are consistent.
 
@@ -95,7 +95,7 @@ Let `N = contract.panel_size`.
    - `all`: fires if predicate holds for all N reviewers.
 3. Record `{condition_id, fired}`.
 
-**Step 3 — Precedence and decision.** Among fired conditions, pick the one with highest `severity`. Ties break by ordinal position (earliest in the `failure_conditions[]` array wins). Emit its `action` as editorial_decision.
+**Step 3 — Precedence and decision.** Among fired conditions, pick the one with highest `severity`. Ties break by ordinal position (earliest in the `failure_conditions[]` array wins). Emit its `action` as `editorial_decision`.
 
 **Forbidden operations (synthesizer prompt hard constraint):**
 - Introduce aggregation rules not derivable from `cross_reviewer_quantifier` + `severity`.
