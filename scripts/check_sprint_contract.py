@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re  # noqa: F401  # used by SC-1 (Task 5) and SC-4 (Task 7)
 import sys
 from pathlib import Path
 
