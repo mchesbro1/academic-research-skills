@@ -202,6 +202,21 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
             "its score cannot influence the editorial decision"
         )
 
+    # SC-11 panel_size sanity
+    ps = contract.get("panel_size")
+    mode = contract.get("mode")
+    if ps == 1:
+        warnings.append(
+            "SC-11 WARNING: panel_size=1 means no cross-reviewer aggregation; "
+            "cross_reviewer_quantifier values collapse to pass-through"
+        )
+    expected_panel = {"reviewer_full": 5, "reviewer_methodology_focus": 2}
+    if mode in expected_panel and ps != expected_panel[mode]:
+        warnings.append(
+            f"SC-11 WARNING: panel_size={ps} inconsistent with mode={mode}; "
+            f"expected {expected_panel[mode]}"
+        )
+
     return warnings
 
 

@@ -455,5 +455,29 @@ class TestSoftWarnings(unittest.TestCase):
         )
 
 
+    def test_sc11_panel_size_1_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["panel_size"] = 1
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-11" in w and "panel_size=1" in w for w in warnings))
+
+    def test_sc11_mode_panel_mismatch_full(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["panel_size"] = 3
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-11" in w and "reviewer_full" in w for w in warnings))
+
+    def test_sc11_mode_panel_mismatch_methodology(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["mode"] = "reviewer_methodology_focus"
+        c["contract_id"] = "reviewer/reviewer_methodology_focus/v1"
+        c["panel_size"] = 5
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-11" in w and "reviewer_methodology_focus" in w for w in warnings))
+
+
 if __name__ == "__main__":
     unittest.main()
