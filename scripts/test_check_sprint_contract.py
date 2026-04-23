@@ -9,9 +9,7 @@ from tempfile import TemporaryDirectory
 from scripts._test_helpers import run_script
 
 SCRIPT = Path(__file__).resolve().parent / "check_sprint_contract.py"
-# SCHEMA / TEMPLATE_FULL / TEMPLATE_METHOD reserved for Tasks 14-17
-# (CLI tests + shipped-template assertions); kept module-level so later tasks
-# don't have to reshuffle imports.
+# SCHEMA / TEMPLATE_FULL / TEMPLATE_METHOD reserved for Tasks 15-16 (shipped-template assertions).
 SCHEMA = Path(__file__).resolve().parent.parent / "shared" / "sprint_contract.schema.json"
 TEMPLATE_FULL = (
     Path(__file__).resolve().parent.parent / "shared" / "contracts" / "reviewer" / "full.json"
