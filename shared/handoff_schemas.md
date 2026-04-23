@@ -501,7 +501,7 @@ score_trajectory: {
 | `upstream_dependencies` | list[string] | Version labels of artifacts this one depends on |
 | `repro_lock` | object \| null | configuration lockfile for artifact reproducibility. See [`artifact_reproducibility_pattern.md`](artifact_reproducibility_pattern.md). `null` = honest opt-out. Required from v3.3.5+ — omitted key fails lint. |
 | `compliance_history` | list[object] | Append-only audit trail of `compliance_report` entries (Schema 12). Added v3.4.0+. See [Schema 12](#schema-12--compliance-report-v340) and [`shared/compliance_report.schema.json`](compliance_report.schema.json). |
-| `reset_boundary` | list[object] | Append-only ledger of reset-boundary entries (one per FULL checkpoint when `ARS_PASSPORT_RESET=1`). Added v3.6.3+. Entry shape: [`shared/contracts/passport/reset_ledger_entry.schema.json`](contracts/passport/reset_ledger_entry.schema.json). See [`academic-pipeline/references/passport_as_reset_boundary.md`](../academic-pipeline/references/passport_as_reset_boundary.md). |
+| `reset_boundary` | list[object] | Append-only ledger. Two entry kinds: `boundary` (recorded at FULL checkpoints when `ARS_PASSPORT_RESET=1`) and `resume` (recorded when `resume_from_passport` consumes a boundary). Added v3.6.3+. Entry shape: [`shared/contracts/passport/reset_ledger_entry.schema.json`](contracts/passport/reset_ledger_entry.schema.json). See [`academic-pipeline/references/passport_as_reset_boundary.md`](../academic-pipeline/references/passport_as_reset_boundary.md). |
 
 ### Example
 
@@ -520,11 +520,13 @@ score_trajectory: {
 
 ### Reset Boundary Extension (v3.6.3)
 
-When `ARS_PASSPORT_RESET=1`, Schema 9 gains an append-only `reset_boundary[]` ledger:
+When `ARS_PASSPORT_RESET=1`, Schema 9 gains an append-only `reset_boundary[]` ledger with two entry kinds: `boundary` (recorded at FULL checkpoints) and `resume` (recorded when a boundary is consumed):
 
 ```yaml
 reset_boundary:
-  - hash: a3f2b7c9d0e1
+  # Kind 1: boundary entry at Stage 2 FULL checkpoint
+  - kind: boundary
+    hash: a3f2b7c9d0e1
     stage: "2"
     next: "2.5"
     generated_at: 2026-04-23T14:00:00Z
@@ -532,10 +534,29 @@ reset_boundary:
     version_label: paper_draft_v1
     mode: full
     verification_status: VERIFIED
+
+  # Kind 1 with pending_decision: Stage 3 rejection case
+  - kind: boundary
+    hash: b4c2d8e7f0a1
+    stage: "3"
+    next: "4"
+    generated_at: 2026-04-24T10:00:00Z
+    session_marker: sess-20260424-3c4d
+    version_label: paper_draft_v2
+    mode: full
+    pending_decision:
+      question: "Stage 3 review outcome: revise, restructure, or abort?"
+      options: ["revise", "restructure", "abort"]
+
+  # Kind 2: resume event consuming the first boundary (Stage 2 → 2.5)
+  - kind: resume
+    consumes_hash: a3f2b7c9d0e1
+    generated_at: 2026-04-23T15:00:00Z
+    session_marker: sess-20260423-5e6f
   # append-only; never overwrite, never reorder
 ```
 
-Consumers (`resume_from_passport` mode) match the short-hash from a user-pasted resume command against the `hash` field of an entry in this list. Mismatch is a hard error.
+Consumers match `resume_from_passport=<hash>` against `boundary` entries. A `boundary` is **awaiting resume** iff no later `resume` entry carries `consumes_hash == <boundary hash>`. Hash mismatch on resume is a hard error.
 
 See [`academic-pipeline/references/passport_as_reset_boundary.md`](../academic-pipeline/references/passport_as_reset_boundary.md) for the full protocol.
 

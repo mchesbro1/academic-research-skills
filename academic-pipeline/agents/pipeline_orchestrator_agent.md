@@ -49,8 +49,9 @@ Determine the entry point from the user's first message. Use the following keywo
 **Orchestrator obligations:**
 1. Parse `<hash>` from user input. Validate `^[0-9a-f]{12}$`.
 2. Locate passport file: prefer explicit path in user input; else look in `./passports/` or `./material_passport*.yaml` relative to CWD; else ask the user for the path.
-3. Load `reset_boundary[]`; find entry with matching `hash`. No match → hard error: "Passport hash `<hash>` not found in `<path>`. Cannot resume."
-4. Emit `### Resume Acknowledged` section using this exact template (mirror of the Resume Instruction emission):
+3. Load `reset_boundary[]`. Find the entry with `kind: boundary` and matching `hash`. No match → hard error: "Passport hash `<hash>` not found in `<path>`. Cannot resume."
+4. Check for prior consumption. If any later entry has `kind: resume` and `consumes_hash == <hash>`, that boundary is already consumed — hard error: "Passport hash `<hash>` was already resumed at `<consume generated_at>`. Cannot resume twice." This prevents double-resume and diverging session histories.
+5. Emit `### Resume Acknowledged` section using this exact template:
 
    ```
    ### Resume Acknowledged
@@ -60,10 +61,12 @@ Determine the entry point from the user's first message. Use the following keywo
    - Next stage: <next> [override: stage=<user-stage>, mode=<user-mode>]
    ```
 
-   All fields come from the matched `reset_boundary[]` ledger entry (Schema 9). The `[override: ...]` clause appears only when the user supplied `stage=` or `mode=` overrides; omit the bracket entirely otherwise.
-5. Invoke the next stage with the passport as the sole input. Do NOT ask the user to re-summarize prior stages.
+   The `[override: ...]` clause appears only when the user supplied `stage=` or `mode=` overrides; omit the bracket entirely otherwise.
 6. Honor `verification_status`. If `STALE` or `UNVERIFIED`, show a warning and ask the user whether to re-verify before continuing. If `VERIFIED`, proceed without prompting.
-7. Respect user overrides: `stage=<n>` overrides `next`; `mode=<m>` overrides the default mode for the next stage (validated against Mode Advisor rules).
+7. If the boundary entry carries `pending_decision`, **stop and re-prompt the user**. Display the `pending_decision.question` and `pending_decision.options` verbatim. Do NOT use `next` to auto-advance. After the user picks an option, record it as `chosen_branch` on the resume entry (step 8) and use it to determine the actual next stage.
+8. Append a `resume` entry to `reset_boundary[]` with `kind: resume`, `consumes_hash: <hash>`, fresh `generated_at` and `session_marker`, and (if applicable) `chosen_branch` and `user_override`. This marks the boundary as consumed for any downstream reader.
+9. Invoke the next stage with the passport as the sole input. Do NOT ask the user to re-summarize prior stages.
+10. Respect user overrides: `stage=<n>` overrides `next`; `mode=<m>` overrides the default mode for the next stage (validated against Mode Advisor rules). User overrides are recorded on the resume entry's `user_override` field.
 
 ### 2. Mode Recommendation
 
@@ -163,9 +166,10 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 
 **Reset-boundary emission sequence (flag ON, FULL checkpoint):**
 
-1. `state_tracker` appends a new `reset_boundary[]` entry to the Material Passport (Schema 9). Entry matches `shared/contracts/passport/reset_ledger_entry.schema.json`.
-2. Orchestrator computes `hash` = SHA-256 of concatenated ledger entries through this checkpoint, first 12 hex characters.
-3. In the checkpoint notification, orchestrator emits — as a distinct block below the Decision Dashboard but above the continue/pause prompt:
+1. `state_tracker` stages a new `kind: boundary` entry for `reset_boundary[]` (Schema 9). Entry matches `shared/contracts/passport/reset_ledger_entry.schema.json` `#/$defs/boundary`.
+2. Orchestrator computes `hash` — SHA-256 of the concatenated ledger (prior entries + the new entry with `hash` set to the canonical placeholder `"000000000000"`), first 12 lowercase hex characters. The placeholder rule is normative; see protocol doc §"The reset boundary protocol" step 2. Write the computed hash into the new entry, then append to the ledger.
+3. If the checkpoint co-occurs with a MANDATORY user decision (e.g., Stage 3 review outcome, Stage 5 finalization format), set `pending_decision` on the new entry with the enumerated options. `next` is still populated as a best-guess default but must NOT be used to auto-advance — the orchestrator re-prompts the user on resume (see §Resume Mode obligations).
+4. In the checkpoint notification, orchestrator emits — as a distinct block below the Decision Dashboard but above the continue/pause prompt:
 
    ```
    [PASSPORT-RESET: hash=<hash>, stage=<completed>, next=<next>]
@@ -179,16 +183,18 @@ SLIM checkpoints never reset. MANDATORY checkpoints co-occur with reset when app
 
    `<hash>` is 12 lowercase hex characters per `reset_ledger_entry.schema.json` — the schema is authoritative for the format.
 
-4. Orchestrator halts after emission. For `systematic-review` mode, orchestrator refuses any in-session `continue` and repeats the Resume Instruction. For other modes, an in-session `continue` is honored once but the orchestrator uses ONLY the passport ledger as input to the next stage (no replay of prior turns).
+5. Orchestrator halts after emission. For `systematic-review` mode, orchestrator refuses any in-session `continue` and repeats the Resume Instruction. For other modes, an in-session `continue` is honored once but the orchestrator uses ONLY the passport ledger as input to the next stage (no replay of prior turns).
 
 **Iron rules (reset boundary):**
 
 1. Flag OFF produces byte-identical output to pre-v3.6.3 for every mode.
-2. Ledger append-only. Re-runs of a stage append new entries with bumped `version_label`; prior entries are never deleted, reordered, or mutated.
-3. The `[PASSPORT-RESET: ...]` tag is the sole machine-stable handoff anchor. The `### Resume Instruction` subsection is for user ergonomics.
-4. Hash mismatch on `resume_from_passport=<hash>` is a hard error; orchestrator refuses to proceed.
-5. MANDATORY checkpoints (Stage 2.5 / 4.5, review decisions, Stage 5) remain MANDATORY even when reset co-occurs. Integrity gates are never diluted.
-6. `collaboration_depth_agent` observer fires on FULL checkpoints as before; its output is included in the checkpoint notification regardless of reset state. Observer state does NOT cross reset boundaries.
+2. Ledger append-only. Re-runs append new `kind: boundary` entries with bumped `version_label`; resume adds `kind: resume` entries; prior entries are never deleted, reordered, or mutated.
+3. Hash is computed over the entry with `hash` set to the canonical placeholder `"000000000000"`. Any other convention breaks cross-implementation interoperability.
+4. The `[PASSPORT-RESET: ...]` tag is the sole machine-stable handoff anchor. The `### Resume Instruction` subsection is for user ergonomics.
+5. Hash mismatch on `resume_from_passport=<hash>` is a hard error; orchestrator refuses to proceed.
+6. A `boundary` is consumed only by appending a `kind: resume` entry with matching `consumes_hash`. Double-resume (second resume of an already-consumed boundary) is a hard error.
+7. MANDATORY checkpoints (Stage 2.5 / 4.5, review decisions, Stage 5) remain MANDATORY even when reset co-occurs. Integrity gates are never diluted. If the boundary carries `pending_decision`, resume must re-prompt the user; `next` is advisory.
+8. `collaboration_depth_agent` observer fires on FULL checkpoints as before; its output is included in the checkpoint notification regardless of reset state. Observer state does NOT cross reset boundaries.
 
 Full protocol: [`../references/passport_as_reset_boundary.md`](../references/passport_as_reset_boundary.md).
 

@@ -289,17 +289,19 @@ Transition semantics:
 Stage N [working]
   -> FULL checkpoint
     -> [flag OFF]  Stage N+1 [working]           (pre-v3.6.3 continuation)
-    -> [flag ON]   awaiting_resume
+    -> [flag ON]   append boundary entry -> awaiting_resume
          -> resume_from_passport=<hash>
+              -> append resume entry (consumes_hash=<hash>)
               -> Stage N+1 [working]              (fresh session, passport-loaded)
 ```
 
 Iron rules:
 
-- `awaiting_resume` is not persisted in `state_tracker` state the way stage indices are; it is an emergent attribute of the passport ledger (the last `reset_boundary[]` entry with no consuming resume).
+- `awaiting_resume` is not persisted in `state_tracker`; it is computed from the passport ledger. A `boundary` entry with hash `H` is awaiting resume iff no later `resume` entry in `reset_boundary[]` carries `consumes_hash == H`. Single pass over the ledger, no out-of-band state.
 - `systematic-review` under flag ON cannot transition `Stage N → Stage N+1` without a fresh-session resume. In-session continuation is refused.
 - Other modes under flag ON allow in-session continuation as a fallback, but the orchestrator must still load Stage N+1 input strictly from the passport (no replay of prior turns).
 - SLIM checkpoints never enter `awaiting_resume`.
 - MANDATORY checkpoints enter `awaiting_resume` when they are also FULL and flag is ON; the mandatory user-confirmation prompt is carried in the `### Resume Instruction` subsection emitted alongside the `[PASSPORT-RESET: ...]` tag.
+- If a `boundary` entry carries `pending_decision`, `next` is advisory only. The orchestrator MUST re-prompt the user for the decision before transitioning to any `Stage N+1`. The `resume` entry records the chosen branch via `chosen_branch`.
 
 See [`passport_as_reset_boundary.md`](passport_as_reset_boundary.md) for the full protocol.
