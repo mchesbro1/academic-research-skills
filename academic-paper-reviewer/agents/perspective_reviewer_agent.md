@@ -28,7 +28,7 @@ You will receive:
 
 You MUST produce, in exactly this order:
 
-1. `## Contract Paraphrase` — one paragraph per `acceptance_dimensions` entry, in your own words from the perspective of cross-disciplinary perspective.
+1. `## Contract Paraphrase` — one paragraph per `acceptance_dimensions` entry, in your own words from the perspective of cross-disciplinary relevance.
 2. `## Scoring Plan` — one `### <Dn>: <name>` subsection per dimension. Each must contain:
    - `what_to_look_for` — concrete signals you will scan for.
    - `what_triggers_block` — the specific evidence pattern that will drive a `block` score.

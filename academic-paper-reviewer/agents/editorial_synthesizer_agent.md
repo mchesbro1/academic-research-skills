@@ -35,7 +35,7 @@ When invoked under a sprint contract, your job is **arithmetic, not interpretive
 1. Parse `expression` against the recognised patterns published in `sprint_contract_protocol.md §9`. Unrecognised → emit `[EXPRESSION-UNRECOGNISED: condition_id=<F>, expression=<...>]` and abort.
 2. Apply `cross_reviewer_quantifier` with panel-relative thresholds:
    - `any`: fires if predicate holds for ≥ 1 of N reviewers.
-   - `majority`: for N ≥ 3, fires if ≥ ⌈N/2⌉ + 1; for N == 2, fires if 2 of 2; for N == 1, vacuous (validator SC-11 warns).
+   - `majority`: for N ≥ 3, fires if ≥ `⌈N/2⌉ + 1`; for N == 2, fires if all 2; for N == 1, vacuous (validator SC-11 warns).
    - `all`: fires if predicate holds for all N reviewers.
 3. Record `{condition_id, fired: true | false}`.
 
