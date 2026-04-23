@@ -2,7 +2,7 @@
 name: academic-pipeline
 description: "Orchestrator for the full academic research pipeline: research -> write -> integrity check -> review -> revise -> re-review -> re-revise -> final integrity check -> finalize. Coordinates deep-research, academic-paper, and academic-paper-reviewer into a seamless 10-stage workflow with mandatory integrity verification, two-stage peer review, and reproducible quality gates. Triggers on: academic pipeline, research to paper, full paper workflow, paper pipeline, end-to-end paper, research-to-publication, complete paper workflow."
 metadata:
-  version: "3.6.2"
+  version: "3.6.3"
   last_updated: "2026-04-23"
   depends_on: "deep-research, academic-paper, academic-paper-reviewer"
   status: active
@@ -14,9 +14,11 @@ metadata:
     - academic-paper-reviewer
 ---
 
-# Academic Pipeline v3.6.2 — Full Academic Research Workflow Orchestrator
+# Academic Pipeline v3.6.3 — Full Academic Research Workflow Orchestrator
 
 A lightweight orchestrator that manages the complete academic pipeline from research exploration to final manuscript. It does not perform substantive work — it only detects stages, recommends modes, dispatches skills, manages transitions, and tracks state.
+
+**v3.6.3 (opt-in):** Set `ARS_PASSPORT_RESET=1` to promote FULL checkpoints to context-reset boundaries. Use `resume_from_passport=<hash>` in a fresh session to continue from the recorded stage. See [`references/passport_as_reset_boundary.md`](references/passport_as_reset_boundary.md).
 
 **v2.0 Core Improvements**:
 1. **Mandatory user confirmation checkpoints** — Each stage completion requires user confirmation before proceeding to the next step
@@ -45,6 +47,15 @@ I already have a paper, help me review it
 I received reviewer comments, help me revise
 ```
 --> academic-pipeline detects, starting from Stage 4 (REVISE)
+
+**Resume from passport (cross-session context reset, opt-in):**
+```
+resume_from_passport=<hash>
+```
+--> Loads the Material Passport (Schema 9), locates the `kind: boundary` entry matching `<hash>`, confirms it has no later `kind: resume` entry consuming it, re-prompts if `pending_decision` is set, then continues the pipeline from the recorded stage using the passport as sole input. No prior session turns are replayed.
+- **Gate**: opt-in; requires `ARS_PASSPORT_RESET=1` was set in the emitting session. The `resume_from_passport=<hash>` invocation itself is always accepted — you can resume a passport emitted in any earlier session as long as the hash matches.
+- **Stage**: any — resumes at whatever stage the boundary entry recorded as `next`.
+- **Reference**: [`references/passport_as_reset_boundary.md`](references/passport_as_reset_boundary.md) — see §"`resume_from_passport` mode contract".
 
 **Execution flow:**
 1. Detect the user's current stage and available materials
@@ -566,7 +577,7 @@ Stage 5: academic-paper (format-convert mode)
 
 | Item | Content |
 |------|---------|
-| Skill Version | 3.6.2 |
+| Skill Version | 3.6.3 |
 | Last Updated | 2026-04-23 |
 | Maintainer | Cheng-I Wu |
 | Dependent Skills | deep-research v2.0+, academic-paper v2.0+, academic-paper-reviewer v1.1+ |
