@@ -164,6 +164,14 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
                 "precedence tie-breaking falls back to ordinal position"
             )
 
+    # SC-9 impossible paraphrase_minimum_dimensions
+    pmd = mp.get("paraphrase_minimum_dimensions")
+    if isinstance(pmd, int) and pmd > len(dims):
+        warnings.append(
+            f"SC-9 WARNING: paraphrase_minimum_dimensions={pmd} exceeds dimension "
+            f"count {len(dims)}; Phase 1 lint will always fail"
+        )
+
     return warnings
 
 

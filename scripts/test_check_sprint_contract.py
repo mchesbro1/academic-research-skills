@@ -415,6 +415,19 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertTrue(any("SC-7" in w for w in warnings))
 
+    def test_sc9_impossible_paraphrase_minimum_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["acceptance_dimensions"] = c["acceptance_dimensions"][:3]  # 3 dims
+        # Keep failure_conditions referencing D1..D3 only; drop D4/D5 refs
+        c["failure_conditions"] = [
+            fc for fc in c["failure_conditions"]
+            if "D4" not in fc["expression"] and "D5" not in fc["expression"]
+        ]
+        c["measurement_procedure"]["paraphrase_minimum_dimensions"] = 5
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-9" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
