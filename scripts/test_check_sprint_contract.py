@@ -281,6 +281,17 @@ class TestSchemaValidation(unittest.TestCase):
             f"Unexpected quantifier error on non-reviewer mode: {errors}",
         )
 
+    def test_shipped_template_full_passes_schema_and_invariants(self):
+        from scripts.check_sprint_contract import validate, check_structural_invariants
+        contract = json.loads(TEMPLATE_FULL.read_text(encoding="utf-8"))
+        self.assertEqual(validate(contract), [])
+        self.assertEqual(check_structural_invariants(contract), [])
+
+    def test_shipped_template_full_produces_zero_soft_warnings(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        contract = json.loads(TEMPLATE_FULL.read_text(encoding="utf-8"))
+        self.assertEqual(warn_suspicious(contract, "v3.6.2"), [])
+
 
 class TestStructuralInvariants(unittest.TestCase):
     def test_structural_invariant_duplicate_dimension_id(self):
