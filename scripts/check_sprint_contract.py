@@ -172,6 +172,36 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
             f"count {len(dims)}; Phase 1 lint will always fail"
         )
 
+    # SC-10 unreferenced mandatory/high dimension.
+    # Covered = directly referenced via Dn token in any expression, OR
+    # any expression contains a priority-scope keyword matching this
+    # dimension's priority (e.g., "any mandatory ...", "every mandatory ...",
+    # "any high-priority ...", "two or more high-priority ..."). See
+    # spec §5.5 recognised expression vocabulary patterns 1-3.
+    referenced: set[str] = set()
+    for fc in contract.get("failure_conditions", []):
+        referenced.update(_DIM_REF_RE.findall(fc.get("expression", "")))
+    priority_keywords = {"mandatory": "mandatory", "high": "high-priority"}
+    for d in dims:
+        did = d.get("id")
+        prio = d.get("priority")
+        if prio not in ("mandatory", "high"):
+            continue
+        if did in referenced:
+            continue
+        pkw = priority_keywords[prio]
+        priority_covered = any(
+            pkw in fc.get("expression", "").lower()
+            for fc in contract.get("failure_conditions", [])
+        )
+        if priority_covered:
+            continue
+        warnings.append(
+            f"SC-10 WARNING: {prio} dimension {did} has no "
+            "failure_condition referencing it (directly or via its priority); "
+            "its score cannot influence the editorial decision"
+        )
+
     return warnings
 
 

@@ -428,6 +428,32 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertTrue(any("SC-9" in w for w in warnings))
 
+    def test_sc10_unreferenced_mandatory_dimension_warns(self):
+        """Add a high-priority D6 AND drop the only high-priority expression
+        from the fixture so neither direct id reference nor priority-scope
+        expression covers D6. SC-10 should fire."""
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        # Drop F3 ("any high-priority dimension scores 'block'") from fixture
+        # so the high-priority class has zero priority-scoped coverage.
+        c["failure_conditions"] = [
+            fc for fc in c["failure_conditions"] if fc["condition_id"] != "F3"
+        ]
+        # Drop existing high-priority dim D4 from fixture so it does not
+        # contaminate the assertion. Then add a fresh D6 high-priority that
+        # has neither id ref nor priority-scope cover.
+        c["acceptance_dimensions"] = [
+            d for d in c["acceptance_dimensions"] if d["priority"] != "high"
+        ]
+        c["acceptance_dimensions"].append(
+            {"id": "D6", "name": "orphan_criterion", "description": "x", "priority": "high"}
+        )
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(
+            any("SC-10" in w and "D6" in w for w in warnings),
+            f"expected SC-10 to fire on orphan high-priority D6, got: {warnings}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
