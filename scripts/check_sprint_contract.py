@@ -107,15 +107,16 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
     dims = contract.get("acceptance_dimensions", [])
     if len(dims) == 1:
         warnings.append(
-            "SC-2 WARNING: single-dimension contract; consider whether this mode needs "
-            "sprint contract at all"
+            "SC-2 WARNING: contract has only 1 acceptance dimension; "
+            "consider whether this mode needs sprint contract at all"
         )
 
-    # SC-3 no mandatory dimension
+    # SC-3 no mandatory dimension. Empty dims handled by schema validation
+    # (minItems: 1); SC-3 only fires when dims exist but lack mandatory.
     if dims and not any(d.get("priority") == "mandatory" for d in dims):
         warnings.append(
-            "SC-3 WARNING: no mandatory-priority dimension; failure_conditions "
-            "referencing 'mandatory' will be vacuous"
+            f"SC-3 WARNING: 0 of {len(dims)} acceptance dimensions are mandatory; "
+            "failure_conditions referencing 'mandatory' will be vacuous"
         )
 
     return warnings

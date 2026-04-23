@@ -362,6 +362,18 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, None)
         self.assertTrue(any("SC-3" in w for w in warnings))
 
+    def test_sc2_multi_dimension_does_not_warn(self):
+        """Negative case: 5-dim default fixture must not trigger SC-2."""
+        from scripts.check_sprint_contract import warn_suspicious
+        warnings = warn_suspicious(_valid_reviewer_full_contract(), None)
+        self.assertFalse(any("SC-2" in w for w in warnings))
+
+    def test_sc3_with_mandatory_does_not_warn(self):
+        """Negative case: default fixture has 3 mandatory dims, SC-3 must skip."""
+        from scripts.check_sprint_contract import warn_suspicious
+        warnings = warn_suspicious(_valid_reviewer_full_contract(), None)
+        self.assertFalse(any("SC-3" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
