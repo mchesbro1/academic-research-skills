@@ -103,6 +103,21 @@ def warn_suspicious(contract: dict, ars_current_version: str | None) -> list[str
                 f"current ARS v{cv_major}; retirement candidate"
             )
 
+    # SC-2 single dimension
+    dims = contract.get("acceptance_dimensions", [])
+    if len(dims) == 1:
+        warnings.append(
+            "SC-2 WARNING: single-dimension contract; consider whether this mode needs "
+            "sprint contract at all"
+        )
+
+    # SC-3 no mandatory dimension
+    if dims and not any(d.get("priority") == "mandatory" for d in dims):
+        warnings.append(
+            "SC-3 WARNING: no mandatory-priority dimension; failure_conditions "
+            "referencing 'mandatory' will be vacuous"
+        )
+
     return warnings
 
 

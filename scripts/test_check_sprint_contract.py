@@ -337,6 +337,31 @@ class TestSoftWarnings(unittest.TestCase):
         warnings = warn_suspicious(c, "v3.6.2")
         self.assertFalse(any("SC-1" in w for w in warnings))
 
+    def test_sc2_single_dimension_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        c["acceptance_dimensions"] = c["acceptance_dimensions"][:1]
+        # Remove failure_conditions referencing D2-D5 so we don't trigger SC-4
+        c["failure_conditions"] = [
+            {
+                "condition_id": "F0",
+                "severity": 10,
+                "cross_reviewer_quantifier": "all",
+                "expression": "D1 scores 'pass'",
+                "action": "editorial_decision=accept",
+            }
+        ]
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-2" in w for w in warnings))
+
+    def test_sc3_no_mandatory_warns(self):
+        from scripts.check_sprint_contract import warn_suspicious
+        c = _valid_reviewer_full_contract()
+        for d in c["acceptance_dimensions"]:
+            d["priority"] = "normal"
+        warnings = warn_suspicious(c, None)
+        self.assertTrue(any("SC-3" in w for w in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()
