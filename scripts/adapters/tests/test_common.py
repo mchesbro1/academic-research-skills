@@ -5,6 +5,7 @@ import yaml
 from scripts.adapters._common import (
     sanitize_citation_key,
     make_citation_key,
+    ensure_unique_citekey,
     parse_csl_name,
     parse_semicolon_names,
     dump_yaml_stable,
@@ -328,3 +329,37 @@ def test_path_to_file_uri_accepts_string():
     # The helper accepts both Path and str inputs.
     p = Path(__file__)
     assert path_to_file_uri(str(p)) == path_to_file_uri(p)
+
+
+# --- ensure_unique_citekey ---
+
+def test_ensure_unique_citekey_passes_through_unique():
+    existing: set[str] = set()
+    assert ensure_unique_citekey("smith2024", existing) == "smith2024"
+    assert "smith2024" in existing
+
+
+def test_ensure_unique_citekey_disambiguates_duplicates():
+    existing = {"smith2024"}
+    out = ensure_unique_citekey("smith2024", existing)
+    assert out == "smith2024a"
+    assert out in existing
+    # second collision keeps incrementing
+    assert ensure_unique_citekey("smith2024", existing) == "smith2024b"
+
+
+def test_ensure_unique_citekey_normalizes_invalid_base():
+    # Schema requires ^[A-Za-z]; bases that don't satisfy it (empty,
+    # leading digit, leading punctuation) must be sanitized + prefixed
+    # so the returned key always passes the citation_key pattern.
+    assert ensure_unique_citekey("", set()) == "ref"
+    assert ensure_unique_citekey("2024paper", set()).startswith("ref")
+    assert ensure_unique_citekey("@key2024", set())[0].isalpha()
+
+
+def test_ensure_unique_citekey_strips_disallowed_chars():
+    # Schema pattern: ^[A-Za-z][A-Za-z0-9_:-]*$. Spaces and other punct
+    # are stripped so the result satisfies the pattern.
+    out = ensure_unique_citekey("Smith Jones 2024!", set())
+    assert all(c.isalnum() or c in "_:-" for c in out)
+    assert out[0].isalpha()

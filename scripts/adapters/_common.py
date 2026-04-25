@@ -87,6 +87,41 @@ def make_citation_key(
     raise RuntimeError("exhausted citation key suffix space")  # practically unreachable
 
 
+def ensure_unique_citekey(key: str, existing: set[str]) -> str:
+    """Disambiguate a pre-existing citation key against ``existing``.
+
+    Used by adapters whose source already supplies a citekey (zotero
+    Better BibTeX, obsidian frontmatter ``citekey:``). The returned
+    key is sanitized to satisfy the schema pattern
+    ``^[A-Za-z][A-Za-z0-9_:-]*$`` and is added to ``existing`` by
+    reference. Collisions get an alpha suffix (a, b, ..., z, aa, ...)
+    just like ``make_citation_key``.
+
+    Empty / leading-digit / leading-punct bases fall back to ``ref``.
+    """
+    cleaned_chars = []
+    for ch in key:
+        if ch.isalnum() or ch in "_:-":
+            cleaned_chars.append(ch)
+    base = "".join(cleaned_chars)
+    if not base or not base[0].isalpha():
+        # Prefix with 'ref' so the result satisfies the schema's
+        # leading-letter constraint while preserving the original
+        # numeric/punctuated tail when one exists.
+        base = f"ref{base}" if base else "ref"
+
+    if base not in existing:
+        existing.add(base)
+        return base
+
+    for suffix in _alpha_suffixes():
+        candidate = f"{base}{suffix}"
+        if candidate not in existing:
+            existing.add(candidate)
+            return candidate
+    raise RuntimeError("exhausted citation key suffix space")
+
+
 def parse_csl_name(raw: str) -> dict[str, str]:
     """Parse a single name string into a CSL-JSON name object.
 
