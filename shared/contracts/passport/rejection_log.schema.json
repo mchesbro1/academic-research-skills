@@ -59,7 +59,8 @@
         },
         "detail": {
           "type": "string",
-          "description": "Free-text explanation. Required when reason='other' (enforced by allOf below). Recommended otherwise."
+          "minLength": 1,
+          "description": "Free-text explanation. Required when reason='other' (enforced by allOf below). Recommended otherwise. Must be non-empty when present — empty strings defeat the 'interpretable rejection' contract."
         },
         "raw": {
           "type": ["object", "string"],

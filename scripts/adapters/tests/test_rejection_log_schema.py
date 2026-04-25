@@ -186,3 +186,86 @@ def test_invalid_generated_at_format_fails():
     }
     with pytest.raises(ValidationError):
         _validator(schema).validate(log)
+
+
+# --- T3-review P2 + test gaps (codex 2026-04-25) ---
+
+def test_reason_other_with_empty_detail_fails():
+    """detail must be non-empty when present. Spec calls it a
+    'free-text explanation'; empty string defeats that contract.
+    Schema enforces via detail.minLength=1."""
+    schema = _load_schema()
+    log = {
+        "adapter_name": "x",
+        "adapter_version": "1",
+        "generated_at": "2026-04-23T00:00:00Z",
+        "rejected": [{"source": "s", "reason": "other", "detail": ""}],
+    }
+    with pytest.raises(ValidationError):
+        _validator(schema).validate(log)
+
+
+def test_top_level_additional_properties_rejected():
+    schema = _load_schema()
+    log = {
+        "adapter_name": "x",
+        "adapter_version": "1",
+        "generated_at": "2026-04-23T00:00:00Z",
+        "rejected": [],
+        "bogus_top_level": "nope",
+    }
+    with pytest.raises(ValidationError):
+        _validator(schema).validate(log)
+
+
+def test_input_source_round_trip():
+    schema = _load_schema()
+    log = {
+        "adapter_name": "x",
+        "adapter_version": "1",
+        "generated_at": "2026-04-23T00:00:00Z",
+        "input_source": "/Users/u/refs",
+        "rejected": [],
+    }
+    _validator(schema).validate(log)
+
+
+def test_summary_round_trip():
+    schema = _load_schema()
+    log = {
+        "adapter_name": "x",
+        "adapter_version": "1",
+        "generated_at": "2026-04-23T00:00:00Z",
+        "rejected": [],
+        "summary": {
+            "total_input": 10,
+            "total_accepted": 7,
+            "total_rejected": 3,
+        },
+    }
+    _validator(schema).validate(log)
+
+
+def test_summary_rejects_unknown_field():
+    schema = _load_schema()
+    log = {
+        "adapter_name": "x",
+        "adapter_version": "1",
+        "generated_at": "2026-04-23T00:00:00Z",
+        "rejected": [],
+        "summary": {"total_input": 1, "made_up": 0},
+    }
+    with pytest.raises(ValidationError):
+        _validator(schema).validate(log)
+
+
+def test_rejection_missing_source_fails():
+    schema = _load_schema()
+    log = {
+        "adapter_name": "x",
+        "adapter_version": "1",
+        "generated_at": "2026-04-23T00:00:00Z",
+        "rejected": [{"reason": "adapter_error"}],
+    }
+    with pytest.raises(ValidationError):
+        _validator(schema).validate(log)
