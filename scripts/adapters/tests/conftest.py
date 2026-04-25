@@ -4,8 +4,10 @@ Provides:
 - `repo_root` : Path to the ARS repo root
 - `adapters_dir` : Path to scripts/adapters/
 - `examples_dir` : Path to scripts/adapters/examples/
-- `clean_timestamps(doc)` : helper that blanks `generated_at` and
-   `obtained_at` fields so byte-identical comparisons are possible.
+- `clean_timestamps(doc)` : helper that blanks `generated_at`,
+   `obtained_at`, `source_pointer`, and `input_source` fields so
+   byte-identical comparisons are possible across machines (absolute
+   paths differ).
 - `load_yaml(path)` : convenience YAML loader.
 """
 from __future__ import annotations
@@ -46,10 +48,15 @@ def _strip_keys(obj, keys_to_blank: set[str]):
 @pytest.fixture
 def clean_timestamps():
     """Return a function that returns a copy of a dict/list with all
-    `generated_at` and `obtained_at` values blanked to '<TIMESTAMP>'. Used to
-    compare adapter output against expected fixtures without flakiness."""
+    `generated_at`, `obtained_at`, `source_pointer`, and `input_source`
+    values blanked to '<TIMESTAMP>'. Used to compare adapter output against
+    expected fixtures without flakiness across machines (absolute paths
+    differ; timestamps drift)."""
     def _clean(doc):
-        return _strip_keys(copy.deepcopy(doc), {"generated_at", "obtained_at"})
+        return _strip_keys(
+            copy.deepcopy(doc),
+            {"generated_at", "obtained_at", "source_pointer", "input_source"},
+        )
     return _clean
 
 
