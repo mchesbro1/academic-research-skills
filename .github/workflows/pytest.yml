@@ -41,4 +41,6 @@ jobs:
           pip install -r requirements-dev.txt pytest
 
       - name: Run adapter tests
+        env:
+          PYTHONPATH: .
         run: pytest scripts/adapters/tests/ -v
