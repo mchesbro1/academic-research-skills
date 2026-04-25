@@ -9,6 +9,7 @@ from scripts.adapters._common import (
     parse_semicolon_names,
     dump_yaml_stable,
     now_iso,
+    path_to_file_uri,
     write_passport,
     write_rejection_log,
     ADAPTER_SPEC_VERSION,
@@ -299,3 +300,31 @@ def test_write_rejection_log_with_summary_totals(tmp_path: Path):
         "total_accepted": 8,
         "total_rejected": 2,
     }
+
+
+# --- path_to_file_uri ---
+
+def test_path_to_file_uri_encodes_spaces(tmp_path: Path):
+    p = tmp_path / "Lee 2024 paper.pdf"
+    p.touch()
+    uri = path_to_file_uri(p)
+    assert uri.startswith("file://")
+    assert " " not in uri
+    assert "%20" in uri
+
+
+def test_path_to_file_uri_resolves_relative(tmp_path: Path, monkeypatch):
+    p = tmp_path / "Smith2024.pdf"
+    p.touch()
+    monkeypatch.chdir(tmp_path)
+    uri = path_to_file_uri("Smith2024.pdf")
+    assert uri.endswith("Smith2024.pdf")
+    assert uri.startswith("file://")
+    # absolute, not relative
+    assert "://./" not in uri
+
+
+def test_path_to_file_uri_accepts_string():
+    # The helper accepts both Path and str inputs.
+    p = Path(__file__)
+    assert path_to_file_uri(str(p)) == path_to_file_uri(p)

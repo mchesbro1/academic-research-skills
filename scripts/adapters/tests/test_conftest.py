@@ -75,6 +75,19 @@ def test_clean_timestamps_handles_no_match(clean_timestamps):
     assert out is not doc
 
 
+def test_clean_timestamps_extra_blank_widens_set(clean_timestamps):
+    """folder_scan-style adapters whose source_pointer is a machine-
+    dependent absolute path must opt in to widen the blanking set; T8/T9
+    keep the default narrow behavior so broken URIs fail loudly."""
+    doc = {"obtained_at": "X", "source_pointer": "/abs/path", "year": 2024}
+    narrow = clean_timestamps(doc)
+    assert narrow["source_pointer"] == "/abs/path"  # not blanked by default
+    wide = clean_timestamps(doc, {"source_pointer"})
+    assert wide["source_pointer"] == "<TIMESTAMP>"
+    # narrow output unaffected by the wide call (no shared-state surprises)
+    assert narrow["source_pointer"] == "/abs/path"
+
+
 # --- load_yaml ---
 
 def test_load_yaml_round_trips(load_yaml, tmp_path: Path):

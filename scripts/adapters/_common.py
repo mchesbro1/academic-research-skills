@@ -12,6 +12,17 @@ from typing import Any
 
 import yaml
 
+
+def path_to_file_uri(path: Path | str) -> str:
+    """Build an RFC 8089 ``file://`` URI from a filesystem path.
+
+    Uses ``Path.as_uri()`` after resolving so spaces and reserved
+    characters are percent-encoded (``Lee 2024 paper.pdf`` →
+    ``file:///.../Lee%202024%20paper.pdf``). Naive ``f"file://{path}"``
+    yields invalid URIs and is the codex-flagged P1 from T7.
+    """
+    return Path(path).resolve().as_uri()
+
 ADAPTER_SPEC_VERSION = "1.0.0"  # bump when overview.md contract changes
 
 _NON_ALNUM = re.compile(r"[^A-Za-z0-9]+")

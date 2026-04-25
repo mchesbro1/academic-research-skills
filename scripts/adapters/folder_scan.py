@@ -31,6 +31,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 from scripts.adapters._common import (  # noqa: E402
     make_citation_key,
+    path_to_file_uri,
     write_passport,
     write_rejection_log,
     now_iso,
@@ -137,16 +138,22 @@ def main() -> int:
     rejected: list[dict] = []
     existing_keys: set[str] = set()
 
+    input_root = args.input.resolve()
     files = sorted(
         p for p in args.input.rglob("*") if p.is_file() and p.name != ".gitkeep"
     )
     for f in files:
+        # Use path relative to --input so two files with the same basename
+        # in different subdirectories remain distinguishable in both the
+        # passport (via source_pointer) and the rejection log.
+        rel = f.resolve().relative_to(input_root)
+        rel_str = str(rel)
         parsed = parse_filename(f.name)
         if not parsed:
             rejected.append({
-                "source": f.name,
+                "source": rel_str,
                 "reason": "authors_unparseable",
-                "raw": f.name,
+                "raw": rel_str,
                 "missing_fields": _missing_fields_for(f.name),
             })
             continue
@@ -162,7 +169,7 @@ def main() -> int:
             "title": parsed["title"],
             "authors": [{"family": parsed["family"]}],
             "year": parsed["year"],
-            "source_pointer": f"file://{f.resolve()}",
+            "source_pointer": path_to_file_uri(f),
             "obtained_via": "folder-scan",
             "obtained_at": now_iso(),
             "adapter_name": ADAPTER_NAME,
