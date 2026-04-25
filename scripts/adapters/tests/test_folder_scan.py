@@ -184,6 +184,34 @@ def test_mixed_valid_invalid_in_nested_tree(tmp_path):
     )
 
 
+def test_symlink_pointing_outside_input_does_not_crash(tmp_path):
+    # Self-audit: Codex round-1 deferred symlinks but my P2b fix used
+    # f.resolve().relative_to(input_root), which raises ValueError when a
+    # symlink target lives outside input_root. The hardened impl uses
+    # f.relative_to(args.input) on the un-resolved path and falls back to
+    # basename if even that fails.
+    import os
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "Smith2024_real.pdf").touch()
+    inside = tmp_path / "inside"
+    inside.mkdir()
+    os.symlink(outside / "Smith2024_real.pdf", inside / "Smith2024_link.pdf")
+    p_out = tmp_path / "p.yaml"
+    r_out = tmp_path / "r.yaml"
+    r = _run("--input", str(inside), "--passport", str(p_out), "--rejection-log", str(r_out))
+    assert r.returncode == 0, r.stderr
+    import yaml
+    with p_out.open() as f:
+        doc = yaml.safe_load(f)
+    assert len(doc["literature_corpus"]) == 1
+    # The symlink's filename is what's parsed (Smith2024_link.pdf), not the
+    # target's filename. Citation key derives from filename, so 'link' tail
+    # appears as the title-hint contribution.
+    assert doc["literature_corpus"][0]["citation_key"] == "smith2024link"
+    assert doc["literature_corpus"][0]["source_pointer"].startswith("file://")
+
+
 def test_parseable_non_pdf_extension(tmp_path):
     # Codex P3: filename parser is extension-agnostic — non-PDF parseable
     # files should still be accepted (e.g. .epub, .djvu, .ps).
