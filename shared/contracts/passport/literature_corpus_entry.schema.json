@@ -86,6 +86,19 @@
     }
   },
 
+  "allOf": [
+    {
+      "description": "When obtained_via='other' (user-written custom adapter), adapter_name MUST be set so consumers can attribute the entry. Reference adapters (folder-scan, zotero-bbt-export, obsidian-vault) and other enum values do not trigger this constraint.",
+      "if": {
+        "properties": { "obtained_via": { "const": "other" } },
+        "required": ["obtained_via"]
+      },
+      "then": {
+        "required": ["adapter_name"]
+      }
+    }
+  ],
+
   "$defs": {
     "csl_name": {
       "oneOf": [

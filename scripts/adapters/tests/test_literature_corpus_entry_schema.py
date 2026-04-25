@@ -14,6 +14,14 @@ def _load_schema():
         return json.load(f)
 
 
+def _validator(schema):
+    """Validator with format_checker so format-keyword constraints
+    (e.g. date-time on obtained_at) are actually enforced."""
+    return Draft202012Validator(
+        schema, format_checker=Draft202012Validator.FORMAT_CHECKER
+    )
+
+
 def test_schema_file_exists():
     assert SCHEMA_PATH.exists(), f"schema missing at {SCHEMA_PATH}"
 
@@ -48,7 +56,7 @@ def test_valid_personal_author_entry_passes():
         "year": 2024,
         "source_pointer": "https://doi.org/10.1234/xyz",
     }
-    Draft202012Validator(schema).validate(entry)
+    _validator(schema).validate(entry)
 
 
 def test_valid_institution_author_entry_passes():
@@ -60,7 +68,7 @@ def test_valid_institution_author_entry_passes():
         "year": 2024,
         "source_pointer": "https://www.who.int/report",
     }
-    Draft202012Validator(schema).validate(entry)
+    _validator(schema).validate(entry)
 
 
 def test_missing_required_field_fails():
@@ -74,7 +82,7 @@ def test_missing_required_field_fails():
         "source_pointer": "file:///x.pdf",
     }
     with pytest.raises(ValidationError):
-        Draft202012Validator(schema).validate(entry)
+        _validator(schema).validate(entry)
 
 
 def test_author_must_be_either_personal_or_literal():
@@ -88,7 +96,7 @@ def test_author_must_be_either_personal_or_literal():
         "source_pointer": "file:///x.pdf",
     }
     with pytest.raises(ValidationError):
-        Draft202012Validator(schema).validate(entry)
+        _validator(schema).validate(entry)
 
 
 def test_year_out_of_range_fails():
@@ -102,7 +110,7 @@ def test_year_out_of_range_fails():
         "source_pointer": "file:///x.pdf",
     }
     with pytest.raises(ValidationError):
-        Draft202012Validator(schema).validate(entry)
+        _validator(schema).validate(entry)
 
 
 def test_citation_key_pattern_rejects_leading_digit():
@@ -116,7 +124,7 @@ def test_citation_key_pattern_rejects_leading_digit():
         "source_pointer": "file:///x.pdf",
     }
     with pytest.raises(ValidationError):
-        Draft202012Validator(schema).validate(entry)
+        _validator(schema).validate(entry)
 
 
 def test_additional_property_fails():
@@ -131,7 +139,7 @@ def test_additional_property_fails():
         "custom_field": "should_not_be_allowed",
     }
     with pytest.raises(ValidationError):
-        Draft202012Validator(schema).validate(entry)
+        _validator(schema).validate(entry)
 
 
 def test_obtained_via_enum_constrained():
@@ -146,4 +154,82 @@ def test_obtained_via_enum_constrained():
         "obtained_via": "rubber-duck",
     }
     with pytest.raises(ValidationError):
-        Draft202012Validator(schema).validate(entry)
+        _validator(schema).validate(entry)
+
+
+def test_obtained_via_other_without_adapter_name_fails():
+    """Spec §obtained_via: 'Required when obtained_via=other'.
+    Schema MUST enforce this conditionally, not via prose only."""
+    from jsonschema.exceptions import ValidationError
+    schema = _load_schema()
+    entry = {
+        "citation_key": "chen2024",
+        "title": "T",
+        "authors": [{"family": "C"}],
+        "year": 2024,
+        "source_pointer": "file:///x.pdf",
+        "obtained_via": "other",
+        # adapter_name missing — must fail
+    }
+    with pytest.raises(ValidationError):
+        _validator(schema).validate(entry)
+
+
+def test_obtained_via_other_with_adapter_name_passes():
+    schema = _load_schema()
+    entry = {
+        "citation_key": "chen2024",
+        "title": "T",
+        "authors": [{"family": "C"}],
+        "year": 2024,
+        "source_pointer": "file:///x.pdf",
+        "obtained_via": "other",
+        "adapter_name": "my-custom-adapter",
+    }
+    _validator(schema).validate(entry)
+
+
+def test_obtained_via_known_value_does_not_require_adapter_name():
+    """Conditional only fires for 'other'. Reference adapters
+    (zotero-bbt-export, obsidian-vault, folder-scan) must validate
+    without adapter_name."""
+    schema = _load_schema()
+    entry = {
+        "citation_key": "chen2024",
+        "title": "T",
+        "authors": [{"family": "C"}],
+        "year": 2024,
+        "source_pointer": "file:///x.pdf",
+        "obtained_via": "folder-scan",
+    }
+    _validator(schema).validate(entry)
+
+
+def test_invalid_obtained_at_format_fails():
+    """obtained_at: format=date-time must be enforced. Without
+    format_checker the keyword is silently ignored."""
+    from jsonschema.exceptions import ValidationError
+    schema = _load_schema()
+    entry = {
+        "citation_key": "chen2024",
+        "title": "T",
+        "authors": [{"family": "C"}],
+        "year": 2024,
+        "source_pointer": "file:///x.pdf",
+        "obtained_at": "not-a-date",
+    }
+    with pytest.raises(ValidationError):
+        _validator(schema).validate(entry)
+
+
+def test_valid_obtained_at_format_passes():
+    schema = _load_schema()
+    entry = {
+        "citation_key": "chen2024",
+        "title": "T",
+        "authors": [{"family": "C"}],
+        "year": 2024,
+        "source_pointer": "file:///x.pdf",
+        "obtained_at": "2026-04-25T10:30:00Z",
+    }
+    _validator(schema).validate(entry)
