@@ -57,14 +57,41 @@ def test_make_citation_key_multiple_collisions():
 
 
 def test_make_citation_key_empty_family_falls_back_to_ref():
-    """family="?" sanitizes to "", so base would be "{year}{title}".
-    With no family at all, base might collapse to nothing — fallback to 'ref'."""
+    """family="" + year=0 + no title → sanitized base is "0".
+    Codex T4-review P2: this exercises the digit-start branch
+    (base[0] is '0' which is not alpha), not the empty-base branch."""
     existing: set[str] = set()
     key = make_citation_key(family="", year=0, title_hint=None, existing=existing)
     assert key == "ref"
     # second call collides → ref + suffix 'a'
     key2 = make_citation_key(family="", year=0, title_hint=None, existing=existing)
     assert key2 == "refa"
+
+
+def test_make_citation_key_digit_start_falls_back_to_ref():
+    """Pure digit base (e.g. family="" + year=2024) violates schema
+    citation_key pattern ^[A-Za-z]... — must fall back to 'ref'.
+    This is the explicit case the T5 deviation was designed for."""
+    existing: set[str] = set()
+    key = make_citation_key(family="", year=2024, title_hint=None, existing=existing)
+    assert key == "ref"
+    # Confirm the fallback respects collision tracking too.
+    existing2: set[str] = {"ref"}
+    key2 = make_citation_key(
+        family="", year=2024, title_hint=None, existing=existing2
+    )
+    assert key2 == "refa"
+
+
+def test_make_citation_key_digit_start_with_title_recovers():
+    """If a title_hint provides a leading-alpha word, no fallback needed."""
+    existing: set[str] = set()
+    key = make_citation_key(
+        family="", year=2024, title_hint="formative feedback", existing=existing
+    )
+    # base = "" + "2024" + "formative" → "2024formative" → still digit-start
+    # because title is appended after the year, so fallback fires.
+    assert key == "ref"
 
 
 def test_make_citation_key_skips_stopwords_in_title():

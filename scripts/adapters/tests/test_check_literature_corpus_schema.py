@@ -192,3 +192,92 @@ def test_rejection_log_other_reason_with_empty_detail_fails(tmp_path):
     _write_yaml(tmp_path, "rejection_log.yaml", log)
     r = _run(["--rejection-log", str(tmp_path / "rejection_log.yaml")])
     assert r.returncode != 0
+
+
+# --- T4-T6 patch (codex 2026-04-25) ---
+
+def test_passport_missing_literature_corpus_key_fails(tmp_path):
+    """[P1] A passport YAML without literature_corpus must fail lint.
+    Previously `data.get('literature_corpus', [])` defaulted to empty
+    list and silently passed."""
+    passport = {"some_other_field": "value"}
+    _write_yaml(tmp_path, "passport.yaml", passport)
+    r = _run(["--passport", str(tmp_path / "passport.yaml")])
+    assert r.returncode != 0
+    assert "literature_corpus" in r.stderr.lower()
+
+
+def test_passport_empty_dict_fails(tmp_path):
+    """[P1] {} must fail too — same root cause."""
+    passport = {}
+    _write_yaml(tmp_path, "passport.yaml", passport)
+    r = _run(["--passport", str(tmp_path / "passport.yaml")])
+    assert r.returncode != 0
+
+
+def test_passport_top_level_list_fails_cleanly(tmp_path):
+    """[P2] Top-level list YAML must produce a controlled lint error,
+    not crash with AttributeError on .get()."""
+    p = tmp_path / "passport.yaml"
+    p.write_text("- a\n- b\n- c\n", encoding="utf-8")
+    r = _run(["--passport", str(p)])
+    assert r.returncode != 0
+    # Crash would surface a Python traceback. Controlled error path emits
+    # something readable on stderr.
+    assert "Traceback" not in r.stderr
+    assert "AttributeError" not in r.stderr
+
+
+def test_passport_malformed_yaml_fails_cleanly(tmp_path):
+    """[P2] Malformed YAML must not surface yaml.ParserError to stderr;
+    the lint should report it as a per-file failure."""
+    p = tmp_path / "passport.yaml"
+    p.write_text("a: [\n", encoding="utf-8")  # unterminated flow seq
+    r = _run(["--passport", str(p)])
+    assert r.returncode != 0
+    assert "Traceback" not in r.stderr
+
+
+def test_rejection_log_top_level_list_fails_cleanly(tmp_path):
+    """[P2] Same crash protection on the rejection-log path."""
+    p = tmp_path / "rejection_log.yaml"
+    p.write_text("- a\n- b\n", encoding="utf-8")
+    r = _run(["--rejection-log", str(p)])
+    assert r.returncode != 0
+    assert "Traceback" not in r.stderr
+
+
+def test_rejection_log_malformed_yaml_fails_cleanly(tmp_path):
+    p = tmp_path / "rejection_log.yaml"
+    p.write_text("a: [\n", encoding="utf-8")
+    r = _run(["--rejection-log", str(p)])
+    assert r.returncode != 0
+    assert "Traceback" not in r.stderr
+
+
+def test_default_mode_catches_bad_examples_fixture(tmp_path):
+    """[P2] Tighten the default-scan test. Drop a known-bad
+    expected_passport.yaml under a fake examples root and verify the
+    lint exits non-zero. We do this by setting EXAMPLES_ROOT via env
+    override (not currently supported), so we instead invoke the
+    script with cwd pointing at a synthesized repo layout. Simpler:
+    create the bad fixture under the real repo's examples_root in a
+    new sub-dir, run, then clean up."""
+    # Synthesize a fake adapter dir under the real repo so the
+    # script's EXAMPLES_ROOT glob finds it.
+    fake_dir = REPO_ROOT / "scripts/adapters/examples/_codex_negative_test"
+    fake_dir.mkdir(parents=True, exist_ok=True)
+    bad = fake_dir / "expected_passport.yaml"
+    bad.write_text(
+        "literature_corpus:\n  - citation_key: bad2024\n    "
+        "title: T\n    authors:\n      - {}\n    year: 2024\n    "
+        "source_pointer: file:///x.pdf\n",
+        encoding="utf-8",
+    )
+    try:
+        r = _run([])  # default mode = scan examples
+        assert r.returncode != 0
+        assert "_codex_negative_test" in r.stderr or "validation" in r.stderr.lower()
+    finally:
+        bad.unlink(missing_ok=True)
+        fake_dir.rmdir()

@@ -71,14 +71,39 @@ def _build_validator(schema: dict[str, Any]) -> Draft202012Validator:
     )
 
 
+def _safe_load_yaml(path: Path) -> tuple[Any, str | None]:
+    """Parse a YAML file. Returns (data, error_message). On success
+    error_message is None; on parse failure data is None and the
+    message names the file and the parser error. Does not raise."""
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return yaml.safe_load(f), None
+    except yaml.YAMLError as e:
+        return None, f"{path}: malformed YAML: {e}"
+    except OSError as e:
+        return None, f"{path}: cannot read file: {e}"
+
+
 def validate_passport(path: Path, entry_schema: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    with path.open("r", encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+    data, parse_err = _safe_load_yaml(path)
+    if parse_err:
+        errors.append(parse_err)
+        return errors
     if data is None:
         errors.append(f"{path}: empty YAML file")
         return errors
-    corpus = data.get("literature_corpus", [])
+    if not isinstance(data, dict):
+        errors.append(
+            f"{path}: passport YAML must be a mapping (got {type(data).__name__})"
+        )
+        return errors
+    if "literature_corpus" not in data:
+        errors.append(
+            f"{path}: missing required 'literature_corpus' key (a passport must declare it, even as an empty list)"
+        )
+        return errors
+    corpus = data["literature_corpus"]
     if not isinstance(corpus, list):
         errors.append(f"{path}: 'literature_corpus' must be a list")
         return errors
@@ -102,10 +127,17 @@ def validate_passport(path: Path, entry_schema: dict[str, Any]) -> list[str]:
 
 def validate_rejection_log(path: Path, log_schema: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    with path.open("r", encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+    data, parse_err = _safe_load_yaml(path)
+    if parse_err:
+        errors.append(parse_err)
+        return errors
     if data is None:
         errors.append(f"{path}: empty YAML file")
+        return errors
+    if not isinstance(data, dict):
+        errors.append(
+            f"{path}: rejection log YAML must be a mapping (got {type(data).__name__})"
+        )
         return errors
     validator = _build_validator(log_schema)
     for err in validator.iter_errors(data):
