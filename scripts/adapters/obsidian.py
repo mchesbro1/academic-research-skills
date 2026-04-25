@@ -34,6 +34,7 @@ from scripts.adapters._common import (  # noqa: E402
     write_passport,
     write_rejection_log,
     parse_semicolon_names,
+    ensure_unique_citekey,
     now_iso,
 )
 
@@ -49,16 +50,29 @@ RE_YEAR_LINE = re.compile(r"^\*\*Year\*\*:\s*((?:19|20)\d{2})\s*$", re.MULTILINE
 RE_YEAR_IN_SOURCE = re.compile(r"((?:19|20)\d{2})")
 
 
-def split_frontmatter(content: str) -> tuple[dict | None, str]:
+# Sentinel: split_frontmatter uses this when '---' is present but YAML is invalid,
+# so callers can reject malformed files rather than silently falling through to
+# Convention B (which would misclassify the filename stem as a valid citekey).
+_SENTINEL_MALFORMED = object()
+
+
+def split_frontmatter(content: str) -> tuple[Any, str]:
+    """Parse YAML frontmatter from `content`.
+
+    Returns (fm, body) where:
+    - fm is a dict            → valid frontmatter
+    - fm is None              → no leading '---' delimiter (fall through to Convention B)
+    - fm is _SENTINEL_MALFORMED → '---' present but YAML invalid (reject as malformed)
+    """
     m = RE_FRONTMATTER.match(content)
     if not m:
         return None, content
     try:
         fm = yaml.safe_load(m.group(1)) or {}
-    except yaml.YAMLError:
-        return None, content
+    except yaml.YAMLError as exc:
+        return _SENTINEL_MALFORMED, str(exc)
     if not isinstance(fm, dict):
-        return None, content
+        return _SENTINEL_MALFORMED, f"frontmatter parsed as {type(fm).__name__}, expected mapping"
     return fm, m.group(2)
 
 
@@ -76,13 +90,65 @@ def build_pointer(vault_name: str, rel_path: Path) -> str:
     )
 
 
+def _coerce_year(raw: Any) -> tuple[int | None, str | None]:
+    """Try to parse year to int.
+
+    Returns (year_int, None) on success, or (None, error_detail) on failure.
+    Accepts int directly, or a string whose first 4 characters parse as a
+    4-digit year (e.g. "2024", "2024-01", "2024-01-15" all yield 2024).
+    """
+    if isinstance(raw, int):
+        return raw, None
+    if isinstance(raw, str):
+        # Accept leading-year patterns: "2024", "2024-01", "2024-01-15" → 2024
+        candidate = raw.strip()[:4]
+        if len(candidate) == 4 and candidate.isdigit():
+            return int(candidate), None
+    return None, f"cannot parse year from {raw!r}"
+
+
+def _coerce_authors(raw: Any) -> tuple[list[dict] | None, str | None]:
+    """Coerce frontmatter authors value to a CSL name list.
+
+    Accepts:
+    - list of dicts, each with 'family' or 'literal'  → validated, returned as-is
+    - str                                               → parsed via parse_semicolon_names
+    Returns (authors_list, None) on success, or (None, error_detail) on failure.
+    """
+    if isinstance(raw, str):
+        parsed = parse_semicolon_names(raw)
+        if not parsed:
+            return None, f"string {raw!r} yielded no parseable names"
+        return parsed, None
+    if isinstance(raw, list):
+        for item in raw:
+            if not isinstance(item, dict):
+                return None, f"authors list contains non-dict item: {item!r}"
+            if "family" not in item and "literal" not in item:
+                return None, f"author dict missing 'family' and 'literal': {item!r}"
+        return raw, None
+    return None, f"authors must be a string or list, got {type(raw).__name__}"
+
+
 def process_file(
-    md_path: Path, vault_root: Path, vault_name: str
+    md_path: Path, vault_root: Path, vault_name: str, existing: set[str]
 ) -> tuple[dict | None, dict | None]:
-    """Return (accepted_entry, rejection) — exactly one is None."""
+    """Return (accepted_entry, rejection) — exactly one is None.
+
+    `existing` is a set of already-chosen citation_key values; it is
+    updated in-place when a new key is allocated.
+    """
     rel = md_path.relative_to(vault_root)
     raw = md_path.read_text(encoding="utf-8")
     fm, body = split_frontmatter(raw)
+
+    if fm is _SENTINEL_MALFORMED:
+        return None, {
+            "source": str(rel),
+            "reason": "invalid_field_format",
+            "detail": f"YAML frontmatter parse error: {body}",
+            "raw": str(rel),
+        }
 
     # Convention A: frontmatter has citekey
     if fm is not None and "citekey" in fm:
@@ -94,12 +160,32 @@ def process_file(
                 "missing_fields": missing,
                 "raw": str(rel),
             }
-        # Build entry — authors come directly from frontmatter YAML (already structured)
+
+        year_val, year_err = _coerce_year(fm["year"])
+        if year_err is not None:
+            return None, {
+                "source": str(rel),
+                "reason": "year_unparseable",
+                "detail": year_err,
+                "raw": str(rel),
+            }
+
+        authors_val, authors_err = _coerce_authors(fm["authors"])
+        if authors_err is not None:
+            return None, {
+                "source": str(rel),
+                "reason": "authors_unparseable",
+                "detail": authors_err,
+                "raw": str(rel),
+            }
+
+        citation_key = ensure_unique_citekey(str(fm["citekey"]), existing)
+
         entry: dict[str, Any] = {
-            "citation_key": str(fm["citekey"]),
+            "citation_key": citation_key,
             "title": str(fm["title"]),
-            "authors": fm["authors"],
-            "year": int(fm["year"]),
+            "authors": authors_val,
+            "year": year_val,
             "source_pointer": build_pointer(vault_name, rel),
             "obtained_via": "obsidian-vault",
             "obtained_at": now_iso(),
@@ -146,8 +232,10 @@ def process_file(
             "raw": str(rel),
         }
 
+    citation_key = ensure_unique_citekey(citekey, existing)
+
     entry = {
-        "citation_key": citekey,
+        "citation_key": citation_key,
         "title": title,
         "authors": authors,
         "year": year,
@@ -193,9 +281,10 @@ def main() -> int:
     vault_name = args.input.name
     entries: list[dict] = []
     rejected: list[dict] = []
+    existing_keys: set[str] = set()
 
     for md in iter_markdown_files(args.input):
-        accepted, rejection = process_file(md, args.input, vault_name)
+        accepted, rejection = process_file(md, args.input, vault_name, existing_keys)
         if accepted is not None:
             entries.append(accepted)
         elif rejection is not None:

@@ -126,3 +126,205 @@ def test_deterministic_output(tmp_path, load_yaml, clean_timestamps):
     _run("--input", str(VAULT), "--passport", str(p2), "--rejection-log", str(r2))
     assert clean_timestamps(load_yaml(p1)) == clean_timestamps(load_yaml(p2))
     assert clean_timestamps(load_yaml(r1)) == clean_timestamps(load_yaml(r2))
+
+
+# ---------------------------------------------------------------------------
+# P1 — year coercion + authors type validation
+# ---------------------------------------------------------------------------
+
+def test_year_leading_4_digit_string_accepted(tmp_path, load_yaml):
+    """Convention A: year='2024-01' (leading-year string) is accepted; year extracted as 2024."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "leading_year.md").write_text(
+        "---\ncitekey: leading2024\ntitle: T\nauthors:\n  - family: Smith\nyear: '2024-01'\n---\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert len(passport["literature_corpus"]) == 1
+    assert passport["literature_corpus"][0]["year"] == 2024
+
+
+def test_year_unparseable_is_rejected(tmp_path, load_yaml):
+    """Convention A: year='not-a-year' (non-numeric string) must be rejected with year_unparseable."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "bad_year.md").write_text(
+        "---\ncitekey: bad2024\ntitle: T\nauthors:\n  - family: Smith\nyear: 'unknown'\n---\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert passport["literature_corpus"] == []
+    rejection = load_yaml(r)
+    assert len(rejection["rejected"]) == 1
+    assert rejection["rejected"][0]["reason"] == "year_unparseable"
+    assert rejection["rejected"][0]["source"] == "bad_year.md"
+
+
+def test_authors_string_parsed_via_semicolon(tmp_path, load_yaml):
+    """Convention A: authors as a bare string 'Smith, J; Lee, K' must be parsed into CSL list."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "str_authors.md").write_text(
+        "---\ncitekey: smith2024\ntitle: A Study\nauthors: 'Smith, J; Lee, K'\nyear: 2024\n---\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert len(passport["literature_corpus"]) == 1
+    authors = passport["literature_corpus"][0]["authors"]
+    assert isinstance(authors, list)
+    assert authors[0]["family"] == "Smith"
+    assert authors[1]["family"] == "Lee"
+
+
+def test_authors_wrong_type_is_rejected(tmp_path, load_yaml):
+    """Convention A: authors=42 (invalid type) must be rejected with authors_unparseable."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "bad_authors.md").write_text(
+        "---\ncitekey: bad2024\ntitle: T\nauthors: 42\nyear: 2024\n---\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert passport["literature_corpus"] == []
+    rejection = load_yaml(r)
+    assert len(rejection["rejected"]) == 1
+    assert rejection["rejected"][0]["reason"] == "authors_unparseable"
+
+
+# ---------------------------------------------------------------------------
+# P2-A — duplicate citekey disambiguation
+# ---------------------------------------------------------------------------
+
+def test_duplicate_citekey_convention_a_disambiguated(tmp_path, load_yaml):
+    """Two Convention A notes with identical citekeys must both be accepted with suffix disambiguation."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "note1.md").write_text(
+        "---\ncitekey: smith2024\ntitle: First Paper\nauthors:\n  - family: Smith\nyear: 2024\n---\n",
+        encoding="utf-8",
+    )
+    (vault / "note2.md").write_text(
+        "---\ncitekey: smith2024\ntitle: Second Paper\nauthors:\n  - family: Smith\nyear: 2024\n---\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert len(passport["literature_corpus"]) == 2
+    keys = {e["citation_key"] for e in passport["literature_corpus"]}
+    assert "smith2024" in keys
+    assert "smith2024a" in keys
+
+
+# ---------------------------------------------------------------------------
+# P2-B — malformed YAML frontmatter
+# ---------------------------------------------------------------------------
+
+def test_malformed_yaml_frontmatter_rejected(tmp_path, load_yaml):
+    """File starting with '---' but containing invalid YAML must be rejected, not fall through to Convention B."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "malformed.md").write_text(
+        "---\nbad: [unclosed\n---\nbody content here\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert passport["literature_corpus"] == []
+    rejection = load_yaml(r)
+    assert len(rejection["rejected"]) == 1
+    rej = rejection["rejected"][0]
+    assert rej["reason"] in ("invalid_field_format", "adapter_error")
+    assert rej["source"] == "malformed.md"
+
+
+# ---------------------------------------------------------------------------
+# P3 — additional coverage
+# ---------------------------------------------------------------------------
+
+def test_empty_file_rejected(tmp_path, load_yaml):
+    """Empty .md file must be rejected (no frontmatter, no body, no title/authors/year)."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "empty.md").write_text("", encoding="utf-8")
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert passport["literature_corpus"] == []
+    rejection = load_yaml(r)
+    assert len(rejection["rejected"]) == 1
+
+
+def test_empty_frontmatter_only_rejected(tmp_path, load_yaml):
+    """File with only '---\\n---\\n' (empty frontmatter, no body) must be rejected."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "empty_fm.md").write_text("---\n---\n", encoding="utf-8")
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert passport["literature_corpus"] == []
+
+
+def test_source_pointer_url_encoding_for_spaces(tmp_path, load_yaml):
+    """Vault name and filename with spaces must produce valid percent-encoded obsidian:// URI."""
+    vault = tmp_path / "My KB"
+    vault.mkdir()
+    (vault / "Chen 2024.md").write_text(
+        "---\ncitekey: chen2024\ntitle: A Study\nauthors:\n  - family: Chen\nyear: 2024\n---\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    entry = passport["literature_corpus"][0]
+    assert "My%20KB" in entry["source_pointer"]
+    assert "Chen%202024" in entry["source_pointer"]
+    assert " " not in entry["source_pointer"]
+
+
+def test_all_rejected_corpus_produces_empty_passport(tmp_path, load_yaml):
+    """All-rejected corpus: passport has empty literature_corpus, rejection_log is populated."""
+    vault = tmp_path / "v"
+    vault.mkdir()
+    (vault / "only_invalid.md").write_text(
+        "This file has no frontmatter and no parseable structure.\n",
+        encoding="utf-8",
+    )
+    p = tmp_path / "p.yaml"
+    r = tmp_path / "r.yaml"
+    res = _run("--input", str(vault), "--passport", str(p), "--rejection-log", str(r))
+    assert res.returncode == 0
+    passport = load_yaml(p)
+    assert passport["literature_corpus"] == []
+    rejection = load_yaml(r)
+    assert len(rejection["rejected"]) >= 1
+    assert rejection["summary"]["total_rejected"] >= 1
