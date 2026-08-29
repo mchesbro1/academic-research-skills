@@ -1,0 +1,1030 @@
+<title>Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   TOKENS — light is the base; both dark states re-declare only tokens
+   ============================================================ */
+:root{
+  --paper:#F2F4F1;
+  --surface:#FFFFFF;
+  --surface-2:#E9EDE9;
+  --ink:#141A19;
+  --ink-2:#3D4845;
+  --muted:#6B7672;
+  --rule:#D5DBD6;
+  --rule-soft:#E4E9E4;
+
+  --accent:#0E6B5D;
+  --accent-soft:#D4E7E2;
+  --accent-ink:#0A4E44;
+  --on-accent:#FFFFFF;
+
+  --amber:#9A6714;
+  --amber-soft:#F0E4CB;
+  --coral:#B93E2C;
+  --coral-soft:#F4DDD8;
+
+  --console:#101614;
+  --console-ink:#DCE5E1;
+  --console-rule:#28322F;
+
+  --shadow:0 1px 2px rgba(20,26,25,.06), 0 8px 24px -12px rgba(20,26,25,.18);
+
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Newsreader",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --col:68ch;
+  --pad:clamp(20px,5vw,64px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1413;
+    --surface:#161D1B;
+    --surface-2:#1D2624;
+    --ink:#E6ECE8;
+    --ink-2:#BCC7C2;
+    --muted:#8B968F;
+    --rule:#2A3431;
+    --rule-soft:#212A28;
+
+    --accent:#57C9B1;
+    --accent-soft:#12332D;
+    --accent-ink:#8FDFCC;
+    --on-accent:#08201C;
+
+    --amber:#D9A441;
+    --amber-soft:#33280F;
+    --coral:#E8836C;
+    --coral-soft:#3A1D17;
+
+    --console:#080C0B;
+    --console-ink:#D3DCD8;
+    --console-rule:#1E2725;
+
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1413;
+  --surface:#161D1B;
+  --surface-2:#1D2624;
+  --ink:#E6ECE8;
+  --ink-2:#BCC7C2;
+  --muted:#8B968F;
+  --rule:#2A3431;
+  --rule-soft:#212A28;
+
+  --accent:#57C9B1;
+  --accent-soft:#12332D;
+  --accent-ink:#8FDFCC;
+  --on-accent:#08201C;
+
+  --amber:#D9A441;
+  --amber-soft:#33280F;
+  --coral:#E8836C;
+  --coral-soft:#3A1D17;
+
+  --console:#080C0B;
+  --console-ink:#D3DCD8;
+  --console-rule:#1E2725;
+
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 28px -14px rgba(0,0,0,.7);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent-soft);color:var(--accent-ink)}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:var(--col);margin:0 auto;padding:0 var(--pad)}
+.wide{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
+
+h1,h2,h3,h4{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.018em;line-height:1.15}
+h2{font-size:clamp(24px,3.4vw,32px)}
+h3{font-size:19px;letter-spacing:-.01em}
+h4{font-size:15px;letter-spacing:.01em}
+p{margin:0 0 1.05em}
+strong{font-weight:600;color:var(--ink)}
+
+.eyebrow{
+  font-family:var(--f-mono);font-size:11px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 10px;display:block;
+}
+.lede{font-size:20px;line-height:1.55;color:var(--ink-2)}
+
+section{padding:clamp(48px,7vw,86px) 0;border-top:1px solid var(--rule-soft)}
+section:first-of-type{border-top:0}
+.sec-head{margin-bottom:34px}
+.stack{display:flex;flex-direction:column;gap:22px}
+.stack-s{display:flex;flex-direction:column;gap:12px}
+
+/* ============================================================
+   MASTHEAD
+   ============================================================ */
+.masthead{
+  background:var(--console);color:var(--console-ink);
+  padding:clamp(52px,9vw,104px) 0 clamp(40px,6vw,64px);
+  border-top:0;
+}
+.masthead .wrap{max-width:1180px}
+.mark{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:#7FD8C3;margin-bottom:26px;display:block;
+}
+.masthead h1{
+  font-size:clamp(42px,8.5vw,86px);font-weight:700;letter-spacing:-.035em;
+  color:#F2F7F5;margin-bottom:18px;line-height:1.02;
+}
+.masthead .thesis{
+  font-size:clamp(19px,2.4vw,24px);line-height:1.5;max-width:30ch;
+  color:#B9C7C2;margin:0 0 40px;
+}
+.masthead .thesis em{color:#7FD8C3;font-style:normal;font-weight:500}
+.facts{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--console-rule);border:1px solid var(--console-rule);
+}
+.fact{background:var(--console);padding:16px 18px}
+.fact dt{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:#6E7C77;margin-bottom:7px;
+}
+.fact dd{margin:0;font-family:var(--f-display);font-size:14px;font-weight:500;color:#E4ECE8;line-height:1.35}
+
+/* ============================================================
+   FINDINGS
+   ============================================================ */
+.finding{
+  display:grid;grid-template-columns:auto 1fr;gap:0 20px;
+  padding-bottom:26px;border-bottom:1px solid var(--rule-soft);
+}
+.finding:last-child{border-bottom:0;padding-bottom:0}
+.finding .n{
+  font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent);
+  padding-top:5px;font-variant-numeric:tabular-nums;
+}
+.finding h3{margin-bottom:8px}
+.finding .body{grid-column:2}
+.finding p:last-child{margin-bottom:0}
+.implication{
+  margin-top:12px;padding:11px 15px;background:var(--accent-soft);
+  border-left:2px solid var(--accent);
+  font-family:var(--f-display);font-size:14.5px;line-height:1.5;color:var(--accent-ink);
+}
+.implication b{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;display:block;margin-bottom:4px;opacity:.75;font-weight:600}
+
+/* ============================================================
+   RULE PANEL (the thesis)
+   ============================================================ */
+.rulebox{
+  background:var(--surface);border:1px solid var(--rule);
+  padding:clamp(22px,4vw,36px);box-shadow:var(--shadow);
+}
+.rulebox .big{
+  font-family:var(--f-display);font-weight:600;font-size:clamp(19px,2.6vw,25px);
+  line-height:1.35;letter-spacing:-.015em;margin:0 0 16px;
+}
+.rulebox .big span{color:var(--accent)}
+.rulebox p:last-child{margin-bottom:0}
+
+/* ============================================================
+   LOOP
+   ============================================================ */
+.loop{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+@media(min-width:820px){.loop{grid-template-columns:repeat(5,1fr)}}
+.step{background:var(--surface);padding:18px 18px 20px}
+.step .n{
+  font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.12em;
+  color:var(--accent);display:block;margin-bottom:9px;
+}
+.step h4{margin-bottom:6px}
+.step p{font-size:14.5px;line-height:1.5;color:var(--muted);margin:0}
+
+/* ============================================================
+   MOCKUP FRAMES
+   ============================================================ */
+.shot{margin:0}
+.shot figcaption{
+  font-family:var(--f-display);font-size:14px;color:var(--muted);
+  margin-top:12px;line-height:1.5;
+}
+.shot figcaption b{color:var(--ink);font-weight:600}
+.frame{
+  border:1px solid var(--rule);background:var(--surface-2);
+  box-shadow:var(--shadow);overflow-x:auto;
+}
+.bar{
+  display:flex;align-items:center;gap:8px;padding:9px 12px;
+  border-bottom:1px solid var(--rule);background:var(--surface);
+}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--rule)}
+.bar .path{
+  font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-left:8px;
+  letter-spacing:.02em;white-space:nowrap;
+}
+
+/* ---- shared app chrome inside mockups ---- */
+.ui{width:1040px;background:var(--surface);color:var(--ink);font-family:var(--f-display);font-size:13px;line-height:1.45}
+.ui *{box-sizing:border-box}
+.ui-top{
+  display:flex;align-items:center;gap:22px;padding:12px 20px;
+  border-bottom:1px solid var(--rule);
+}
+.ui-logo{font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.ui-nav{display:flex;gap:20px;font-size:12.5px;color:var(--muted)}
+.ui-nav .on{color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--accent);padding-bottom:3px}
+.ui-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border:1px solid var(--rule);color:var(--muted);border-radius:2px;white-space:nowrap;
+}
+.pill.ok{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.pill.part{color:var(--amber);border-color:var(--amber);background:var(--amber-soft)}
+.pill.gap{color:var(--coral);border-color:var(--coral);background:var(--coral-soft)}
+.btn{
+  font-family:var(--f-display);font-size:12px;font-weight:600;padding:6px 12px;
+  background:var(--accent);color:var(--on-accent);border:0;border-radius:2px;
+}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+
+/* ---- shortlist table ---- */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);text-align:left;font-weight:500;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.tbl td{padding:13px 14px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.role{font-weight:600;font-size:13.5px;display:block;margin-bottom:3px}
+.co{color:var(--muted);font-size:12px}
+.score{
+  font-family:var(--f-mono);font-weight:600;font-size:16px;
+  font-variant-numeric:tabular-nums;display:block;line-height:1;
+}
+.score.hi{color:var(--accent)}
+.score.mid{color:var(--amber)}
+.score.lo{color:var(--coral)}
+.score-sub{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);letter-spacing:.06em}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.meter{height:4px;background:var(--rule);display:flex;width:120px;margin-top:7px}
+.meter i{display:block;height:100%}
+
+/* ---- tailor split ---- */
+.split{display:grid;grid-template-columns:400px 1fr}
+.pane{padding:16px 18px}
+.pane+.pane{border-left:1px solid var(--rule)}
+.pane-h{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;
+}
+.req{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--rule-soft);align-items:flex-start}
+.req:last-child{border-bottom:0}
+.req .tick{font-family:var(--f-mono);font-size:11px;font-weight:600;width:14px;flex:none;line-height:1.5}
+.req .t-ok{color:var(--accent)}
+.req .t-part{color:var(--amber)}
+.req .t-gap{color:var(--coral)}
+.req .txt{font-size:12.5px;line-height:1.45}
+.req .ev{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);letter-spacing:.04em;margin-top:3px;display:block}
+.bullet{
+  border:1px solid var(--rule);padding:11px 13px;margin-bottom:9px;background:var(--surface);
+}
+.bullet.edited{border-left:2px solid var(--accent)}
+.bullet p{margin:0;font-size:13px;line-height:1.5;font-family:var(--f-body)}
+.bullet .meta{
+  display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;
+}
+.bullet .src{font-family:var(--f-mono);font-size:9.5px;color:var(--accent);letter-spacing:.05em}
+.warnbox{
+  border:1px solid var(--coral);background:var(--coral-soft);padding:11px 13px;margin-top:12px;
+}
+.warnbox h5{margin:0 0 5px;font-family:var(--f-display);font-size:12.5px;font-weight:600;color:var(--coral)}
+.warnbox p{margin:0;font-size:12px;line-height:1.45;color:var(--ink-2)}
+
+/* ---- pack ---- */
+.pack{display:grid;grid-template-columns:1fr 340px}
+.qa{border-bottom:1px solid var(--rule-soft);padding:12px 0}
+.qa:last-child{border-bottom:0}
+.q{font-size:12px;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between;gap:12px}
+.a{font-family:var(--f-body);font-size:13px;line-height:1.5;margin:0}
+.copy{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--rule);padding:2px 7px;background:transparent;white-space:nowrap}
+.letter{font-family:var(--f-body);font-size:13px;line-height:1.62}
+.letter p{margin:0 0 .8em}
+.aside{background:var(--surface-2);padding:16px 18px;border-left:1px solid var(--rule)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--rule-soft);font-size:12px}
+.kv:last-of-type{border-bottom:0}
+.kv .k{color:var(--muted)}
+.kv .v{font-family:var(--f-mono);font-size:11px;font-variant-numeric:tabular-nums}
+
+/* ---- pipeline ---- */
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule)}
+.col-h{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);padding:10px 12px;background:var(--surface-2);
+  display:flex;justify-content:space-between;
+}
+.col-b{background:var(--surface);padding:10px;min-height:132px;display:flex;flex-direction:column;gap:8px}
+.card{border:1px solid var(--rule);padding:9px 10px;background:var(--surface)}
+.card .role{font-size:12px;margin-bottom:2px}
+.card .co{font-size:10.5px}
+.card .age{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);margin-top:6px;display:block}
+.card.warn{border-left:2px solid var(--amber)}
+
+/* ============================================================
+   CODE / SCHEMA
+   ============================================================ */
+.code{
+  background:var(--console);color:var(--console-ink);
+  font-family:var(--f-mono);font-size:12.5px;line-height:1.72;
+  padding:20px 22px;overflow-x:auto;border:1px solid var(--console-rule);
+  white-space:pre;tab-size:2;
+}
+.code b{color:#7FD8C3;font-weight:500}
+.code i{color:#8B968F;font-style:normal}
+.code u{color:#D9A441;text-decoration:none}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.grid-t{width:100%;border-collapse:collapse;font-family:var(--f-display);font-size:14px}
+.grid-t th{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);text-align:left;font-weight:500;padding:9px 12px 9px 0;
+  border-bottom:1px solid var(--rule);
+}
+.grid-t td{padding:12px 12px 12px 0;border-bottom:1px solid var(--rule-soft);vertical-align:top;line-height:1.5}
+.grid-t td:first-child{font-weight:600;white-space:nowrap}
+.grid-t .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.t-scroll{overflow-x:auto}
+
+/* ============================================================
+   PHASES
+   ============================================================ */
+.phase{
+  display:grid;grid-template-columns:auto 1fr;gap:0 22px;
+  padding:22px 0;border-bottom:1px solid var(--rule-soft);
+}
+.phase:last-child{border-bottom:0}
+.phase .tag{
+  font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent);
+  padding-top:4px;white-space:nowrap;
+}
+.phase h3{margin-bottom:4px}
+.phase .when{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;margin-bottom:9px;display:block}
+.phase ul{margin:0;padding-left:1.1em;font-size:15px;color:var(--ink-2)}
+.phase li{margin-bottom:4px}
+.phase .done{
+  margin-top:11px;font-family:var(--f-display);font-size:13.5px;
+  padding:9px 13px;background:var(--surface-2);border-left:2px solid var(--rule);
+}
+.phase .done b{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+
+/* ============================================================
+   RISKS + QUESTIONS
+   ============================================================ */
+.risk{border-left:2px solid var(--rule);padding:2px 0 2px 16px}
+.risk.hot{border-left-color:var(--coral)}
+.risk h4{margin-bottom:5px}
+.risk p{font-size:15px;color:var(--ink-2);margin:0}
+.qs{counter-reset:q;list-style:none;padding:0;margin:0}
+.qs li{
+  counter-increment:q;padding:14px 0 14px 42px;position:relative;
+  border-bottom:1px solid var(--rule-soft);font-size:16px;
+}
+.qs li:last-child{border-bottom:0}
+.qs li::before{
+  content:counter(q,decimal-leading-zero);position:absolute;left:0;top:16px;
+  font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent);
+}
+.qs b{display:block;font-family:var(--f-display);font-size:15px;margin-bottom:2px}
+.qs span{color:var(--muted);font-size:14.5px;line-height:1.5}
+
+footer{background:var(--console);color:#8B968F;padding:40px 0;font-size:13px}
+footer .wrap{max-width:1180px}
+footer a{color:#7FD8C3}
+footer ol{padding-left:1.2em;margin:10px 0 0;font-family:var(--f-display);font-size:12.5px;line-height:1.8}
+
+@media(max-width:760px){
+  .split{grid-template-columns:1fr}
+  .pack{grid-template-columns:1fr}
+  .pane+.pane{border-left:0;border-top:1px solid var(--rule)}
+  .aside{border-left:0;border-top:1px solid var(--rule)}
+  body{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <span class="mark">Product design + build plan</span>
+    <h1>Dossier</h1>
+    <p class="thesis">A job-application workbench that will never write a sentence about you that <em>you can't prove</em>.</p>
+    <dl class="facts">
+      <div class="fact"><dt>Scope</dt><dd>Single user, product-ready architecture</dd></div>
+      <div class="fact"><dt>Stack</dt><dd>Next.js · TypeScript · Prisma · SQLite → Postgres</dd></div>
+      <div class="fact"><dt>Sources</dt><dd>Adzuna · ATS feeds · paste-a-URL · extension capture</dd></div>
+      <div class="fact"><dt>First useful build</dt><dd>Phase 1 — about a week</dd></div>
+      <div class="fact"><dt>Running cost</dt><dd>~$5–15/mo at 20 applications/week</dd></div>
+    </dl>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">01 — What the research says</span>
+      <h2>Five findings that decide the design</h2>
+    </div>
+    <p class="lede">I looked at what the incumbent tools actually do, what applicant tracking systems actually reject, and which data sources are actually available without a legal grey area. Five things came back that change what this app should be.</p>
+
+    <div class="stack">
+      <div class="finding">
+        <span class="n">01</span>
+        <div class="body">
+          <h3>Finding jobs is solved. Tailoring is the bottleneck.</h3>
+          <p>Between one aggregator API and the free per-company ATS feeds, you can have more relevant listings than you can possibly action. Adzuna alone gives 1,000 calls a month free across UK/US/EU; Greenhouse, Lever and Ashby each expose public JSON for every company on their platform. Nobody is short of listings. What costs you is the 45–90 minutes per application spent rereading the job description, rewriting six bullets, drafting a letter, and retyping the same answers into a form.</p>
+          <div class="implication"><b>Design consequence</b>The primary object in the app is an <em>application</em>, not a listing. The job feed is an input to it, not the product.</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="n">02</span>
+        <div class="body">
+          <h3>The ATS is not the thing rejecting you.</h3>
+          <p>The folk model — a robot scores your CV and bins it — is mostly wrong in 2026. Workday, iCIMS, Greenhouse and Lever all parse ordinary formatted PDFs correctly, provided you avoid tables, text boxes, multi-column layouts, and content stuck in headers or footers. The fast rejections come overwhelmingly from two places: <strong>knockout screening questions</strong> (visa status, salary, notice period, years-with-X) and <strong>parse failures</strong> that leave your record half-empty in the database. After that, a human recruiter runs keyword filters over the database to decide who to read.</p>
+          <div class="implication"><b>Design consequence</b>Screening questions get first-class treatment — every incumbent treats them as an afterthought. And the CV renderer is deliberately structurally boring: one column, no tables, real text.</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="n">03</span>
+        <div class="body">
+          <h3>Keyword stuffing is now a penalty, not a hack.</h3>
+          <p>White text and hidden keywords have been detected and flagged since roughly 2016. Semantic matchers score relevance in context, so repeating a term lowers your score rather than raising it. The single highest-leverage edit is much duller: aligning your headline job title with the posting's job title. (Vendor research claims a very large effect here; treat the magnitude with suspicion, but the direction is well supported.)</p>
+          <div class="implication"><b>Design consequence</b>The match score is evidence-based, not term-frequency-based. The question it answers is "can he prove this requirement?" — not "does this word appear?"</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="n">04</span>
+        <div class="body">
+          <h3>The incumbents split one workflow across three products.</h3>
+          <p>Jobscan owns ATS match scoring. Teal owns the kanban tracker with tailoring bolted on. Simplify owns autofill. Between $0 and about $59 a month, three logins, and three separate half-copies of your career history. None of them holds a single authoritative record of what you've actually done, so none can reason well about any individual job.</p>
+          <div class="implication"><b>Design consequence</b>One master profile is the whole edge. Matching, tailoring, letter-writing and form-filling all read from the same store, so improving it improves everything downstream at once.</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="n">05</span>
+        <div class="body">
+          <h3>The failure mode of AI CV tools is fabrication.</h3>
+          <p>Point a language model at a job description and ask it to make a CV match, and it will helpfully invent the missing experience — a plausible metric, a technology you touched once, a scope you didn't have. It reads beautifully and it ends the interview the moment someone probes it. This is the risk that matters, and it's structural: the model is being asked to close a gap it has no evidence for.</p>
+          <div class="implication"><b>Design consequence</b>Generation is bound to evidence. This is the architectural spine of the whole app — see below.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">02 — The spine</span>
+      <h2>Evidence-bound generation</h2>
+    </div>
+    <div class="rulebox">
+      <p class="big">One rule the architecture enforces rather than requests: <span>every generated line carries the ID of the fact it came from.</span></p>
+      <p>You maintain an <strong>evidence bank</strong> — atomic, dated, quantified records of things you actually did. "Cut deployment time from 40 min to 6 min by moving CI to self-hosted runners, 2024, team of 4." Each one is a card with tags, a date, a scope, and a number where one exists.</p>
+      <p>When the app writes a CV bullet or a paragraph of a cover letter, it may only rephrase, compress, and reframe cards from that bank — and the draft shows you which card each line came from. If a requirement has no matching card, the app is <strong>forbidden from writing to it</strong>. It surfaces the hole as a gap you can see, and offers you three honest moves: add a card if you do in fact have the experience, address the gap directly in the letter, or accept it and apply anyway.</p>
+      <p>Mechanically this is a strict structured output: the model returns <code style="font-family:var(--f-mono);font-size:12.5px">{ text, evidence_ids[] }</code> per bullet, and a validation pass rejects any bullet whose evidence array is empty or references a card whose content doesn't support it. Anything that fails goes back as a gap, never into the document. That check is cheap, and it is the difference between a tool you can send from and a tool that eventually embarrasses you.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">03 — The core loop</span>
+      <h2>Five steps, one screen each</h2>
+    </div>
+  </div>
+  <div class="wide">
+    <div class="loop">
+      <div class="step"><span class="n">STEP 1</span><h4>Capture</h4><p>Jobs arrive from the aggregator, from company ATS feeds you follow, from a URL you paste, or from the extension as you browse.</p></div>
+      <div class="step"><span class="n">STEP 2</span><h4>Screen</h4><p>A cheap model extracts the requirements and scores each against your evidence bank. Covered, partial, or gap — per requirement.</p></div>
+      <div class="step"><span class="n">STEP 3</span><h4>Tailor</h4><p>You pick one. The app proposes bullet rewrites, each anchored to a card. Gaps stay visible as gaps.</p></div>
+      <div class="step"><span class="n">STEP 4</span><h4>Pack</h4><p>CV, cover letter and pre-written screening answers on one page, each with a copy button and an export.</p></div>
+      <div class="step"><span class="n">STEP 5</span><h4>Track</h4><p>Status, dates, follow-ups. Outcomes feed back so you learn which evidence actually earns interviews.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">04 — The screens</span>
+      <h2>Four views</h2>
+    </div>
+    <p class="lede">Designed as a dense working tool, not a marketing surface. Everything that needs your attention encodes its state in shape and colour as well as number, so the whole list reads at a glance.</p>
+  </div>
+
+  <div class="wide stack" style="gap:56px;margin-top:12px">
+
+    <!-- ============ SHOT A: SHORTLIST ============ -->
+    <figure class="shot">
+      <div class="frame">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="path">dossier.local / shortlist</span></div>
+        <div class="ui">
+          <div class="ui-top">
+            <span class="ui-logo">Dossier</span>
+            <nav class="ui-nav"><span class="on">Shortlist</span><span>Pipeline</span><span>Evidence</span><span>Profile</span></nav>
+            <div class="ui-right"><span class="pill">42 new · 3 sources</span><button class="btn ghost">Paste a URL</button></div>
+          </div>
+          <table class="tbl">
+            <thead>
+              <tr><th style="width:74px">Match</th><th>Role</th><th style="width:300px">Requirement coverage</th><th style="width:118px">Source</th><th style="width:96px">Posted</th><th style="width:104px"></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="score hi">86</span><span class="score-sub">9/11</span></td>
+                <td><span class="role">Senior Platform Engineer</span><span class="co">Monzo · London · Hybrid</span></td>
+                <td>
+                  <div class="chips"><span class="pill ok">Kubernetes</span><span class="pill ok">Go</span><span class="pill ok">On-call</span><span class="pill part">Terraform</span><span class="pill gap">FinTech</span></div>
+                  <div class="meter"><i style="width:74%;background:var(--accent)"></i><i style="width:12%;background:var(--amber)"></i><i style="width:14%;background:var(--coral)"></i></div>
+                </td>
+                <td><span class="pill">Greenhouse</span></td>
+                <td><span class="score-sub">2 days ago</span></td>
+                <td><button class="btn">Tailor</button></td>
+              </tr>
+              <tr>
+                <td><span class="score hi">79</span><span class="score-sub">8/12</span></td>
+                <td><span class="role">Staff Engineer, Developer Tools</span><span class="co">Datadog · Remote (UK)</span></td>
+                <td>
+                  <div class="chips"><span class="pill ok">CI/CD</span><span class="pill ok">Python</span><span class="pill part">Staff scope</span><span class="pill gap">Observability</span></div>
+                  <div class="meter"><i style="width:64%;background:var(--accent)"></i><i style="width:18%;background:var(--amber)"></i><i style="width:18%;background:var(--coral)"></i></div>
+                </td>
+                <td><span class="pill">Ashby</span></td>
+                <td><span class="score-sub">Today</span></td>
+                <td><button class="btn">Tailor</button></td>
+              </tr>
+              <tr>
+                <td><span class="score mid">61</span><span class="score-sub">6/12</span></td>
+                <td><span class="role">Engineering Manager, Infrastructure</span><span class="co">Wise · London</span></td>
+                <td>
+                  <div class="chips"><span class="pill ok">Kubernetes</span><span class="pill part">Line management</span><span class="pill gap">Hiring</span><span class="pill gap">Budget ownership</span></div>
+                  <div class="meter"><i style="width:50%;background:var(--accent)"></i><i style="width:17%;background:var(--amber)"></i><i style="width:33%;background:var(--coral)"></i></div>
+                </td>
+                <td><span class="pill">Adzuna</span></td>
+                <td><span class="score-sub">4 days ago</span></td>
+                <td><button class="btn ghost">Tailor</button></td>
+              </tr>
+              <tr>
+                <td><span class="score lo">38</span><span class="score-sub">4/14</span></td>
+                <td><span class="role">Principal Data Engineer</span><span class="co">Ocado Technology · Hatfield</span></td>
+                <td>
+                  <div class="chips"><span class="pill ok">Python</span><span class="pill gap">Spark</span><span class="pill gap">dbt</span><span class="pill gap">Data modelling</span></div>
+                  <div class="meter"><i style="width:29%;background:var(--accent)"></i><i style="width:7%;background:var(--amber)"></i><i style="width:64%;background:var(--coral)"></i></div>
+                </td>
+                <td><span class="pill">Adzuna</span></td>
+                <td><span class="score-sub">6 days ago</span></td>
+                <td><button class="btn ghost">Dismiss</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption><b>Shortlist.</b> The score is never shown alone — it always sits next to the requirement chips that produced it, so you can see in one line whether an 86 means "strong across the board" or "perfect on the easy half". The three-part meter is coverage, not progress: teal covered, amber partial, coral gap.</figcaption>
+    </figure>
+
+    <!-- ============ SHOT B: TAILOR ============ -->
+    <figure class="shot">
+      <div class="frame">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="path">dossier.local / application / monzo-senior-platform-engineer / tailor</span></div>
+        <div class="ui">
+          <div class="ui-top">
+            <span class="ui-logo">Dossier</span>
+            <nav class="ui-nav"><span>Shortlist</span><span class="on">Tailor</span><span>Pack</span></nav>
+            <div class="ui-right"><span class="pill ok">9 covered</span><span class="pill part">1 partial</span><span class="pill gap">1 gap</span><button class="btn">Build pack</button></div>
+          </div>
+          <div class="split">
+            <div class="pane">
+              <div class="pane-h"><span>Requirements — extracted</span><span>11</span></div>
+              <div class="req"><span class="tick t-ok">●</span><div><div class="txt">Production Kubernetes at scale</div><span class="ev">EV-014 · Migrated 60-service estate to EKS</span></div></div>
+              <div class="req"><span class="tick t-ok">●</span><div><div class="txt">Go in production</div><span class="ev">EV-003, EV-021 · 4 yrs, two services</span></div></div>
+              <div class="req"><span class="tick t-ok">●</span><div><div class="txt">Owns an on-call rotation</div><span class="ev">EV-009 · Led 6-person rota, cut pages 71%</span></div></div>
+              <div class="req"><span class="tick t-ok">●</span><div><div class="txt">CI/CD pipeline ownership</div><span class="ev">EV-002 · 40 min → 6 min build time</span></div></div>
+              <div class="req"><span class="tick t-part">◐</span><div><div class="txt">Terraform / infrastructure as code</div><span class="ev">EV-018 · Used, not owned — 1 project, 2022</span></div></div>
+              <div class="req"><span class="tick t-gap">○</span><div><div class="txt">Financial services or regulated domain</div><span class="ev">No matching evidence</span></div></div>
+              <div class="req"><span class="tick t-ok">●</span><div><div class="txt">Mentoring engineers</div><span class="ev">EV-011 · 3 juniors to mid, 18 months</span></div></div>
+            </div>
+            <div class="pane">
+              <div class="pane-h"><span>CV — experience, tailored</span><span>4 of 6 bullets changed</span></div>
+              <div class="bullet edited">
+                <p>Migrated a 60-service estate onto EKS with zero customer-facing downtime, cutting infrastructure spend 34% in the first quarter.</p>
+                <div class="meta"><span class="src">◆ EV-014</span><span class="pill ok">Requirement 1</span><span class="pill">Reordered to top</span></div>
+              </div>
+              <div class="bullet edited">
+                <p>Owned the platform on-call rotation for six engineers, reducing out-of-hours pages 71% over two quarters through alert triage and runbook automation.</p>
+                <div class="meta"><span class="src">◆ EV-009</span><span class="pill ok">Requirement 3</span><span class="pill">Reworded</span></div>
+              </div>
+              <div class="bullet">
+                <p>Rebuilt the deployment pipeline on self-hosted runners, taking mean build time from 40 minutes to 6.</p>
+                <div class="meta"><span class="src">◆ EV-002</span><span class="pill ok">Requirement 4</span><span class="pill">Unchanged</span></div>
+              </div>
+              <div class="warnbox">
+                <h5>Gap — financial services experience</h5>
+                <p>No card in your evidence bank supports this, so nothing was written for it. Add a card if you have relevant regulated-domain work, or address it directly in the cover letter — Dossier will draft an honest two-sentence acknowledgement on request.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Tailor.</b> The two panes are a ledger: every requirement on the left resolves to evidence or to nothing, and every bullet on the right carries the card ID it came from. The gap panel is the feature — it's the place where every other tool on the market quietly invents something.</figcaption>
+    </figure>
+
+    <!-- ============ SHOT C: PACK ============ -->
+    <figure class="shot">
+      <div class="frame">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="path">dossier.local / application / monzo-senior-platform-engineer / pack</span></div>
+        <div class="ui">
+          <div class="ui-top">
+            <span class="ui-logo">Dossier</span>
+            <nav class="ui-nav"><span>Shortlist</span><span>Tailor</span><span class="on">Pack</span></nav>
+            <div class="ui-right"><button class="btn ghost">CV.pdf</button><button class="btn ghost">CV.docx</button><button class="btn">Mark applied</button></div>
+          </div>
+          <div class="pack">
+            <div class="pane">
+              <div class="pane-h"><span>Cover letter — 214 words</span><button class="copy">Copy</button></div>
+              <div class="letter">
+                <p>Dear Hiring Team,</p>
+                <p>I'm applying for the Senior Platform Engineer role. The part of the posting I'd point at first is the on-call ownership: I ran the platform rotation for six engineers and took out-of-hours pages down 71% in two quarters, mostly by killing alerts that nobody could act on and writing runbooks for the ones that survived.</p>
+                <p>The scale question I can answer directly — I moved a 60-service estate onto EKS with no customer-facing downtime, and the same programme took 34% out of infrastructure spend in its first quarter.</p>
+                <p>I should be straight about one thing: I haven't worked in financial services, so I'd be learning your regulatory constraints from scratch. What I'd bring instead is having twice been the person who introduced deployment discipline to a team that didn't have it.</p>
+              </div>
+
+              <div class="pane-h" style="margin-top:26px"><span>Screening questions — pre-answered</span><span>6</span></div>
+              <div class="qa">
+                <div class="q"><span>Why do you want to work at Monzo?</span><button class="copy">Copy</button></div>
+                <p class="a">Reused from your bank, adapted to this posting's emphasis on platform reliability. 78 words.</p>
+              </div>
+              <div class="qa">
+                <div class="q"><span>Do you require visa sponsorship?</span><button class="copy">Copy</button></div>
+                <p class="a">No — from profile.</p>
+              </div>
+              <div class="qa">
+                <div class="q"><span>Notice period</span><button class="copy">Copy</button></div>
+                <p class="a">One month — from profile.</p>
+              </div>
+              <div class="qa">
+                <div class="q"><span>Salary expectations</span><button class="copy">Copy</button></div>
+                <p class="a">£95,000–£110,000 — from profile. Posting states £90k–£115k.</p>
+              </div>
+              <div class="qa">
+                <div class="q"><span>Describe a system you designed end to end.</span><button class="copy">Copy</button></div>
+                <p class="a">Drafted from EV-014 and EV-002. 190 words. Review before sending.</p>
+              </div>
+            </div>
+            <aside class="aside">
+              <div class="pane-h"><span>This application</span></div>
+              <div class="kv"><span class="k">Match</span><span class="v">86</span></div>
+              <div class="kv"><span class="k">Requirements met</span><span class="v">9 / 11</span></div>
+              <div class="kv"><span class="k">Evidence cards used</span><span class="v">7</span></div>
+              <div class="kv"><span class="k">Unsupported claims</span><span class="v" style="color:var(--accent)">0</span></div>
+              <div class="kv"><span class="k">Time spent</span><span class="v">9 min</span></div>
+              <div class="kv"><span class="k">Model cost</span><span class="v">$0.19</span></div>
+              <div class="pane-h" style="margin-top:24px"><span>Before you send</span></div>
+              <p style="font-size:12.5px;line-height:1.5;color:var(--muted);margin:0 0 10px">Read the letter's third paragraph. It names a gap on purpose — that's a judgement call, and it's yours, not the model's.</p>
+              <button class="btn" style="width:100%">Open application form ↗</button>
+            </aside>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Pack.</b> Everything needed to fill one form, in one place, each block copyable on its own. <b>Unsupported claims: 0</b> is the number that matters — it's the evidence validator reporting, and it's the reason you can paste this without rereading every line for invented history.</figcaption>
+    </figure>
+
+    <!-- ============ SHOT D: PIPELINE ============ -->
+    <figure class="shot">
+      <div class="frame">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="path">dossier.local / pipeline</span></div>
+        <div class="ui">
+          <div class="ui-top">
+            <span class="ui-logo">Dossier</span>
+            <nav class="ui-nav"><span>Shortlist</span><span class="on">Pipeline</span><span>Evidence</span><span>Profile</span></nav>
+            <div class="ui-right"><span class="pill part">2 need a follow-up</span></div>
+          </div>
+          <div class="board">
+            <div><div class="col-h"><span>Drafted</span><span>3</span></div><div class="col-b">
+              <div class="card"><span class="role">Staff Engineer, Dev Tools</span><span class="co">Datadog</span><span class="age">Pack ready · not sent</span></div>
+              <div class="card"><span class="role">Platform Lead</span><span class="co">Cleo</span><span class="age">Pack ready · not sent</span></div>
+            </div></div>
+            <div><div class="col-h"><span>Applied</span><span>11</span></div><div class="col-b">
+              <div class="card"><span class="role">Senior Platform Engineer</span><span class="co">Monzo</span><span class="age">Sent 3 days ago</span></div>
+              <div class="card warn"><span class="role">Infrastructure Engineer</span><span class="co">Deliveroo</span><span class="age">Sent 16 days ago · nudge?</span></div>
+            </div></div>
+            <div><div class="col-h"><span>Screening</span><span>4</span></div><div class="col-b">
+              <div class="card"><span class="role">SRE II</span><span class="co">Depop</span><span class="age">Call Thu 14:00</span></div>
+            </div></div>
+            <div><div class="col-h"><span>Interviewing</span><span>2</span></div><div class="col-b">
+              <div class="card"><span class="role">Senior SRE</span><span class="co">Starling</span><span class="age">Round 2 of 3</span></div>
+            </div></div>
+            <div><div class="col-h"><span>Closed</span><span>9</span></div><div class="col-b">
+              <div class="card"><span class="role">Platform Engineer</span><span class="co">Revolut</span><span class="age">Rejected · post-screen</span></div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Pipeline.</b> Deliberately the plainest screen in the app. Its real job is quiet: recording outcomes against the evidence cards each application used, so that after forty applications you can see which of your cards actually correlate with getting a call.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">05 — Data model</span>
+      <h2>Five tables, one of which is the product</h2>
+    </div>
+    <p>The profile follows the <strong>JSON Resume</strong> schema so you can render with any of its hundreds of themes and import from tools that already speak it. The evidence bank is the extension that makes the rest work — it has no equivalent in JSON Resume, and it is where your time goes.</p>
+  </div>
+  <div class="wide">
+    <div class="code"><i>// Profile — JSON Resume 1.0.0 shape, stored as JSON. The renderable facts.</i>
+<b>Profile</b>       basics · work[] · education[] · skills[] · projects[]
+              + <u>constants</u>: visa status, notice period, salary band, locations,
+                            demographics, referral source, links
+
+<i>// Evidence — the bank. Atomic, dated, quantified. THIS is the product.</i>
+<b>Evidence</b>      id            <i>EV-014</i>
+              claim         <i>"Migrated 60-service estate to EKS, zero downtime"</i>
+              metric        <i>{ value: 34, unit: "%", of: "infra spend", direction: "down" }</i>
+              period        <i>2023-04 → 2023-11</i>
+              scope         <i>"lead, 4 engineers"</i>
+              tags          <i>[kubernetes, aws, migration, cost]</i>
+              employerId    <i>→ Profile.work[]</i>
+              strength      <i>owned | contributed | exposed</i>   <b>← drives covered/partial/gap</b>
+
+<i>// Job — normalised across every source adapter.</i>
+<b>Job</b>           source        <i>adzuna | greenhouse | lever | ashby | manual | extension</i>
+              sourceRef · url · title · company · location · remote · salary
+              descriptionRaw · <u>requirements[]</u>  <i>← extracted, not scraped text</i>
+              postedAt · closesAt · dedupeHash
+
+<i>// Application — the working object. One per job you act on.</i>
+<b>Application</b>   jobId · status <i>(drafted|applied|screening|interviewing|closed)</i>
+              matchScore · coverage[]   <i>{ requirementId, verdict, evidenceIds[] }</i>
+              tailoredBullets[]         <i>{ text, evidenceIds[], baseBulletId }</i>
+              coverLetter · answers[]
+              renderedCvPath · appliedAt · outcome · outcomeNote
+
+<i>// Answer — the reusable bank of screening-question responses.</i>
+<b>Answer</b>        questionHash · canonicalQuestion · text · evidenceIds[]
+              timesUsed · lastUsedAt      <i>← fuzzy-matched against new forms</i>
+</div>
+  </div>
+  <div class="wrap" style="margin-top:28px">
+    <p><strong>Why <code style="font-family:var(--f-mono);font-size:13px">strength</code> earns its column:</strong> it's what separates a real match from a keyword collision. "Used Terraform on one project in 2022" is <em>exposed</em>; "owned the Terraform estate for two years" is <em>owned</em>. The same tag, three very different answers to the same requirement — and the difference between an honest partial and an overclaim.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">06 — Architecture</span>
+      <h2>How it fits together</h2>
+    </div>
+  </div>
+  <div class="wide">
+    <div class="code">  <b>Next.js (App Router) · TypeScript · Prisma</b>
+  ┌──────────────────────────────────────────────────────────────────┐
+  │  <b>UI</b>  Shortlist · Tailor · Pack · Pipeline · Evidence · Profile  │
+  └───────────────────────────────┬──────────────────────────────────┘
+                                  │  server actions / route handlers
+  ┌───────────────────────────────┴──────────────────────────────────┐
+  │  <b>Core</b>                                                            │
+  │    ingest      <i>adapter → normalise → dedupe → store</i>                │
+  │    extract     <i>job description → requirements[]  (Haiku, batch)</i>    │
+  │    match       <i>requirements × evidence → coverage[]</i>                │
+  │    tailor      <i>coverage → bullets{text, evidenceIds}  (Opus 5)</i>     │
+  │    <u>validate</u>    <i>reject any claim not supported by cited evidence</i>    │
+  │    render      <i>Profile + bullets → PDF / DOCX / plain text</i>         │
+  └────┬──────────────────────┬───────────────────────┬──────────────┘
+       │                      │                       │
+  ┌────┴─────────┐   ┌────────┴────────┐   ┌──────────┴───────────┐
+  │ <b>Sources</b>      │   │ <b>Anthropic SDK</b>   │   │ <b>Prisma → SQLite</b>     │
+  │ adzuna       │   │ opus 5 · haiku  │   │ (→ Postgres later)   │
+  │ greenhouse   │   │ structured out  │   │                      │
+  │ lever        │   │ prompt caching  │   │ evidence bank        │
+  │ ashby        │   │ batch API       │   │ is the crown jewel   │
+  │ manual-url   │   └─────────────────┘   └──────────────────────┘
+  │ extension    │
+  └──────────────┘</div>
+  </div>
+  <div class="wrap" style="margin-top:30px">
+    <div class="stack">
+      <div>
+        <h3 style="margin-bottom:8px">Source adapters are one interface</h3>
+        <p>Every source implements <code style="font-family:var(--f-mono);font-size:13px">fetch() → NormalisedJob[]</code> and nothing else knows the difference. Greenhouse, Lever and Ashby are public JSON endpoints their own careers pages already call — no keys, no bot walls, no breakage when a careers page is redesigned. Adzuna needs an app ID and key, gives 1,000 calls a month free, and returns truncated descriptions, so the adapter follows through to the posting URL when a job scores well enough to be worth the full text.</p>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">Rendering the CV</h3>
+        <p>The document renderer takes the profile plus the tailored bullets and emits a single-column PDF with real text, no tables, no text boxes, and nothing in the header or footer — precisely the shape finding 02 says parses cleanly. Headless Chromium against an HTML template is the pragmatic route: you get exact typographic control and DOCX from the same template via a second exporter. Keep the template in the repo; it's the one piece of the app you'll fiddle with forever.</p>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">Multi-tenant-ready without being multi-tenant</h3>
+        <p>Per your scope answer: every table carries a <code style="font-family:var(--f-mono);font-size:13px">userId</code> from day one and every query goes through a repository layer that scopes by it, but there is exactly one user row and no login screen. API keys live server-side in environment variables, never in the client. That is roughly a day of extra discipline in phase 1, and it's the difference between adding auth later and rewriting the data layer later.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">07 — The model layer</span>
+      <h2>Which model does what, and what it costs</h2>
+    </div>
+    <p>Three techniques do most of the work here. <strong>Structured outputs</strong> with strict schemas, so extraction and tailoring return validated objects rather than prose you have to parse. <strong>Prompt caching</strong>, because your profile and evidence bank are a large, byte-identical prefix on every single request — cache it once and the marginal cost of scoring another job collapses. And the <strong>Batch API</strong> at half price for the overnight scoring run, which has no latency requirement at all.</p>
+    <div class="t-scroll">
+      <table class="grid-t">
+        <thead><tr><th>Job</th><th>Model</th><th>Why</th><th class="num">Rate /1M in · out</th></tr></thead>
+        <tbody>
+          <tr><td>Requirement extraction</td><td>Haiku 4.5</td><td>Mechanical structure-finding against a strict schema. Runs on every ingested job, so it must be cheap.</td><td class="num">$1 · $5</td></tr>
+          <tr><td>Overnight match scoring</td><td>Haiku 4.5, batched</td><td>Hundreds of jobs, no user waiting. Batch halves it; the cached evidence-bank prefix does the rest.</td><td class="num">$1 · $5 <span style="color:var(--muted)">−50%</span></td></tr>
+          <tr><td>Bullet tailoring</td><td>Opus 5</td><td>The judgement call — what to foreground, what to compress, what not to claim. This is where quality is visible and where you should not economise.</td><td class="num">$5 · $25</td></tr>
+          <tr><td>Cover letter + screening answers</td><td>Opus 5</td><td>Prose you'll actually send under your own name. Adaptive thinking on; effort high.</td><td class="num">$5 · $25</td></tr>
+          <tr><td>Evidence validation</td><td>Haiku 4.5</td><td>Narrow entailment check: does card EV-014 support this sentence? Cheap, and the last line before a claim reaches a document.</td><td class="num">$1 · $5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:22px"><strong>What that adds up to.</strong> A full tailoring run — extraction, matching, six bullets, a letter, six answers, validation — lands around <strong>$0.15–0.30</strong>. Overnight scoring of a couple of hundred new listings is cents once the prefix is cached. At twenty applications a week you're looking at roughly <strong>$5–15 a month</strong>, which is under the cheapest incumbent's single-product subscription and buys you all three functions.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">08 — Build plan</span>
+      <h2>Four phases, each independently useful</h2>
+    </div>
+    <p class="lede">The ordering principle: the thing that saves you the most time per hour of build is the paste-a-URL path. It needs no source integrations at all, and it is the entire value proposition. Everything else is convenience layered on top.</p>
+
+    <div style="margin-top:30px">
+      <div class="phase">
+        <span class="tag">PHASE 0</span>
+        <div>
+          <h3>Seed the evidence bank</h3>
+          <span class="when">Half a day · mostly your time, not build time</span>
+          <ul>
+            <li>Parse your existing CV into candidate evidence cards</li>
+            <li>An editor screen where you correct, split, date, and quantify each one</li>
+            <li>Set the constants: visa, notice, salary band, locations, links</li>
+          </ul>
+          <div class="done"><b>Done when</b>You have 25–40 real cards with numbers on them. Nothing downstream works properly without this, and no amount of clever prompting substitutes for it.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="tag">PHASE 1</span>
+        <div>
+          <h3>The single-application loop</h3>
+          <span class="when">About a week · this is the release that changes your life</span>
+          <ul>
+            <li>Paste a URL or a job description → extract requirements</li>
+            <li>Coverage report against the evidence bank</li>
+            <li>Tailored bullets with evidence binding, plus the validator</li>
+            <li>Cover letter and screening answers</li>
+            <li>PDF export from the HTML template</li>
+            <li>SQLite, no auth, <code style="font-family:var(--f-mono);font-size:13px">userId</code> everywhere</li>
+          </ul>
+          <div class="done"><b>Done when</b>You can go from a job URL to a sendable pack in under ten minutes, and the unsupported-claims counter reads zero.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="tag">PHASE 2</span>
+        <div>
+          <h3>Sources and pipeline</h3>
+          <span class="when">About a week</span>
+          <ul>
+            <li>Adapters: Adzuna, plus Greenhouse/Lever/Ashby for a company list you curate</li>
+            <li>Dedupe across sources — the same role arrives three times</li>
+            <li>Shortlist screen with overnight batch scoring</li>
+            <li>Pipeline board, follow-up nudges, outcome recording</li>
+            <li>DOCX export</li>
+          </ul>
+          <div class="done"><b>Done when</b>You open the app in the morning to a scored shortlist you didn't assemble by hand.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="tag">PHASE 3</span>
+        <div>
+          <h3>Browser extension</h3>
+          <span class="when">1–2 weeks · the maintenance-heavy phase</span>
+          <ul>
+            <li><strong>Capture:</strong> one click sends the listing you're viewing — including LinkedIn and Indeed pages you found yourself — into Dossier</li>
+            <li><strong>Autofill:</strong> Greenhouse, Lever and Ashby first; their DOM is clean and stable</li>
+            <li>Workday last, behind a fallback to copy-paste — its custom SPA components have no conventional field names and break routinely</li>
+            <li>Always fills, never submits. You review every field</li>
+          </ul>
+          <div class="done"><b>Done when</b>A Greenhouse application takes under two minutes end to end. Budget ongoing time for selector rot — this phase is never "finished".</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="tag">PHASE 4</span>
+        <div>
+          <h3>Productise — only if you decide to</h3>
+          <span class="when">Not scheduled</span>
+          <ul>
+            <li>Auth, Postgres, per-user encryption of CV content at rest</li>
+            <li>Billing, usage caps, model-cost accounting per user</li>
+            <li>A lawful basis and a data-processing story: other people's CVs are personal data, and some of it is special-category</li>
+          </ul>
+          <div class="done"><b>Note</b>Phases 0–3 are yours to build however you like. Phase 4 changes the legal character of the project, and it's worth deciding deliberately rather than drifting into it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">09 — Risks</span>
+      <h2>What could go wrong</h2>
+    </div>
+    <div class="stack">
+      <div class="risk hot">
+        <h4>LinkedIn and Indeed scraping</h4>
+        <p>You asked for it, so it's in the plan — but implemented as <em>extension capture</em> rather than server-side scraping. When you're logged in and looking at a listing, the extension reads the page you're already viewing and sends it to Dossier. That gets you the same coverage without an IP that gets blocked within a week, and without a crawler hitting their servers. Server-side scraping of both sites is against their terms, aggressively defended, and carries account-ban risk. The capture path is my recommendation; if you want the crawler anyway, it slots in behind the same adapter interface.</p>
+      </div>
+      <div class="risk hot">
+        <h4>Fabrication leaks past the validator</h4>
+        <p>The evidence binding makes fabrication hard, not impossible — a model can cite a real card and still overstate what it says. Mitigation is layered: strict schemas, the entailment check, the unsupported-claims counter surfaced on the pack screen, and a hard rule that you read the letter before sending. Treat any leak you spot as a bug with a regression test, not a one-off.</p>
+      </div>
+      <div class="risk">
+        <h4>Extension selector rot</h4>
+        <p>ATS vendors redesign their forms and your selectors die silently — filling the wrong field is worse than filling nothing. Build it to detect its own failure: if the expected field count doesn't match, refuse to fill and say so rather than guessing.</p>
+      </div>
+      <div class="risk">
+        <h4>Truncated aggregator descriptions</h4>
+        <p>Adzuna returns snippets, and requirement extraction on a snippet produces a confidently wrong coverage report. The adapter must mark jobs as <em>partial-text</em> and either fetch the full posting or refuse to score them above a provisional band.</p>
+      </div>
+      <div class="risk">
+        <h4>Volume becomes the goal</h4>
+        <p>Any tool that makes applying cheap tempts you to apply more rather than better, which is exactly the behaviour that gets ignored. Worth designing against: the pipeline board tracks response rate, not application count, and the shortlist defaults to hiding anything under a 60 match.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">10 — Over to you</span>
+      <h2>What I need before phase 1</h2>
+    </div>
+    <ol class="qs">
+      <li><b>Your target roles, seniority and regions</b><span>Determines the Adzuna country endpoints, the ATS company list worth curating, and — more importantly — how the matcher weighs seniority signals against skill signals.</span></li>
+      <li><b>Do you have a current CV I can seed the evidence bank from?</b><span>Phase 0 goes from half a day to twenty minutes if I can parse an existing document rather than interview you from scratch.</span></li>
+      <li><b>PDF only, or DOCX as well?</b><span>Some employers still demand .docx uploads. It's a second exporter off the same template, but it's worth knowing now rather than retrofitting.</span></li>
+      <li><b>Roughly how many applications a week?</b><span>Sets the batch-scoring budget and whether overnight scoring needs to run at all, versus scoring on demand.</span></li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0 0 4px"><strong style="color:#DCE5E1;font-family:var(--f-display)">Dossier</strong> — design and plan, ready to build against. Nothing here is committed code; phase 1 starts on your word.</p>
+    <p style="margin:14px 0 0;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase">Research sources</p>
+    <ol>
+      <li><a href="https://jobspipe.dev/free-jobs-api">Free Jobs API: 8 Real Options Compared (2026)</a> — JobsPipe</li>
+      <li><a href="https://cavuno.com/blog/ats-platforms-public-job-posting-apis">6 ATS Platforms with Public Job Posting APIs</a> — Cavuno</li>
+      <li><a href="https://jobspipe.dev/blog/scrape-workday-jobs-legally">How to scrape Workday job postings legally (and why you shouldn't)</a> — JobsPipe</li>
+      <li><a href="https://enhancv.com/blog/busting-ats-myths/">Busting ATS Myths: Comprehensive Testing of Popular Resume Builders</a> — Enhancv</li>
+      <li><a href="https://atsverification.com/blog/ai-resume-screening-2026/">AI Resume Screening in 2026: How It Works &amp; How to Pass</a> — ATS Verification</li>
+      <li><a href="https://www.jobscan.co/blog/ai-job-search-tools/">Best AI Job Search Tools in 2026: What Actually Works</a> — Jobscan</li>
+      <li><a href="https://four-leaf.ai/blog/best-resume-tailoring-services-2026">Best AI resume tailoring tool in 2026: 6 compared</a> — Four-Leaf</li>
+      <li><a href="https://jsonresume.org/schema">JSON Resume Schema 1.0.0</a></li>
+      <li><a href="https://simplify.jobs/copilot">Simplify Copilot</a> and <a href="https://jobwizard.ai/blog/how-to-autofill-job-applications-automatically-in-2026">autofill behaviour on Workday</a></li>
+    </ol>
+  </div>
+</footer>
